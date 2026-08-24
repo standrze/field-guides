@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A method-first guide to transformer layers, abliteration mathematics, and practical tradeoffs.">
+  <meta name="theme-color" content="#6fe7ff">
+  <title>Abliteration Methods Guide</title>
+  <link rel="stylesheet" href="./base.css?v=1">
+  <link rel="stylesheet" href="./styles.css?v=3">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#orientation" aria-label="Abliteration Methods Guide home">
+        <span class="brand-mark">R⊥</span>
+        <span><strong>Abliteration</strong><small>METHODS · MATH · TRADEOFFS</small></span>
+      </a>
+      <div class="progress-card">
+        <div class="progress-copy"><span>Your progress</span><strong id="progress-label">0%</strong></div>
+        <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
+      </div>
+      <nav id="course-nav" aria-label="Course chapters"></nav>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span> TRANSFORMERS · GEOMETRY · SAFETY
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button class="menu-button" id="menu-button" aria-label="Open course navigation">☰</button>
+        <div class="crumb" id="crumb">00 / Orientation</div>
+        <button class="key-hint" id="search-button"><kbd>/</kbd> Jump to lesson</button>
+      </header>
+      <article id="lesson" tabindex="-1"></article>
+      <footer class="lesson-footer">
+        <button id="previous" class="nav-button">← Previous</button>
+        <button id="complete" class="complete-button">Mark complete</button>
+        <button id="next" class="nav-button">Next →</button>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="search-dialog">
+    <div class="search-box">
+      <label for="search-input">Jump to a lesson</label>
+      <input id="search-input" type="search" placeholder="Try “KL”, “biprojection”, or “SNR”…" autocomplete="off">
+      <div id="search-results"></div>
+      <small><kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>enter</kbd> open · <kbd>esc</kbd> close</small>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="course-data">[{"group":"Start here","id":"orientation","level":"Orientation","summary":"Define the scope, separate abliteration from adjacent techniques, and map the learning path.","terms":"ablation uncensoring orthogonalization safety behavior refusal","time":"12 min","title":"What abliteration actually is"},{"group":"Model anatomy","id":"transformer-layers","level":"Foundation","summary":"Follow a token through embeddings, repeated transformer blocks, normalization, and the language-model head.","terms":"tokenizer embeddings blocks attention q k v o mlp rmsnorm layernorm logits unembedding","time":"18 min","title":"How a model is layered"},{"group":"Model anatomy","id":"residual-stream","level":"Foundation","summary":"Locate pre-, mid-, and post-block states and understand what Transformers hidden states actually expose.","terms":"resid_pre resid_mid resid_post hidden_states hooks token position generation","time":"16 min","title":"Residual stream & hidden states"},{"group":"Model anatomy","id":"refusal-mechanism","level":"Intermediate","summary":"Separate topic, harmfulness, refusal policy, and capability; then follow refusal through a staged mechanism.","terms":"detector gate router amplifier writer harmfulness topic policy capability single direction cone subspace","time":"20 min","title":"What refusal represents"},{"group":"Model anatomy","id":"geometry-language","level":"Intermediate","summary":"Build an intuitive and mathematical vocabulary for directions, subspaces, projection, SVD, whitening, and norms.","terms":"vector centroid dot product cosine projection orthogonal basis rank SVD PCA covariance whitening norm winsorization","time":"22 min","title":"The geometry you need"},{"group":"Core workflow","id":"measurement-design","level":"Intermediate","summary":"Build valid contrasts and compare ordinary, paired, robust, and covariance-aware direction estimators.","terms":"dataset harmful harmless refused answered contrast robust mean paired mean median of means geometric median winsorization LDA Fisher shrinkage covariance","time":"24 min","title":"Design the measurement"},{"group":"Core workflow","id":"layer-analysis","level":"Intermediate","summary":"Read layer metrics without mistaking a visualization heuristic for causal evidence.","terms":"mean gap within class scatter Fisher cosine rotation angular velocity source layer destination layer induce KL causal selection","time":"22 min","title":"Analyze layers & positions"},{"group":"Core workflow","id":"standard-abliteration","level":"Intermediate","summary":"Derive runtime directional ablation and its permanent weight-orthogonalization form.","terms":"activation ablation orthogonal projector weight orthogonalization rank one W out equivalence scale invert induction","time":"20 min","title":"Standard abliteration"},{"group":"Core workflow","id":"projected-norm","level":"Advanced","summary":"Disentangle source projection, destination projection, norm preservation, and their combined community variants.","terms":"projected biprojected norm-preserving NPBA Gram Schmidt answer mean residualization direction magnitude geometry","time":"24 min","title":"Projected, biprojected & norm-preserving"},{"group":"Core workflow","id":"runtime-weight","level":"Practical","summary":"Compare reversible activation interventions, all-writer folding, targeted writer surgery, and learned low-rank updates.","terms":"runtime hooks weight folding checkpoint orthogonalization diagnostic ablation equivalence all writers targeted low rank lora","time":"26 min","title":"Runtime projection vs permanent weight edits"},{"group":"Method atlas","id":"multidirectional-whitening","level":"Advanced","summary":"Move beyond one mean vector with affine, multidirectional, and covariance-aware erasure methods.","terms":"multi direction subspace SVD PCA whitened SVD ACE LEACE INLP R-LACE covariance protected spectral prototypes clustering manifold","time":"28 min","title":"Subspaces, SVD & concept erasure"},{"group":"Method atlas","id":"conditional-distributional","level":"Advanced","summary":"Replace global deletion with answer-centered maps, distribution transport, learned low-rank updates, or gated runtime control.","terms":"ACE optimal transport Wasserstein controlled latent evasion CLE ReFT conditional gate CAST angular steering natural gradient low rank folding","time":"30 min","title":"Conditional & distributional edits"},{"group":"Method atlas","id":"sparse-circuits","level":"Advanced","summary":"Localize refusal to features, components, and causal paths instead of projecting an entire residual direction everywhere.","terms":"SAE sparse autoencoder feature neuron attention head activation patching causal tracing circuit editability decodability hydra","time":"28 min","title":"Sparse features & causal circuits"},{"group":"Method atlas","id":"moe-vlm","level":"Advanced","summary":"Adapt refusal editing to routed experts, shared components, multimodal streams, and nonstandard writer layouts.","terms":"mixture experts MoE router shared expert fused tensor VLM modality vision language category prototype expert steering","time":"24 min","title":"MoE, VLM & hybrid architectures"},{"group":"Method atlas","id":"thirty-primitives","level":"Reference","summary":"Use thirty research primitives as a map from discovery through causal proof.","terms":"technique primitives established adapted novel discovery localization intervention proof complete atlas","time":"32 min","title":"Appendix: the 30-technique index"},{"group":"Method comparison","id":"operator-variants","level":"Advanced","summary":"Compare the operators that remove, weaken, reflect, rotate, normalize, regularize, or schedule a measured direction.","terms":"partial projection attenuation ridge regularization householder reflection inversion norm preservation angular steering spectral layer schedule","time":"30 min","title":"Operator variants: attenuation, reflection & regularization"},{"group":"Method comparison","id":"method-comparison","level":"Reference","summary":"Compare the major abliteration families by mathematical assumption, data needs, selectivity, cost, reversibility, and characteristic failure mode.","terms":"method comparison advantages disadvantages mean direction svd whitening leace ace inlp r-lace transport sparse conditional learned low rank","time":"36 min","title":"The complete method comparison atlas"},{"group":"Method comparison","id":"method-selection","level":"Practical","summary":"Select the least complex method that addresses the observed failure, then verify its mathematical and behavioral invariants.","terms":"decision guide invariants orientation symmetry idempotence residual energy alpha boundary equivalence random control method selection","time":"28 min","title":"Choose a method—and prove the math"},{"group":"Evidence & practice","id":"experiment-ladder","level":"Advanced","summary":"Build evidence in stages—from frozen baselines and measurement validity through causal tests, Pareto selection, and adversarial generalization.","terms":"experimental design controls baselines factorial causal patching addition removal pareto frontier ablation study cross validation","time":"30 min","title":"Design a defensible experiment"},{"group":"Evidence & practice","id":"metrics-acronyms","level":"Intermediate reference","summary":"Expand the common acronyms, reproduce the core formulas, interpret their direction and units, and recognize what each metric cannot prove.","terms":"metrics acronyms KL Kullback Leibler NLL negative log likelihood PPL perplexity CE cross entropy JSD entropy refusal rate ASR ORR TPR FPR F1 AUROC AUPRC ECE Brier SNR EVR CKA confidence interval bootstrap","time":"36 min","title":"Metrics & acronyms: read the scoreboard"},{"group":"Evidence & practice","id":"evaluation-deployment","level":"Advanced","summary":"Measure what the model actually says, what it still knows, how safety behavior changes, and whether the converted artifact matches the validated model.","terms":"evaluation refusal compliance substantive answer evasion strongreject harmbench xstest perplexity kl nll quantization reload deployment","time":"30 min","title":"Evaluate behavior, utility & deployed bytes"},{"group":"Evidence & practice","id":"failure-modes","level":"All levels","summary":"Recognize the ways an abliteration result can be technically real yet mechanistically wrong, operationally fragile, or unsafe to deploy.","terms":"failure modes ethics responsible use authorization safety dual use limitations reconstruction topic erasure overfitting misuse","time":"22 min","title":"Failure modes, limits & responsible use"},{"group":"Reference","id":"glossary-sources","level":"Reference","summary":"Review the core vocabulary, follow the primary method literature, and choose a disciplined next study path.","terms":"glossary sources papers links arditi transformer leace ace inlp r-lace steering transport strongreject harmbench xstest next steps","time":"18 min","title":"Glossary, primary sources & next steps"}]</script>
+<template id="lesson-orientation">
+      <p class="eyebrow">00 · Orientation</p>
+      <h1>Refusal is a behavior. Abliteration is a model edit.</h1>
+      <p class="lede">Abliteration is the community name for suppressing a model's learned refusal behavior by finding structure in its internal activations and intervening on that structure—temporarily at runtime or permanently in weights.</p>
+      <div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ CONCEPT FIRST</span><span>⊥ SOURCE-GROUNDED</span></div>
+
+      <div class="scope-banner"><strong>Method-first scope</strong><p>This guide synthesizes a verified 116-paper research corpus plus implementation evidence, but it is organized around mathematical method families—not software packages or preset names. Each method is compared by its assumptions, operator, practical advantages, and failure modes.</p></div>
+
+      <h2>The careful definition</h2>
+      <p>Instruction-tuned models can learn internal features that correlate with refusing a request. The canonical method estimates a direction from contrasting activation averages and removes the component parallel to that direction. The original research calls this <strong>directional ablation</strong> at runtime and <strong>weight orthogonalization</strong> when folded into a checkpoint. “Abliteration” is the memorable community label.</p>
+      <div class="concept-grid">
+        <div class="concept-card"><code>What it can change</code><p>The probability, style, timing, or category of refusal behavior on prompts resembling the measurement set.</p></div>
+        <div class="concept-card"><code>What it does not prove</code><p>That harmful knowledge was erased, every safeguard disappeared, answers became correct, or unrelated capabilities remained intact.</p></div>
+      </div>
+
+      <h2>Keep these techniques separate</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Technique</th><th>Where it acts</th><th>Training?</th><th>Same as abliteration?</th></tr></thead>
+        <tbody>
+          <tr><td>Prompt jailbreak</td><td>Input text / conversation</td><td>No</td><td>No—weights and internal maps stay unchanged.</td></tr>
+          <tr><td>Activation steering</td><td>Hidden state during inference</td><td>No</td><td>Related; subtraction or projection can be runtime abliteration.</td></tr>
+          <tr><td>Weight orthogonalization</td><td>Residual-writing matrices</td><td>No gradients</td><td>Canonical permanent abliteration.</td></tr>
+          <tr><td>SFT, DPO, RLHF, LoRA</td><td>Learned parameter update</td><td>Yes</td><td>Adjacent; may remove, restore, or reshape refusal through training.</td></tr>
+          <tr><td>Unlearning</td><td>Knowledge or behavior objective</td><td>Usually</td><td>No. Refusal suppression does not establish knowledge removal.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>The learning path</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>01 · ANATOMY</b><span>Tokens, transformer blocks, residual streams, attention, MLPs, and logits.</span></div>
+        <div class="pipeline-step"><b>02 · DISCOVERY</b><span>Contrasts, hidden states, directions, subspaces, and layer selection.</span></div>
+        <div class="pipeline-step"><b>03 · INTERVENTION</b><span>Projection, biprojection, norm preservation, sparse and conditional edits.</span></div>
+        <div class="pipeline-step"><b>04 · TRADEOFFS</b><span>Single versus rank-k, global versus conditional, dense versus sparse, runtime versus permanent.</span></div>
+        <div class="pipeline-step"><b>05 · PROOF</b><span>Causal tests, capability checks, safety evaluation, uncertainty, and artifact parity.</span></div>
+      </div>
+
+      <div class="callout warning"><strong>Responsible scope</strong><p>Removing safeguards can increase misuse risk. Treat these methods as controlled interpretability and model-evaluation tools: use models you are authorized to modify, isolate experiments, keep an untouched baseline, and never confuse lower refusal with safe or correct behavior.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>If an edited model stops saying “I cannot” but produces vague nonsense, abliteration changed a surface outcome; it did not demonstrate useful capability. That distinction drives the rest of this course.</p></div></template>
+<template id="lesson-transformer-layers">
+      <p class="eyebrow">01 · Model anatomy</p>
+      <h1>A transformer is a stack of residual updates.</h1>
+      <p class="lede">Every token position carries a vector with <code>d_model</code> coordinates. A decoder-only model repeatedly lets attention and an MLP add information to that vector, then turns the final vector into next-token scores.</p>
+      <div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ FOUNDATION</span><span>↧ TOKEN → LOGITS</span></div>
+
+      <div class="stack-diagram" role="img" aria-label="Decoder-only transformer stack">
+        <div class="stack-stage signal"><strong>Token IDs</strong><span>A tokenizer maps text to integers; the chat template adds role and control tokens.</span></div>
+        <div class="stack-stage"><strong>Embedding</strong><span>Each token ID selects a learned vector in the shared model width.</span></div>
+        <div class="stack-stage repeat"><strong>Block × L</strong><div class="block-parts"><span>Normalization</span><span>Self-attention · Q, K, V → O</span><span>Residual add</span><span>MLP · gate/up → down</span><span>Residual add</span></div></div>
+        <div class="stack-stage"><strong>Final norm</strong><span>RMSNorm or LayerNorm stabilizes the last residual state.</span></div>
+        <div class="stack-stage"><strong>LM head</strong><span>The unembedding reads the state and produces one logit per vocabulary token.</span></div>
+      </div>
+
+      <h2>Inside one pre-norm block</h2>
+      <div class="formula">uˡ = xˡ + Attention(Norm(xˡ))
+xˡ⁺¹ = uˡ + MLP(Norm(uˡ))
+<small>Architectures vary, but the central idea is stable: attention and the MLP write updates into a shared residual stream.</small></div>
+      <p><strong>Attention</strong> moves information between token positions. Queries decide what a position wants, keys describe what other positions offer, values carry content, and the output projection <code>o_proj</code> writes the combined result back to model width. <strong>The MLP</strong> independently transforms each position through a wider intermediate space; its output or <code>down_proj</code> writes back to model width.</p>
+
+      <h2>Readers versus writers</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Internal readers / transforms</code><p>Q, K, V, MLP gate, and MLP up matrices inspect or transform the current state. Whatever their tensor width, these outputs are not directly added to the residual stream.</p></div>
+        <div class="concept-card"><code>Residual writers</code><p>Embeddings, attention output projections, MLP output/down projections, and some biases emit vectors in <code>d_model</code> space.</p></div>
+      </div>
+      <p>Weight abliteration targets writers because preventing a writer from producing a direction can mimic removing that direction from activations. The LM head is a <em>reader</em>: it maps residual space to vocabulary space.</p>
+
+      <h2>Dense and mixture-of-experts blocks</h2>
+      <p>A dense model runs one MLP per block. A mixture-of-experts (MoE) model uses a router to select a small set of expert MLPs and combines their outputs. The residual stream remains shared, but refusal can involve router decisions, expert-specific writers, shared experts, and attention. Editing one conveniently named <code>down_proj</code> is not automatically sufficient.</p>
+      <div class="callout"><strong>Architecture rule</strong><p>Reason from tensor shapes and the forward pass, not from a favorite model's parameter names. GQA, MQA, RoPE, hybrid attention, MoE, and multimodal fusion alter the plumbing without changing the need to identify every relevant residual writer.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>Why is <code>o_proj</code> a natural target while <code>q_proj</code> is not? Because <code>o_proj</code> emits into the residual stream; <code>q_proj</code> creates an internal attention representation.</p></div></template>
+<template id="lesson-residual-stream">
+      <p class="eyebrow">02 · Model anatomy</p>
+      <h1>The residual stream is the model's shared workspace.</h1>
+      <p class="lede">A refusal direction is not stored in a file named “refusal.” It is a pattern in the evolving vectors carried between and within transformer blocks.</p>
+      <div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ FOUNDATION</span><span>◎ LAYER × TOKEN</span></div>
+
+      <h2>Three common observation points</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Name</th><th>Location</th><th>What it contains</th></tr></thead>
+        <tbody>
+          <tr><td><code>resid_pre</code></td><td>Start of block</td><td>Everything written by embeddings and previous blocks.</td></tr>
+          <tr><td><code>resid_mid</code></td><td>After attention residual add</td><td>Pre-state plus the current block's attention contribution.</td></tr>
+          <tr><td><code>resid_post</code></td><td>After MLP residual add</td><td>The complete output passed to the next block.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Refusal-direction studies have inspected all three sites. Many general model interfaces expose only block-boundary hidden states, while hook-based methods can isolate attention and MLP contributions. Those are different measurements and should not share a layer label without qualification.</p>
+
+      <h2>A hidden state has three axes</h2>
+      <div class="formula">hidden_state.shape = [batch, sequence_position, d_model]
+candidate = hidden_state[:, chosen_position, :]
+<small>A “layer direction” is incomplete without the token position, prompt renderer, and checkpoint that produced it.</small></div>
+      <p>The canonical paper measures candidates at post-instruction token positions. Other variants use the last user token, first assistant token, or a trajectory across generated tokens. These answer different questions: prompt taps study policy formation; response taps study policy realization and downstream reconstruction.</p>
+
+      <h2>Indexing is a trap</h2>
+      <p>Many model APIs include an embedding state at index 0 followed by one output per transformer layer. Treating the first returned state as “block 0” can shift every label and omit the final block. Verify an exported index against a known module hook before comparing layer results.</p>
+
+      <h2>Runtime hook versus folded edit</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Activation intervention</code><p>A hook projects every selected hidden state during each forward pass. Reversible and ideal for causal testing.</p></div>
+        <div class="concept-card"><code>Weight intervention</code><p>Projection is folded into writer matrices once. Portable as a checkpoint, but equivalence depends on complete and correctly oriented targets.</p></div>
+      </div>
+      <div class="callout warning"><strong>Equivalence condition</strong><p>Runtime ablation and weight orthogonalization are equivalent only when the same direction is removed from every relevant residual source, including the initial residual where required. A targeted <code>o_proj</code> + <code>down_proj</code> editor is an approximation to that all-writer statement.</p></div></template>
+<template id="lesson-refusal-mechanism">
+      <p class="eyebrow">03 · Model anatomy</p>
+      <h1>Recognition, refusal, and capability are not one thing.</h1>
+      <p class="lede">A dataset label like “harmful” bundles several causal variables. If you subtract its mean from a benign mean, the resulting vector can contain topic, risk recognition, refusal execution, style, and answer capability all at once.</p>
+      <div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ INTERMEDIATE</span><span>⌁ MECHANISM</span></div>
+
+      <h2>Four variables to keep apart</h2>
+      <div class="metric-grid">
+        <div class="metric"><code>T · Topic</code><p>What domain the conversation concerns: cyber, cooking, medicine, finance, or something else.</p></div>
+        <div class="metric"><code>H · Harm assessment</code><p>Whether the model represents the request as risky, disallowed, dual-use, or benign.</p></div>
+        <div class="metric"><code>R · Refusal decision</code><p>The internal policy choice to withhold, redirect, hedge, or answer.</p></div>
+        <div class="metric"><code>C · Capability</code><p>Whether the model can construct a correct and substantive answer at all.</p></div>
+      </div>
+
+      <h2>A useful causal scaffold</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>DETECT</b><span>Represent topic, risk, policy context, roles, and conversation history.</span></div>
+        <div class="pipeline-step"><b>GATE</b><span>Select or suppress a policy pathway; in MoE models this may interact with routing.</span></div>
+        <div class="pipeline-step"><b>WRITE</b><span>Attention, MLPs, or experts inject a refusal feature into the residual stream.</span></div>
+        <div class="pipeline-step"><b>AMPLIFY</b><span>Later components strengthen, repair, or oppose the developing trajectory.</span></div>
+        <div class="pipeline-step"><b>REALIZE</b><span>The decoder produces refusal, compliance, hedging, moralizing, diversion, or failure.</span></div>
+      </div>
+      <p>This scaffold is not claimed to be a literal five-module circuit in every model. It is a set of distinct causal questions. A selective edit usually wants the <strong>execution/writer</strong> stage: change refusal without deleting topic or harm recognition and without damaging capability.</p>
+
+      <h2>From one arrow to richer geometry</h2>
+      <p><a href="https://arxiv.org/abs/2406.11717" target="_blank" rel="noreferrer">Arditi et al.</a> established that a single direction can mediate refusal across many tested models: removing it reduces refusal and adding it induces refusal. That is a strong historical baseline—not a theorem that every checkpoint, category, language, token, and refusal style uses one universal axis.</p>
+      <blockquote><p>Across the literature, the more durable picture is a conditional, time-dependent policy that can involve multiple directions, sparse components, routing circuits, and answer capability that remains partly separable from refusal execution.</p></blockquote>
+
+      <h2>The minimum outcome table</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Prompt assessment</th><th>Refused outcome</th><th>Answered outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Harmful / restricted</td><td><code>μHR</code></td><td><code>μHA</code></td></tr>
+          <tr><td>Benign / allowed</td><td><code>μBR</code> · over-refusal</td><td><code>μBA</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="formula">refusal effect = ½[(μHR − μHA) + (μBR − μBA)]
+harm effect    = ½[(μHR − μBR) + (μHA − μBA)]
+<small>A four-cell design attempts to isolate outcome from harm recognition instead of assuming the dataset label is the mechanism.</small></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>If an edit lowers refusal on cyber prompts by deleting cyber vocabulary, it succeeded on a superficial metric and failed mechanistically. Topic probes, technical correctness, and benign-cyber controls reveal the mistake.</p></div></template>
+<template id="lesson-geometry-language">
+      <p class="eyebrow">04 · Model anatomy</p>
+      <h1>A direction is a hypothesis about behavior.</h1>
+      <p class="lede">The math is compact. The experimental assumptions behind it are not. Learn what each geometric operation says—and what it cannot say.</p>
+      <div class="lesson-meta"><span>◷ 22 MIN</span><span>◇ INTERMEDIATE</span><span>∑ LINEAR ALGEBRA</span></div>
+
+      <h2>Core objects</h2>
+      <div class="glossary-grid">
+        <div class="glossary-item"><code>Activation h</code><p>One model-width vector at a particular layer, token position, checkpoint, and rendered prompt.</p></div>
+        <div class="glossary-item"><code>Centroid μ</code><p>The component-wise average of a group of activations.</p></div>
+        <div class="glossary-item"><code>Direction r</code><p>A vector whose orientation is tested as a candidate behavioral feature.</p></div>
+        <div class="glossary-item"><code>Subspace B</code><p>Several independent directions, stored here as the rows of an orthonormal basis.</p></div>
+        <div class="glossary-item"><code>Dot product hᵀr</code><p>A signed coordinate: how strongly activation <code>h</code> points along <code>r</code>.</p></div>
+        <div class="glossary-item"><code>Cosine similarity</code><p>Angular alignment after ignoring magnitude; 1 same direction, 0 orthogonal, −1 opposite.</p></div>
+      </div>
+
+      <div class="scope-banner"><strong>Notation</strong><p><code>h</code> is a column activation; <code>μR, ΣR</code> and <code>μA, ΣA</code> describe refused and answered groups; <code>B</code> is an orthonormal row basis; <code>G</code> is an arbitrary row basis; <code>P</code> is a projector; and <code>s_ref</code> is a scalar refusal score. Harmful/benign labels appear only in the four-cell causal design.</p></div>
+
+      <h2>One-direction projection</h2>
+      <div class="formula">r̂ = r / ‖r‖₂
+projection onto r̂:     (hᵀr̂)r̂
+remove that component: h′ = h − α(hᵀr̂)r̂
+<small>α = 0 is identity; α = 1 is exact orthogonal removal; 0 &lt; α &lt; 1 is partial attenuation. Overshoot is no longer ordinary ablation.</small></div>
+      <p>Projection preserves everything orthogonal to the chosen direction in Euclidean coordinates. It does <em>not</em> guarantee preserved language capability: useful features can overlap the direction, and the model's locally meaningful metric may not be Euclidean.</p>
+
+      <h2>Several directions</h2>
+      <div class="formula">store basis vectors as rows: B ∈ ℝᵏˣᵈ,  BBᵀ = Iₖ
+orthogonal span projector: P = BᵀB
+h′ = (I − P)h
+arbitrary row basis G: P = Gᵀ(GGᵀ)⁺G
+<small>This row-basis convention is used throughout the guide. Sequentially removing correlated directions is order-dependent and is not automatically equivalent to projecting out their joint span.</small></div>
+      <p><strong>SVD</strong> factorizes a matrix into orthogonal directions ranked by captured variation. <strong>PCA</strong> applies that idea to centered variance. These can recover a low-rank refusal subspace—but the top variance direction is not necessarily the most causal or selective one.</p>
+
+      <h2>Four operations people confuse</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Operation</th><th>What it changes</th><th>What it is not</th></tr></thead>
+        <tbody>
+          <tr><td>Unit normalization</td><td>Sets one vector's length to 1.</td><td>Not covariance whitening.</td></tr>
+          <tr><td>LayerNorm / RMSNorm</td><td>Normalizes model activations during the forward pass.</td><td>Not a learned concept eraser.</td></tr>
+          <tr><td>Winsorization / clipping</td><td>Caps outlier coordinates before estimating a mean.</td><td>Not sparsification and not whitening.</td></tr>
+          <tr><td>Whitening</td><td>Uses covariance to make ordinary control variation isotropic.</td><td>Not merely dividing by a norm.</td></tr>
+          <tr><td>Norm preservation</td><td>Restores each chosen residual-output vector or activation to its prior length.</td><td>Does not restore lost information or guarantee capability.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Why covariance matters</h2>
+      <p>If a candidate direction lies along naturally high-variance benign behavior, ordinary projection may cause disproportionate damage. Whitening with a protected covariance asks which differences are large <em>relative to ordinary variation</em>. LEACE and generalized eigenvector methods formalize covariance-aware erasure, but require many representative samples and stable regularization.</p>
+      <div class="callout"><strong>Language rule</strong><p>Say “we removed the measured projection” or “linear decoding fell on this evaluation set.” Do not say a concept was deleted unless the experiment survives fresh nonlinear probes, causal tests, generation, reload, and deployment transforms.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>High cosine similarity between refused and answered means says their centroids point similarly. It does not make their difference noise; you still need within-group variance, held-out stability, and causal tests.</p></div></template>
+<template id="lesson-measurement-design">
+      <p class="eyebrow">05 · Core workflow</p>
+      <h1>The dataset is part of the intervention.</h1>
+      <p class="lede">There is no checkpoint-only refusal vector waiting to be discovered. A measured direction depends on the prompts, actual outputs, chat template, token position, layer, pooling, precision, and estimator.</p>
+      <div class="lesson-meta"><span>◷ 24 MIN</span><span>◇ INTERMEDIATE</span><span>▦ MEASURE</span></div>
+
+      <h2>The canonical estimate</h2>
+      <div class="formula">μRˡ = mean hidden state for actually refused examples at layer l
+μAˡ = mean hidden state for matched answered examples at layer l
+rˡ  = μRˡ − μAˡ
+r̂ˡ = rˡ / ‖rˡ‖₂
+<small>Historical harmful-minus-benign datasets approximate this contrast but can mix refusal with topic and risk recognition. Calling any contrast a refusal direction is a causal hypothesis.</small></div>
+
+      <h2>Label what the model actually did</h2>
+      <p>A prompt placed in a “harmful” file may be answered; a benign prompt may be over-refused. If you fit only the intended labels, the contrast mixes harm with outcome. Render the exact prompt, save the complete baseline response, and classify it as refusal, substantive completion, or evasive/failed other. When possible, build all four harmful/benign × refused/answered cells.</p>
+      <div class="callout"><strong>Contrast discipline</strong><p>Match length, language, format, source, and chat role enough to reduce nuisance signal, but do not make controls so topically identical that subtraction cancels the mechanism of interest. Learn or residualize topic separately.</p></div>
+
+      <h2>Measurement choices change the method</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Choice</th><th>Practical advantage</th><th>Practical disadvantage</th></tr></thead>
+        <tbody>
+          <tr><td>Post-instruction token</td><td>Measures the state immediately before the answer begins; cheap and easy to align.</td><td>Misses refusal structure that emerges or repairs itself during generation.</td></tr>
+          <tr><td>Generated-token trajectory</td><td>Reveals timing, downstream reconstruction, and changing refusal style.</td><td>Costs more memory and introduces sampling-dependent paths.</td></tr>
+          <tr><td>Difference of means</td><td>Stable, simple, and needs relatively few samples.</td><td>Collapses multimodal structure and is sensitive to confounded labels.</td></tr>
+          <tr><td>Paired differences</td><td>Cancels prompt-specific topic and form when controls are truly matched.</td><td>Poor matches turn length, style, or content differences into the signal.</td></tr>
+          <tr><td>Per-coordinate winsorization across examples</td><td>Limits dataset-tail outliers before computing each coordinate's mean.</td><td>Coordinate-wise and basis-dependent; ignores multivariate structure.</td></tr>
+          <tr><td>Within-activation coordinate clipping</td><td>Limits unusually large coordinates inside each individual state.</td><td>Also basis-dependent and can erase genuine sparse features; it is a different estimator.</td></tr>
+          <tr><td>Covariance estimate</td><td>Supports whitening and minimum-distortion erasure.</td><td>Needs far more representative data and careful shrinkage.</td></tr>
+          <tr><td>Quantized forward pass</td><td>Lowers measurement memory and matches some deployment runtimes.</td><td>May rotate or attenuate directions relative to the full-precision model.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Robust and covariance-aware estimators</h2>
+      <div class="formula">paired mean:     r = (1/n) Σᵢ(hᴿᵢ − hᴬᵢ)
+Fisher / LDA:    w = (ΣR + ΣA + λI)⁻¹(μR − μA)
+shrinkage:       Σ̃ = (1−γ)Σ̂ + γτI
+<small>LDA discounts directions with large within-class variance. It is not the same as SVD of paired deltas or whitening a multi-direction subspace.</small></div>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Estimator</th><th>Advantage</th><th>Disadvantage</th><th>Best diagnostic</th></tr></thead>
+        <tbody>
+          <tr><td>Ordinary mean</td><td>Lowest complexity and variance under clean light-tailed data.</td><td>Sensitive to outliers and mixture imbalance.</td><td>Bootstrap direction cosine and source-held-out behavior.</td></tr>
+          <tr><td>Paired mean</td><td>Removes pair-shared nuisance structure.</td><td>Depends completely on match quality.</td><td>Permute pairings and compare the learned direction.</td></tr>
+          <tr><td>Trimmed / winsorized mean</td><td>Cheap robustness by trimming examples or dataset tails per coordinate.</td><td>Threshold and coordinate basis can remove genuine rare signal.</td><td>State the clipping axis; sweep trim fraction and inspect causal stability.</td></tr>
+          <tr><td>Median-of-means</td><td>Strong outlier robustness without estimating full covariance.</td><td>Block partition adds randomness; less efficient on clean Gaussian data.</td><td>Repeat blockings and report angular spread.</td></tr>
+          <tr><td>Geometric median</td><td>Robust multivariate center with no privileged coordinate system.</td><td>Iterative and can ignore meaningful minority modes.</td><td>Compare per-category residuals and convergence.</td></tr>
+          <tr><td>Fisher / LDA</td><td>Finds separation relative to pooled within-class noise.</td><td>High-dimensional covariance is unstable without shrinkage.</td><td>Nested selection of <code>λ</code> and eigenvalue stability.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Sampling checklist</h2>
+      <ul class="checklist">
+        <li>Use disjoint fitting, model-selection, and final test prompts.</li>
+        <li>Stratify by source, semantic family, category, language, and actual outcome.</li>
+        <li>Record checkpoint and tokenizer revisions, template text, token IDs, role-relative position, precision, and seed.</li>
+        <li>Measure enough examples for stable means; covariance methods need substantially more than a single direction.</li>
+        <li>Verify padding side and that the sampled position means the same thing for every batch item.</li>
+        <li>Keep an untouched baseline response set for paired evaluation.</li>
+      </ul>
+
+      <h2>Quantized measurement is a separate condition</h2>
+      <p>A direction estimated from a 4-bit or 8-bit forward pass is a direction for that numerical model. Applying it to full-precision weights assumes cross-precision geometric transfer. Measure cosine stability and behavioral transfer in both directions; do not treat lower precision as a transparent memory optimization.</p>
+      <div class="quiz"><strong>Checkpoint</strong><p>A bigger dataset does not rescue a confounded contrast. Ten thousand cyber-versus-cooking prompts can estimate the cyber topic direction extremely well while completely missing refusal execution.</p></div></template>
+<template id="lesson-layer-analysis">
+      <p class="eyebrow">06 · Core workflow</p>
+      <h1>Decodability is not editability.</h1>
+      <p class="lede">A layer can make refusal easy to predict yet be a poor place to intervene. Analysis should locate stable candidates; addition, removal, and patching decide whether they matter causally.</p>
+      <div class="lesson-meta"><span>◷ 22 MIN</span><span>◇ INTERMEDIATE</span><span>⌁ ANALYZE</span></div>
+
+      <h2>Useful layerwise diagnostics</h2>
+      <div class="metric-grid">
+        <div class="metric"><code>Mean norms</code><p>Lengths of refused mean, answered mean, and their raw difference at each layer.</p></div>
+        <div class="metric"><code>Cosines</code><p>Angular alignment among outcome means, adjacent-layer directions, and nuisance directions.</p></div>
+        <div class="metric"><code>Relative mean gap</code><p><code>‖r‖ / max(‖μR‖, ‖μA‖)</code>. This is scale-normalized—not a signal-to-noise ratio.</p></div>
+        <div class="metric"><code>Within-class scatter</code><p>Variance around each outcome mean; needed for Fisher separation and uncertainty.</p></div>
+        <div class="metric"><code>Answer-mean overlap</code><p>How much of the raw contrast lies along the answer-side mean; motivates but does not validate residualization.</p></div>
+        <div class="metric"><code>Layer rotation</code><p>Cosine similarity and angular change between consecutive layer directions reveal stable or rapidly changing regions.</p></div>
+      </div>
+
+      <div class="layer-strip" aria-label="Illustrative 36-layer model with middle-late candidate region">
+        <i>0</i><i>3</i><i>6</i><i>9</i><i>12</i><i class="candidate">15</i><i class="candidate">18</i><i class="candidate">21</i><i class="candidate">24</i><i>27</i><i>30</i><i>33</i>
+      </div>
+      <p class="layer-caption">ILLUSTRATION ONLY · CANDIDATE LAYERS ARE CHECKPOINT-, DATA-, POSITION-, AND METHOD-SPECIFIC.</p>
+
+      <h2>How the original study selected a direction</h2>
+      <p>The canonical work evaluated candidates by intervening, not by norm alone. A candidate had to reduce harmful-prompt refusal, be sufficient to induce refusal when added, keep benign-prompt KL below a threshold, and originate before the final fifth of the network. Selected layers differed by model family.</p>
+
+      <h2>Source layer and destination layer are different choices</h2>
+      <p>A <strong>measurement/source layer</strong> supplies the direction. A <strong>destination layer</strong> is where an activation or writer matrix is edited. You can use a local basis per destination, reuse one source across a depth range, or blend adjacent sources. Reuse is cheaper and smoother; local bases track rotation but need more data and can overfit layer noise.</p>
+
+      <h2>A stronger selection ladder</h2>
+      <ol>
+        <li>Rank stable candidates with held-out geometry and nuisance controls.</li>
+        <li><strong>Add</strong> the direction: does refusal rise on benign prompts?</li>
+        <li><strong>Remove</strong> it: does refusal fall on target prompts?</li>
+        <li>Patch matched answer-side activations into a refusing run and perform the reverse patch.</li>
+        <li>Compare against random directions of the same rank and norm.</li>
+        <li>Select the smallest layer/token/component set on the target-effect versus protected-drift frontier.</li>
+      </ol>
+      <div class="callout warning"><strong>Index audit</strong><p>Transformers hidden-state tuples commonly start with the embedding output. Verify whether a saved index denotes an embedding boundary, block output, or actual module number before using it as a source for a destination block.</p></div></template>
+<template id="lesson-standard-abliteration">
+      <p class="eyebrow">07 · Core workflow</p>
+      <h1>Remove one coordinate from the model's workspace.</h1>
+      <p class="lede">Standard abliteration asks every selected residual state—or every selected writer—to have zero component along a unit refusal direction.</p>
+      <div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ INTERMEDIATE</span><span>⊥ RANK ONE</span></div>
+
+      <h2>Runtime directional ablation</h2>
+      <div class="formula">P⊥ = I − r̂r̂ᵀ
+h′ = P⊥h = h − (hᵀr̂)r̂
+<small>Apply with forward hooks at selected layer/token sites. It is reversible, observable, and the cleanest way to test causality before editing weights.</small></div>
+      <p>Removing the direction at every layer and every token prevents the state from carrying that coordinate, but a smaller schedule may preserve more utility. Downstream blocks can also reconstruct a removed feature—the “hydra” or self-repair problem—so single-site success must be tested over a full generation.</p>
+
+      <h2>Permanent weight orthogonalization</h2>
+      <div class="formula">for a residual writer W ∈ ℝᵈᵐᵒᵈᵉˡ × ᵈⁱⁿ:
+W′ = (I − r̂r̂ᵀ)W = W − r̂(r̂ᵀW)
+<small>After the edit, each output column is orthogonal to r̂, so that writer cannot emit the direction.</small></div>
+      <p>The exact all-writer construction includes every matrix and bias that writes into residual space, plus the initial residual source where applicable. A targeted approximation edits only the dominant per-block attention and MLP output writers. All-writer editing better matches runtime projection; targeted editing touches fewer parameters and may preserve more utility, but can leave alternate writers able to reconstruct the feature.</p>
+
+      <h2>Scaling the edit</h2>
+      <div class="formula">W′ = W − αr̂(r̂ᵀW)
+α = 0   → unchanged
+0&lt;α&lt;1 → partial attenuation
+α = 1   → exact projection
+α &gt; 1  → overshoot / sign change, not ordinary removal
+α &lt; 0  → amplification or induction-like behavior</div>
+      <p>Strength can be global, layer-specific, or token-specific. Negative strength changes subtraction into amplification, while <code>α &gt; 1</code> crosses the projection plane. These are useful causal stress tests, not evidence that refusal is a perfectly symmetric scalar feature.</p>
+
+      <h2>Why the rank-one update is attractive</h2>
+      <ul><li>No gradients or harmful target completions are required.</li><li>The edit is cheap relative to training and easy to inspect.</li><li>Runtime and folded forms have a precise mathematical relationship.</li><li>Strength, layer span, and source direction are controllable.</li></ul>
+      <div class="callout warning"><strong>What projection preserves</strong><p>It preserves the Euclidean orthogonal complement of <code>r̂</code>, not “all capabilities.” If refusal overlaps planning, style, multilingual features, or ordinary caution, those behaviors can move too.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>Stopping a writer from producing <code>r̂</code> is different from deleting every neuron correlated with refusal. A direction is a coordinate in residual space, not a named physical module.</p></div></template>
+<template id="lesson-projected-norm">
+      <p class="eyebrow">08 · Core workflow</p>
+      <h1>Three switches produce several method names.</h1>
+      <p class="lede">These variants differ along three independent axes: how the direction is cleaned at its source, how it is adapted to a destination, and whether edited weight magnitudes are restored.</p>
+      <div class="lesson-meta"><span>◷ 24 MIN</span><span>◇ ADVANCED</span><span>◇ GEOMETRIC VARIANTS</span></div>
+
+      <h2>1 · Source answer-mean residualization</h2>
+      <div class="formula">âₛ = μA,ₛ / ‖μA,ₛ‖
+rₛ = normalize[(I − âₛâₛᵀ)(μR,ₛ − μA,ₛ)]
+<small>Two-pass Gram–Schmidt can improve numerical orthogonality. This heuristic removes overlap with the answer-side mean at the measurement source.</small></div>
+
+      <h2>2 · Destination answer-mean residualization</h2>
+      <div class="formula">âₗ = μA,ₗ / ‖μA,ₗ‖
+rₛ→ₗ = normalize[(I − âₗâₗᵀ)rₛ]
+<small>In the convention used here, “biprojected” means answer-mean residualization once at the source and again for every destination. It does not vaguely mean projecting both sides of a weight matrix.</small></div>
+
+      <h2>3 · Norm preservation</h2>
+      <div class="formula">for each residual-output vector wⱼ:
+qⱼ = (I − αr̂r̂ᵀ)wⱼ
+w′ⱼ = ‖wⱼ‖₂ · qⱼ / ‖qⱼ‖₂      when ‖qⱼ‖₂ &gt; ε
+<small>If <code>y=Wx</code>, residual-output vectors are columns of W. Define an explicit fallback when projection sends a vector to zero.</small></div>
+      <p>At <code>α=1</code>, multiplying each projected residual-output vector by one scalar preserves its orthogonality. By contrast, anisotropically rescaling output coordinates—such as independently restoring stored rows in an <code>[out,in]</code> tensor—can reintroduce the removed direction. Norm preservation can reduce scale drift, but preserves neither function nor capability.</p>
+
+      <h2>Method matrix</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Name</th><th>Source answer-mean residualization</th><th>Destination answer-mean residualization</th><th>Restore norms</th></tr></thead>
+        <tbody>
+          <tr><td>Conventional</td><td>No</td><td>No</td><td>No</td></tr>
+          <tr><td>Projected</td><td>Yes</td><td>Optional / implementation-dependent</td><td>No</td></tr>
+          <tr><td>Biprojected</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+          <tr><td>Norm-preserving</td><td>No</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Norm-preserving biprojected</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout"><strong>Interpretation</strong><p>Answer-mean residualization is a heuristic boundary condition, not proof of capability preservation. An absolute mean depends on the representation origin, and ordinary answered behavior occupies a distribution—not one arrow.</p></div>
+      <p>A <a href="https://huggingface.co/blog/grimjim/norm-preserving-biprojected-abliteration" target="_blank" rel="noreferrer">norm-preserving biprojection case study</a> motivates the method. Its retention result remains a checkpoint-specific observation to replicate, not a cross-model law.</p>
+      <div class="quiz"><strong>Checkpoint</strong><p>“Projected” is ambiguous unless you state where. Record whether answer-mean overlap was removed during measurement, during destination editing, or both.</p></div></template>
+<template id="lesson-runtime-weight">
+      <p class="eyebrow">09 · Core workflow</p>
+      <h1>The same geometric idea can live in different places.</h1>
+      <p class="lede">An intervention can modify a hidden state for one forward pass, be folded into every residual writer, touch only a selected writer set, or be learned as a small parameter update. These choices change reversibility, fidelity, cost, and side effects.</p>
+      <div class="lesson-meta"><span>◷ 26 MIN</span><span>◇ PRACTICAL</span><span>⇄ RUNTIME / WEIGHTS</span></div>
+
+      <h2>Why runtime and weight projection can be equivalent</h2>
+      <div class="formula">writer output: y = Wx + b
+runtime:       y′ = P⊥y
+folded:        W′ = P⊥W,  b′ = P⊥b
+therefore:     W′x + b′ = P⊥(Wx + b)
+<small>This local equality holds when tensor orientation is correct and both weight and bias are projected.</small></div>
+      <p>A transformer residual state is the sum of many sources, including the previous residual. To reproduce projection of the <em>whole</em> state, every relevant source must be projected or the hidden state must be projected again after addition. Editing only two prominent writer families is a targeted approximation, not exact algebraic equivalence.</p>
+
+      <h2>Intervention classes</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Method</th><th>What changes</th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+        <tbody>
+          <tr><td>Diagnostic knockout</td><td>Temporarily zero a layer, head, neuron, or feature.</td><td>Simple causal localization; original weights return immediately.</td><td>Large off-manifold perturbation; not a selective refusal method by itself.</td></tr>
+          <tr><td>Runtime activation projection</td><td>Apply <code>P⊥</code> at chosen layers, tokens, or components.</td><td>Reversible, schedulable, observable, ideal for dose and causal tests.</td><td>Adds inference overhead and requires intervention-aware serving.</td></tr>
+          <tr><td>All-writer orthogonalization</td><td>Fold <code>P⊥</code> into every residual source.</td><td>Closest permanent equivalent to global runtime projection.</td><td>Touches many tensors and can cause broad, repeated collateral change.</td></tr>
+          <tr><td>Targeted writer surgery</td><td>Edit only selected attention/MLP outputs or causal sites.</td><td>Smaller footprint and potentially better utility retention.</td><td>Alternate paths can preserve or reconstruct the refusal feature.</td></tr>
+          <tr><td>Learned low-rank update</td><td>Optimize a small map or adapter under behavior and protection losses.</td><td>Can model non-projector geometry and explicit tradeoffs.</td><td>Needs training, is easier to overfit, and weakens closed-form interpretability.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Runtime schedules</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Every layer, every token</code><p>Strongest suppression and closest to a global constraint; highest overhead and broadest effect.</p></div>
+        <div class="concept-card"><code>Selected layers</code><p>Targets a causal window and lowers cost; downstream layers may rebuild the feature.</p></div>
+        <div class="concept-card"><code>Prompt boundary only</code><p>Cheap and useful when policy is decided before decoding; misses response-time dynamics.</p></div>
+        <div class="concept-card"><code>Conditional / latched</code><p>Activates only when a calibrated gate fires; selectivity depends on a second classifier.</p></div>
+      </div>
+
+      <h2>Permanent-edit checklist</h2>
+      <ul class="checklist">
+        <li>Prove the runtime intervention before folding it into weights.</li>
+        <li>Write down the residual-space axis of every target tensor; transpose mistakes can silently edit the input space.</li>
+        <li>Decide explicitly whether biases, embeddings, experts, shared experts, and tied heads are in scope.</li>
+        <li>Compare all-writer and targeted edits at matched total update norm.</li>
+        <li>Reload in a fresh process and re-evaluate after every conversion or quantization step.</li>
+      </ul>
+      <div class="callout warning"><strong>Hooks are not checkpoint data</strong><p>A runtime hook disappears when the process ends. Saving model weights after a hook-based success does not preserve the intervention unless its map was explicitly folded into parameters.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>Choose runtime projection for discovery and conditional control; choose weight folding only after the geometry, layer schedule, strength, and protected drift are validated.</p></div></template>
+<template id="lesson-multidirectional-whitening">
+      <p class="eyebrow">10 · Method atlas</p>
+      <h1>One direction is a baseline, not a ceiling.</h1>
+      <p class="lede">Refusal categories, styles, languages, and token positions can occupy several independent directions. Subspace methods model that rank explicitly—but every extra direction is another opportunity for collateral deletion.</p>
+      <div class="lesson-meta"><span>◷ 28 MIN</span><span>◇ ADVANCED</span><span>▥ RANK-k</span></div>
+
+      <h2>Paired SVD</h2>
+      <p>When examples are meaningfully paired, form rows <code>Δᵢ = hᵢ(refused) − hᵢ(answered)</code> and take singular vectors. An <strong>uncentered</strong> SVD retains the shared mean shift and ranks total paired-delta energy. A <strong>centered</strong> SVD studies variation around that shift; augment it with the normalized mean delta if you also want the coherent shift. Neither is automatically correct, so report which matrix was decomposed.</p>
+      <div class="formula">D = [Δ₁; Δ₂; …; Δₙ]          or Dᶜ = D − 1·mean(D)
+D(*) = UΣVᵀ
+B = first k rows of Vᵀ; if adding mean(D), joint-orthonormalize the set
+h′ = h − αBᵀBh
+<small>Choose k with held-out target effect and protected drift—not merely an explained-variance elbow.</small></div>
+
+      <h2>Whitened subspaces</h2>
+      <p>Ordinary SVD rewards directions with large raw variance. A covariance-whitened method measures change relative to variation on protected controls:</p>
+      <div class="formula">uncentered: SΔᵘ = DᵀD / n
+centered:   SΔᶜ = DᶜᵀDᶜ / n,  Dᶜ = D − 1·mean(D)
+generalized eigenproblem: SΔv = λ(Cₚ + εI)v
+<small>Choose uncentered to retain the coherent mean plus modes; choose centered to study modes around the mean. Ridge ε and sample size determine stability.</small></div>
+      <p>Here <code>Cₚ</code> is protected-control covariance. Generalized eigenvectors are orthogonal in the <code>Cₚ + εI</code> metric, not necessarily in Euclidean residual space. If you solve the generalized problem directly, <code>v</code> is already in original coordinates; Euclidean-orthonormalize its span before using <code>BᵀB</code>. If you eigendecompose the whitened matrix, map a whitened vector <code>u</code> back with <code>(Cₚ+εI)⁻¹ᐟ²u</code>, then orthonormalize.</p>
+
+      <h2>Affine and erasure families</h2>
+      <div class="formula">ACE, with d̂ = normalize(μR − μA), P = d̂d̂ᵀ:
+h′ = (I − P)h + PμA = h − P(h − μA)
+
+LEACE, for centered covariance ΣXX and cross-covariance ΣXZ:
+Q = (ΣXX¹ᐟ²)⁺,  C = QΣXZ
+h′ = μX + [I − Q⁺ Pcol(C) Q](h − μX)
+<small>ACE sets the edited coordinate to an answer-side value. LEACE removes linear cross-covariance with labels while minimizing distortion in the observed covariance geometry.</small></div>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Method</th><th>Core idea</th><th>Primary caution</th></tr></thead>
+        <tbody>
+          <tr><td>ACE</td><td>Project away the concept coordinate and re-center it at the typical answer-side value.</td><td>One centroid cannot represent a multimodal answer distribution.</td></tr>
+          <tr><td>INLP</td><td>Repeatedly fit linear probes and project into their nullspaces.</td><td>Later layers or nonlinear probes may recover the concept.</td></tr>
+          <tr><td>R-LACE</td><td>Learn a fixed-rank projection against the strongest linear adversary.</td><td>Minimax probe failure is not behavioral success.</td></tr>
+          <tr><td>LEACE</td><td>Closed-form covariance-aware affine erasure with minimum linear distortion.</td><td>Needs representative covariance; zero cross-covariance is not nonlinear deletion.</td></tr>
+          <tr><td>Protected spectral cleaning</td><td>Remove known capability/style basis components from the intervention direction before editing.</td><td>A protection registry can omit important features or remove the true mechanism.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Rank-k and diverse-direction variants</h2>
+      <p>Multidirectional methods use SVD, category prototypes, clustering, or optimized directions, then penalize redundancy and orthonormalize the retained span. A common practical baseline keeps the top four paired-difference axes, but rank should be selected rather than inherited. More rank can reduce refusal while simply erasing more model behavior, so plot target completion and protected utility against rank and total edit norm.</p>
+
+      <h2>Prototype, cluster & manifold extensions</h2>
+      <div class="formula">category prototype: r̂c = normalize(μR,c − μA,c)
+cluster prototype:  r̂j = normalize(mean{Δᵢ : cluster(Δᵢ)=j})
+joint linear basis: orthonormalize({r̂c or r̂j})
+<small>Category prototypes use known groups; clustering discovers recurring modes. Both remain linear once their prototypes are combined.</small></div>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Extension</th><th>Advantage</th><th>Disadvantage</th><th>Foldability</th></tr></thead>
+        <tbody>
+          <tr><td>Category prototypes</td><td>Interpretable per-domain modes and easy stratified evaluation.</td><td>Requires trustworthy labels and can encode topic rather than outcome.</td><td>Easy after joint orthonormalization.</td></tr>
+          <tr><td>Clustering paired deltas</td><td>Finds recurring modes without prespecified categories.</td><td>Cluster count and metric are unstable in high dimensions.</td><td>Easy if reduced to a small linear basis.</td></tr>
+          <tr><td>Manifold / self-organizing map</td><td>Can represent curved or multimodal refusal geometry.</td><td>Experimental, data-hungry, difficult to falsify, and easy to overfit.</td><td>Hard; usually needs a conditional runtime map or local linear pieces.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout"><strong>Selection rule</strong><p>For row directions <code>G</code>, orthonormalize first or use the exact joint projector <code>Gᵀ(GGᵀ)⁺G</code>. Replacing the pseudoinverse with <code>(GGᵀ+λI)⁻¹</code> creates stable ridge shrinkage, but it is no longer an idempotent orthogonal projector.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>“Whitened” should mean covariance was estimated and inverted or factorized. Unit-normalized vectors, RMSNorm outputs, clipped activations, and norm-restored weights are not whitened.</p></div></template>
+<template id="lesson-conditional-distributional">
+      <p class="eyebrow">11 · Method atlas</p>
+      <h1>Cross the boundary without flattening the space.</h1>
+      <p class="lede">Orthogonal projection moves every selected state to a zero coordinate. Newer methods ask a better question: where do genuine answer-side states live, and how little must change to reach them?</p>
+      <div class="lesson-meta"><span>◷ 30 MIN</span><span>◇ ADVANCED</span><span>↝ CONTROLLED MAPS</span></div>
+
+      <h2>Controlled latent-space evasion</h2>
+      <p>Let higher values of a calibrated linear score <code>s(h)=wᵀh+b</code> denote the answer side. Controlled latent evasion changes only states that fail a chosen answer-side margin:</p>
+      <div class="formula">δ* = [max(0, m − s(h)) / ‖w‖²]w
+h′ = h + δ*
+<small>If the score orientation is reversed, reverse the inequality and direction. The margin must be calibrated against realized semantic behavior and protected utility.</small></div>
+
+      <h2>Gaussian optimal transport</h2>
+      <p>Optimal-transport refusal ablation estimates the centroids and covariances of refusal-side and answer-side activations, then applies an affine map that matches the two Gaussian approximations in a low-rank PCA space.</p>
+      <div class="formula">T(h) = μA + M(h − μR)
+M = ΣR⁻¹ᐟ²(ΣR¹ᐟ²ΣAΣR¹ᐟ²)¹ᐟ²ΣR⁻¹ᐟ²
+<small>Use positive-definite regularized covariances or low-rank pseudoinverses. Unlike a projector, this changes both center and covariance.</small></div>
+
+      <h2>Learned low-rank interventions</h2>
+      <div class="formula">h′ = h + U(Vᵀh),      U,V ∈ ℝᵈˣᵏ
+min Ltarget + λ·KL(fedited ‖ fbase on controls) + η·E‖h′−h‖²
+<small>A ReFT-style eraser learns a rank-k map while the base model stays frozen.</small></div>
+      <p>These methods can capture non-projector geometry, but add training, overfitting risk, and a larger audit surface. After validating a runtime target map <code>T(h)</code>, protected ridge folding can fit <code>ΔW</code> by minimizing <code>Σtarget‖ΔWxᵢ−[T(Wxᵢ)−Wxᵢ]‖² + λ‖ΔW‖² + γΣcontrol‖ΔWxⱼ‖²</code>. The control term protects ordinary states; the result remains an approximation to the runtime map, distinct from simple orthogonalization.</p>
+
+      <h2>Conditional control</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Prompt-latched gate</code><p>Decide once at the assistant boundary whether both the target domain and refusal trajectory are present; hold the strength fixed during generation.</p></div>
+        <div class="concept-card"><code>Hysteretic gate</code><p>Use separate turn-on and turn-off thresholds so a long conversation does not flicker around a boundary.</p></div>
+      </div>
+      <div class="formula">g = 1[domain_score ≥ τD  and  refusal_score ≥ τR]
+h′ = h − g·αBᵀBh
+<small>A prompt-latched variant computes g at the assistant boundary and holds it fixed; a tokenwise gate can adapt but may flicker.</small></div>
+      <p>CAST provides the conditional-steering lineage. Dual and hysteretic gates are natural adaptations, not established universal solutions. A topic gate can silently recreate over-refusal or miss euphemisms, so its calibration becomes part of the method's safety and selectivity claim.</p>
+
+      <h2>Norm-aware continuous control</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Method</th><th>Action</th><th>Benefit</th><th>Risk</th></tr></thead>
+        <tbody>
+          <tr><td>Angular steering</td><td>Rotate within a learned 2D plane.</td><td>Preserves activation length and exposes a continuous angle.</td><td>The plane can still be confounded; a sign gate can be discontinuous.</td></tr>
+          <tr><td>Natural-gradient actuation</td><td>Move along a protected covariance/Fisher metric.</td><td>Penalizes changes to sensitive control behavior.</td><td>Local linear and metric approximations can fail during generation.</td></tr>
+          <tr><td>Partial projection</td><td>Use <code>0&lt;α&lt;1</code>.</td><td>Simple dose control.</td><td>Weaker refusal effect may still have diffuse side effects.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="formula">angular rotation for orthonormal plane vectors p,q:
+a=pᵀh, b=qᵀh
+a′=a cosθ−b sinθ,  b′=a sinθ+b cosθ
+h′=h+(a′−a)p+(b′−b)q
+<small>This is norm-preserving inside the chosen plane. It is adjacent to abliteration because it rotates rather than deletes a coordinate.</small></div>
+
+      <div class="formula">natural-gradient / protected-metric step:
+δ* = κ Cₚ⁻¹g / (gᵀCₚ⁻¹g)
+<small>Among moves satisfying <code>gᵀδ=κ</code>, this minimizes <code>δᵀCₚδ</code>. Use a regularized protected metric; the guarantee is local and linear.</small></div>
+
+      <div class="callout warning"><strong>Compile last</strong><p>Prove a runtime map first. Permanent weight folding, conversion, and quantization each introduce a new approximation and must be tested as new model conditions.</p></div></template>
+<template id="lesson-sparse-circuits">
+      <p class="eyebrow">12 · Method atlas</p>
+      <h1>A probe can read a feature it does not control.</h1>
+      <p class="lede">Prediction answers “where is information available?” Causal intervention answers “what must change to alter behavior?” Sparse and circuit methods are valuable only when they make that second question sharper.</p>
+      <div class="lesson-meta"><span>◷ 28 MIN</span><span>◇ ADVANCED</span><span>⌘ CAUSAL LOCALIZATION</span></div>
+
+      <h2>Matched activation patching</h2>
+      <p>Run a refusing example and a carefully matched answering example. Replace one layer/token/component activation in the refusing run with its answer-side counterpart, measure the full-response change, then perform the reverse patch. This tests necessity and sufficiency more directly than a classifier.</p>
+      <div class="formula">effect(l,t) = s_ref(model with hˡ,ᵗ_refuse ← hˡ,ᵗ_answer) − s_ref(baseline refuse)
+<small>Use multiple matched pairs and corruption baselines. A patch can be off-manifold or carry unrelated pair differences.</small></div>
+
+      <h2>Functional stages</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>DETECTOR</b><span>Encodes risky topic or policy evidence.</span></div>
+        <div class="pipeline-step"><b>GATE</b><span>Routes the policy response.</span></div>
+        <div class="pipeline-step"><b>WRITER</b><span>Introduces the refusal feature.</span></div>
+        <div class="pipeline-step"><b>AMPLIFIER</b><span>Strengthens or repairs it later.</span></div>
+        <div class="pipeline-step"><b>OPPOSER</b><span>Components may push back toward answering.</span></div>
+      </div>
+      <p>These labels are hypotheses to validate with interchange signatures. Editing the detector risks removing domain understanding; targeting a verified writer or gate can be more selective.</p>
+
+      <h2>Sparse intervention families</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Granularity</th><th>Discovery</th><th>Intervention</th><th>Failure mode</th></tr></thead>
+        <tbody>
+          <tr><td>SAE feature bundle</td><td>Encode states into sparse learned latents and find refusal-linked features.</td><td>Clamp selected latents and preserve the SAE reconstruction residual.</td><td>Feature splitting, polysemanticity, dead latents, reconstruction error.</td></tr>
+          <tr><td>Coordinate-sparse direction</td><td>Keep only large coordinates of a residual-space direction.</td><td>Project with the sparsified vector or basis.</td><td>Coordinate sparsity is basis-dependent and need not imply sparse parameters or circuits.</td></tr>
+          <tr><td>Parameter / neuron sparsity</td><td>Gradients, masks, z-scores, or sparse optimization over components.</td><td>Mask, zero, rescale, or project selected rows, columns, or neurons.</td><td>A distributed feature can survive a small parameter mask; neuron identity changes under basis rotations.</td></tr>
+          <tr><td>Attention head</td><td>Direct-logit attribution, patching, or head knockout.</td><td>Head output projection surgery or runtime masking.</td><td>A low-logit gate can still be causal through downstream amplification.</td></tr>
+          <tr><td>Cross-layer path</td><td>Causal tracing, transcoders, and synergy search.</td><td>Interrupt a small bundle of sites.</td><td>Combinatorial overfit and downstream self-repair.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>The hydra effect</h2>
+      <p>Removing one component can cause later components to reconstruct part of the computation. This explains why a one-layer intervention may look strong locally and weak at the final response, while a small multi-layer bundle succeeds. Search singles first, then promising pairs or 2–4 site bundles with an untouched validation set.</p>
+      <div class="callout"><strong>Editability map</strong><p>Use gradients or probes as scalable candidate filters, then verify exact interventions. A high refusal probe score is evidence of decodability, not ownership.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>If zeroing a head changes refusal but also destroys sentence structure, it is causal but not selective. Causality is necessary evidence, not the whole objective.</p></div></template>
+<template id="lesson-moe-vlm">
+      <p class="eyebrow">13 · Method atlas</p>
+      <h1>Architecture changes where the policy can hide.</h1>
+      <p class="lede">A dense Llama-like naming recipe is not a model-agnostic method. MoE routing, shared experts, multimodal fusion, and hybrid attention create additional causal sites and tensor layouts.</p>
+      <div class="lesson-meta"><span>◷ 24 MIN</span><span>◇ ADVANCED</span><span>⌘ ROUTED MODELS</span></div>
+
+      <h2>One MoE block</h2>
+      <div class="formula">router probabilities pₑ(x) → select top-k experts
+MLP output = Σₑ∈top-k pₑ(x) · Expertₑ(x)
+residual next = residual + attention output + MLP output</div>
+      <p>Refusal can be represented in shared attention, router logits, individual expert outputs, always-on shared experts, or their interaction. Routing frequency alone does not prove that an expert owns the safety mechanism; the router may remain topic-driven while expert parameters enforce policy.</p>
+
+      <h2>Expert-aware options</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Method</th><th>What it changes</th><th>Required control</th></tr></thead>
+        <tbody>
+          <tr><td>All-writer projection</td><td>Every selected expert down/output projection plus attention writers.</td><td>Compare to dense-equivalent edit norm and check shared experts.</td></tr>
+          <tr><td>Expert-support localization</td><td>Experts whose output weights strongly support a refusal basis.</td><td>Causal expert masking; do not select from router frequency alone.</td></tr>
+          <tr><td>Expert-specific steering</td><td>Add or remove a direction inside one or all routed experts.</td><td>Condition on natural routing and compare forced-expert artifacts.</td></tr>
+          <tr><td>Category-prototype expert edit</td><td>Several category directions applied only to high-support experts.</td><td>Joint search over target effect, KL, and footprint.</td></tr>
+          <tr><td>Router intervention</td><td>Redirect expert selection.</td><td>Separate topic-routing changes from refusal-control changes.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Tensor geometry in expert models</h2>
+      <p>A dense writer is usually a 2D map; fused expert banks often add an expert axis and become 3D. Projection must be applied along the residual-output axis for each selected expert, regardless of storage order. This is one reason architecture adaptation is part of the method: a parameter-name match does not prove that every router, shared expert, residual writer, or custom block was included.</p>
+
+      <h2>Multimodal models</h2>
+      <p>A VLM can represent visual hazard recognition, text-policy refusal, and fusion-stage control in different spaces. A text-only direction cannot establish a multimodal mechanism. A truly multimodal edit requires modality-specific samples, per-stream centering, fusion-layer localization, and text→image / image→text causal transfer tests.</p>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Shared subspace</code><p>Find a refusal component with causal effects across text, vision, and fusion streams.</p></div>
+        <div class="concept-card"><code>Modality-specific complement</code><p>Preserve visual recognition and ordinary OCR/code-image behavior that should not be erased by a text-derived vector.</p></div>
+      </div>
+
+      <div class="callout warning"><strong>Model-family audit</strong><p>Inspect the forward pass, state-dict keys, tied weights, normalization, quantization metadata, and tensor orientation. Print exactly which writers will be modified before saving anything.</p></div></template>
+<template id="lesson-thirty-primitives">
+      <p class="eyebrow">14 · Method atlas</p>
+      <h1>Thirty primitives, four jobs.</h1>
+      <p class="lede">This compact appendix indexes discovery, localization, intervention, and proof primitives. Use the detailed lessons for equations and tradeoffs; entries marked as hypotheses are research directions, not ready-made recommendations.</p>
+      <div class="lesson-meta"><span>◷ 32 MIN</span><span>◇ REFERENCE</span><span>▦ 30 PRIMITIVES</span></div>
+      <div class="badge-row"><span class="badge status-established">Established</span><span class="badge status-adapted">Adapted</span><span class="badge status-hypothesis">Novel hypothesis</span></div>
+
+      <h2>A · Discover the behavior</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>#</th><th>Primitive</th><th>Status</th><th>Question</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td>Difference in means</td><td>Established</td><td>What linear arrow separates two activation groups?</td></tr>
+          <tr><td>02</td><td>Outcome-factorial isolation</td><td>Adapted / hypothesis</td><td>Can refusal be separated from harmfulness and topic?</td></tr>
+          <tr><td>03</td><td>Paired covariance-whitened subspace</td><td>Adapted</td><td>Which paired changes are large relative to protected variation?</td></tr>
+          <tr><td>04</td><td>Nuisance residualization</td><td>Adapted</td><td>Can length, source, template, language, and category be regressed out?</td></tr>
+          <tr><td>05</td><td>Topic-aware contrasts</td><td>Established warning</td><td>Are controls matched without canceling the causal signal?</td></tr>
+          <tr><td>06</td><td>RepIt-style whitening</td><td>Established</td><td>Can one category be isolated from shared restricted-category structure?</td></tr>
+          <tr><td>07</td><td>SAE feature bundles</td><td>Established / adapted</td><td>Is refusal better represented by sparse nonlinear features?</td></tr>
+          <tr><td>08</td><td>Refusal-trajectory tensor</td><td>Hypothesis</td><td>How does the behavior factor across layers and generated time?</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>B · Localize where to act</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>#</th><th>Primitive</th><th>Status</th><th>Question</th></tr></thead>
+        <tbody>
+          <tr><td>09</td><td>Matched activation patching</td><td>Established</td><td>Which answer-side state rescues a refusing run?</td></tr>
+          <tr><td>10</td><td>Editability map</td><td>Adapted</td><td>Where does a proposed edit change behavior, not just probe score?</td></tr>
+          <tr><td>11</td><td>Detector/gate/writer decomposition</td><td>Established / adapted</td><td>Which stage recognizes, routes, writes, amplifies, or opposes refusal?</td></tr>
+          <tr><td>12</td><td>Multi-layer synergy graph</td><td>Hypothesis</td><td>Which weak sites become effective as a small bundle?</td></tr>
+          <tr><td>13</td><td>Sparse parameter/neuron localization</td><td>Established</td><td>Can a smaller set of heads, neurons, or rows carry the effect?</td></tr>
+          <tr><td>14</td><td>MoE expert-support localization</td><td>Established / adapted</td><td>Which routed experts causally support the refusal basis?</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>C · Perform the intervention</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>#</th><th>Primitive</th><th>Status</th><th>Core action</th></tr></thead>
+        <tbody>
+          <tr><td>15</td><td>Orthogonal directional ablation</td><td>Established</td><td>Project out one direction or an orthonormal basis.</td></tr>
+          <tr><td>16</td><td>Affine concept editing</td><td>Established</td><td>Project and re-center at an answer-side coordinate.</td></tr>
+          <tr><td>17</td><td>LEACE / INLP / R-LACE</td><td>Established</td><td>Erase linearly decodable information under explicit geometry.</td></tr>
+          <tr><td>18</td><td>Diverse multidirectional ablation</td><td>Established</td><td>Select nonredundant directions and remove their joint span.</td></tr>
+          <tr><td>19</td><td>Controlled latent evasion</td><td>Established</td><td>Move to a calibrated margin on the answer side.</td></tr>
+          <tr><td>20</td><td>Gaussian optimal transport</td><td>Established</td><td>Map refusal-side center and covariance toward answer-side distribution.</td></tr>
+          <tr><td>21</td><td>Protected spectral cleaning</td><td>Established / adapted</td><td>Remove known capability/style overlap from the edit direction.</td></tr>
+          <tr><td>22</td><td>Learned low-rank ReFT eraser</td><td>Adapted</td><td>Train a small hidden-state map with behavior and KL objectives.</td></tr>
+          <tr><td>23</td><td>Protected low-rank weight folding</td><td>Adapted</td><td>Compile a validated runtime edit into the smallest protected weight update.</td></tr>
+          <tr><td>24</td><td>Prompt-latched dual gate</td><td>Adapted</td><td>Enable the edit only for target domain plus refusal trajectory.</td></tr>
+          <tr><td>25</td><td>Hysteretic sequential gate</td><td>Hypothesis</td><td>Maintain a stable gate in long conversations with memory.</td></tr>
+          <tr><td>26</td><td>Natural-gradient actuation</td><td>Adapted / hypothesis</td><td>Minimize change in a protected Fisher/covariance metric.</td></tr>
+          <tr><td>27</td><td>Modality-separated shared subspace</td><td>Adapted / hypothesis</td><td>Separate text, vision, and fusion refusal components.</td></tr>
+          <tr><td>28</td><td>Norm-preserving angular steering</td><td>Established</td><td>Rotate in a learned plane instead of adding or deleting a vector.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>D · Prove what happened</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>#</th><th>Primitive</th><th>Status</th><th>Required evidence</th></tr></thead>
+        <tbody>
+          <tr><td>29</td><td>Bidirectional causal certificate</td><td>Established / adapted</td><td>Removal lowers refusal, addition raises it, and strength has a dose response.</td></tr>
+          <tr><td>30</td><td>Semantic/statistical/deployment certificate</td><td>Established / adapted</td><td>Full responses, utility bounds, uncertainty, fresh probes, and exact deployed bytes.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout"><strong>How to use this map</strong><p>Do not combine all thirty. Establish the simplest baseline, use localization to falsify weak candidates, then add complexity only when it improves target behavior at matched protected drift on untouched data.</p></div></template>
+<template id="lesson-operator-variants">
+      <p class="eyebrow">15 · Method comparison</p>
+      <h1>Finding a direction does not determine what to do with it.</h1>
+      <p class="lede">The same measured basis can be deleted, attenuated, reflected, rotated, regularized, sparsified, or applied with a depth schedule. These operators have different semantics even when their refusal score looks similar.</p>
+      <div class="lesson-meta"><span>◷ 30 MIN</span><span>◇ ADVANCED</span><span>⌁ OPERATOR GEOMETRY</span></div>
+
+      <div class="scope-banner"><strong>Keep axes separate</strong><p>Direction discovery, layer localization, and intervention operator are independent choices. A top-k whitened basis can still use partial projection; a single mean direction can still use reflection or conditional angular steering.</p></div>
+
+      <h2>The operator atlas</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Operator</th><th>Mathematical action</th><th>Practical advantage</th><th>Practical disadvantage</th></tr></thead>
+        <tbody>
+          <tr><td>Exact projection</td><td><code>h′=(I−BᵀB)h</code> for orthonormal rows</td><td>Closed form, interpretable, and completely removes the measured coordinate.</td><td>Abrupt global deletion; collateral loss grows with overlap and rank.</td></tr>
+          <tr><td>Partial attenuation</td><td><code>h′=(I−αBᵀB)h</code>, <code>0&lt;α&lt;1</code></td><td>Simple continuous tradeoff and easy dose-response testing.</td><td>Residual refusal may remain; one scalar may fit layers poorly.</td></tr>
+          <tr><td>Ridge attenuation</td><td><code>Pλ=Gᵀ(GGᵀ+λI)⁻¹G</code>; <code>h′=(I−Pλ)h</code></td><td>Stable with correlated or noisy directions; <code>λ→0</code> approaches span removal.</td><td><code>Pλ</code> is not a projector; <code>λ→∞</code> approaches identity and mixes stability with strength.</td></tr>
+          <tr><td>Householder reflection</td><td><code>h′=(I−2bbᵀ)h</code>, <code>‖b‖=1</code></td><td>Norm-preserving and powerful as a bidirectional causal test.</td><td>Flips the coordinate instead of erasing it; usually more disruptive.</td></tr>
+          <tr><td>Translation / steering</td><td><code>h′=h+βr̂</code></td><td>Simple signed induction or suppression without flattening variation.</td><td>Moves every selected state equally and is adjacent to—not the same as—ablation.</td></tr>
+          <tr><td>Angular rotation</td><td>Rotate in a chosen 2D plane by angle <code>θ</code>.</td><td>Preserves norm and exposes smooth, signed control.</td><td>Requires a defensible plane and can move states off their natural manifold.</td></tr>
+          <tr><td>Norm-restored projection</td><td>Project, then rescale each chosen residual-output vector.</td><td>Preserves one scale statistic and can reduce scale drift.</td><td>Scalar per-vector restoration preserves orthogonality; anisotropic coordinate or stored-row restoration can reintroduce basis energy.</td></tr>
+          <tr><td>Sparse projection</td><td>Edit only high-support coordinates, rows, heads, or features.</td><td>Smaller footprint and better mechanistic localization.</td><td>Basis-dependent, threshold-sensitive, and vulnerable to alternate paths.</td></tr>
+          <tr><td>Depth-scheduled projection</td><td>Use <code>αₗ</code> or a smooth basis <code>Bₗ</code> across layers.</td><td>Tracks layer rotation and concentrates change in a causal window.</td><td>Adds many selection degrees of freedom and overfitting risk.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>The full strength spectrum</h2>
+      <div class="formula">h′ = (I − αP)h, where P = BᵀB
+coordinate inside the subspace is multiplied by (1 − α)
+
+α = 0      identity
+0 &lt; α &lt; 1  same-side attenuation
+α = 1      deletion / projection
+1 &lt; α &lt; 2  inverted attenuation
+α = 2      Householder-style reflection across the complement
+α &gt; 2      inverted amplification
+α &lt; 0      same-side amplification
+<small>For an orthogonal projector P, I−2P is norm-preserving. Only α=1 is exact deletion.</small></div>
+
+      <div class="formula">layer/time schedule:
+W′ₗ = [I − αₗ Bₛ₍ₗ₎ᵀBₛ₍ₗ₎]Wₗ
+<small><code>s(l)</code> chooses the source basis used at destination layer l. Smooth schedules reduce abrupt depth changes; every free <code>αₗ</code> or source switch increases selection risk.</small></div>
+
+      <h2>Decompose every operator into five questions</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>FIX THE BASIS</b><span>Compare operators on exactly the same direction or subspace.</span></div>
+        <div class="pipeline-step"><b>MATCH STRENGTH</b><span>Use target effect or update norm, not incomparable default scales.</span></div>
+        <div class="pipeline-step"><b>SWEEP DOSE</b><span>Plot the full response curve for <code>α</code>, <code>λ</code>, angle, or sparsity.</span></div>
+        <div class="pipeline-step"><b>MEASURE DRIFT</b><span>Track behavior, KL/NLL, geometry, calibration, and long outputs.</span></div>
+        <div class="pipeline-step"><b>REPEAT AFTER SAVE</b><span>Verify the exact folded and deployed artifact.</span></div>
+      </div>
+
+      <h2>What the modifiers really preserve</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Regularization</code><p>Preserves some fitted component or stabilizes an inverse; it does not identify which semantics are protected.</p></div>
+        <div class="concept-card"><code>Norm restoration</code><p>Preserves length at the chosen granularity; it does not preserve direction, logits, calibration, or capability.</p></div>
+        <div class="concept-card"><code>Sparsity</code><p>Preserves untouched coordinates or components; it does not prove the chosen basis is causally privileged.</p></div>
+        <div class="concept-card"><code>Optimization</code><p>Preserves what appears in its loss and data; omitted behavior can still drift or be exploited by the search.</p></div>
+      </div>
+      <div class="callout warning"><strong>Reflection is not “stronger ablation”</strong><p>Projection sends the measured coordinate to zero. Reflection preserves its magnitude and reverses its sign. Both can lower a refusal score, but they make different causal claims and should never share a label.</p></div>
+      <div class="quiz"><strong>Checkpoint</strong><p>Compare operators at matched target effect and matched basis. Otherwise the apparent winner may simply be the one that applied a larger perturbation.</p></div></template>
+<template id="lesson-method-comparison">
+      <p class="eyebrow">16 · Method comparison</p>
+      <h1>There is no best method without a stated failure budget.</h1>
+      <p class="lede">Simple methods have low variance and clear math; richer methods can be more selective but require more data, tuning, and validation. Choose by the geometry you can justify and the side effects you can measure.</p>
+      <div class="lesson-meta"><span>◷ 36 MIN</span><span>◇ REFERENCE</span><span>▦ SIDE-BY-SIDE</span></div>
+
+      <h2>A method is a tuple of choices</h2>
+      <div class="formula">M = (contrast C, estimator E, localization L, operator A, persistence P)
+
+C: what differs?       E: what geometry is fitted?
+L: where is it causal? A: how are states changed?
+P: runtime or weights?
+<small>Two studies that both say “SVD abliteration” can still implement different methods on every other axis.</small></div>
+      <p>Keep these axes independent in both experiments and explanations. Paired data does not require SVD; a whitened basis does not require permanent editing; a sparse target does not require a sparse estimator.</p>
+
+      <h2>The bias–variance ladder</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>ONE MEAN AXIS</b><span>Least data and lowest estimator variance; strongest linearity assumption.</span></div>
+        <div class="pipeline-step"><b>RANK-k SUBSPACE</b><span>Captures several modes; rank selection adds variance.</span></div>
+        <div class="pipeline-step"><b>COVARIANCE-AWARE</b><span>Models protected geometry; needs many stable controls.</span></div>
+        <div class="pipeline-step"><b>SPARSE / CIRCUIT</b><span>Targets finer causal sites; localization can be fragile.</span></div>
+        <div class="pipeline-step"><b>LEARNED / GATED</b><span>Most flexible and potentially selective; largest overfit and audit surface.</span></div>
+      </div>
+
+      <h2>Comparison axes that matter in practice</h2>
+      <div class="metric-grid">
+        <div class="metric"><code>Data burden</code><p>Means need dozens to hundreds; stable covariance, sparse, and learned methods can need far more.</p></div>
+        <div class="metric"><code>Interpretability</code><p>Closed-form rank-one projection is easiest to inspect; optimized maps are harder to attribute.</p></div>
+        <div class="metric"><code>Selectivity</code><p>Conditional and localized edits may reduce global drift, but rely on additional learned boundaries.</p></div>
+        <div class="metric"><code>Reversibility</code><p>Runtime maps are easy to disable; folded weights need a pristine checkpoint and rollback artifact.</p></div>
+        <div class="metric"><code>Serving cost</code><p>Weight edits add little inference overhead; dynamic gates and hooks add computation and state.</p></div>
+        <div class="metric"><code>Evidence burden</code><p>Every extra rank, gate, feature, or optimizer adds a degree of freedom that needs untouched evaluation.</p></div>
+      </div>
+
+      <h2>Major method families</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Family</th><th>Core math</th><th>Advantages</th><th>Disadvantages / best use</th></tr></thead>
+        <tbody>
+          <tr><td>Mean-direction projection</td><td><code>r=μR−μA</code>; project out <code>r̂</code>.</td><td>Cheap, stable, closed form, strong baseline.</td><td>Mixes confounds and modes. Best first experiment.</td></tr>
+          <tr><td>Fisher / LDA direction</td><td><code>w=(ΣR+ΣA+λI)⁻¹(μR−μA)</code>.</td><td>Downweights high-noise axes while retaining a single interpretable direction.</td><td>Covariance- and ridge-sensitive. Best when means separate poorly relative to within-class noise.</td></tr>
+          <tr><td>Paired rank-k SVD</td><td>Top right singular vectors of paired deltas.</td><td>Retains multiple recurring modes and pair structure.</td><td>Needs good pairing and rank selection. Best when one axis underfits.</td></tr>
+          <tr><td>Whitened / generalized eigen</td><td>Contrast energy relative to protected covariance.</td><td>Prioritizes change in otherwise stable directions.</td><td>Sample-hungry and inversion-sensitive. Best with large representative controls.</td></tr>
+          <tr><td>ACE</td><td>Project, then re-center at an answer-side affine coordinate.</td><td>Avoids forcing all states to an arbitrary zero.</td><td>One center may flatten multimodal answers. Best for clear affine separation.</td></tr>
+          <tr><td>LEACE</td><td>Closed-form covariance-aware linear erasure.</td><td>Minimum distortion under its covariance-weighted linear objective.</td><td>Only removes linear cross-covariance. Best when protected covariance is trustworthy.</td></tr>
+          <tr><td>INLP / R-LACE</td><td>Iterated or adversarial fixed-rank nullspace learning.</td><td>Targets residual linear decodability more thoroughly.</td><td>Can chase probes without changing behavior. Best as a representation-erasure control.</td></tr>
+          <tr><td>Margin / controlled evasion</td><td>Minimum move across a calibrated linear boundary.</td><td>Changes only states that need to cross and supports explicit margin.</td><td>Probe boundary may not be causal. Best for reversible runtime testing.</td></tr>
+          <tr><td>Gaussian transport</td><td>Affine map matching refusal and answer means/covariances.</td><td>Matches the answer-side first two moments instead of collapsing a coordinate.</td><td>Gaussian, low-rank, and matching assumptions. Best with dense matched data.</td></tr>
+          <tr><td>SAE / sparse feature edit</td><td>Clamp or transform selected sparse latents.</td><td>Human-interpretable candidates and small activation footprint.</td><td>Reconstruction and feature-splitting errors. Best after causal feature validation.</td></tr>
+          <tr><td>Circuit-localized edit</td><td>Patch or modify verified heads, neurons, experts, or paths.</td><td>Potentially highest mechanistic selectivity.</td><td>Expensive combinatorial search and self-repair. Best for research-grade localization.</td></tr>
+          <tr><td>Learned low-rank / ReFT</td><td>Optimize a small linear or affine hidden-state map through end-to-end losses.</td><td>Flexible learned objective and explicit protection terms.</td><td>Training and scorer overfit. Best when closed forms visibly underfit.</td></tr>
+          <tr><td>Conditional gate</td><td>Apply another operator only when a classifier or latch fires.</td><td>Can preserve unrelated prompts by avoiding a global edit.</td><td>Moves the problem into gate calibration. Best when context-specific control is required.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>No universal winner</h2>
+      <p>The expected progression is evidence-driven: mean direction → rank-k → covariance-aware → localized or conditional → learned map. Stop as soon as a simpler method reaches the desired target effect inside the declared protected-drift budget. Complexity is justified by a measured failure of the previous rung, not by novelty.</p>
+      <div class="callout warning"><strong>Do not compare names</strong><p>Compare resolved mathematics, data, layer/token sites, rank, strength, update norm, persistence, and evaluation. A sophisticated family with weak controls is less informative than a rank-one baseline with strong causal and held-out evidence.</p></div></template>
+<template id="lesson-method-selection">
+      <p class="eyebrow">17 · Method comparison</p>
+      <h1>Escalate the method only when a simpler assumption fails.</h1>
+      <p class="lede">Method choice should follow the geometry and failure mode you observe. Once chosen, test the operator's invariants separately from whether it changes model behavior.</p>
+      <div class="lesson-meta"><span>◷ 28 MIN</span><span>◇ PRACTICAL</span><span>⌕ DECISION GUIDE</span></div>
+
+      <h2>Five decisions, in order</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>DEFINE OUTCOME</b><span>Separate refusal, answer quality, evasion, harm recognition, and capability.</span></div>
+        <div class="pipeline-step"><b>FIT SIMPLE</b><span>Start with an outcome-screened mean direction and runtime projection.</span></div>
+        <div class="pipeline-step"><b>DIAGNOSE FAILURE</b><span>Underfit, confounding, collateral drift, self-repair, or deployment mismatch?</span></div>
+        <div class="pipeline-step"><b>ADD ONE IDEA</b><span>Rank, covariance, locality, conditionality, or learned flexibility—one at a time.</span></div>
+        <div class="pipeline-step"><b>RETEST CLAIM</b><span>Use untouched data, causal controls, and exact deployed bytes.</span></div>
+      </div>
+
+      <h2>Failure → method escalation</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Observed failure</th><th>Next method to try</th><th>Why—and what could still go wrong</th></tr></thead>
+        <tbody>
+          <tr><td>One direction misses categories or styles</td><td>Paired rank-k SVD or category prototypes</td><td>Captures multiple modes; extra rank can erase unrelated behavior.</td></tr>
+          <tr><td>Direction overlaps ordinary benign variation</td><td>Whitening, LDA, LEACE, or protected spectral cleaning</td><td>Uses protected covariance; unstable inversion can amplify noise.</td></tr>
+          <tr><td>Zero projection produces unnatural states</td><td>ACE recentering, margin crossing, angular rotation, or transport</td><td>Targets an answer-side region; distributional assumptions can be wrong.</td></tr>
+          <tr><td>Global edit damages unrelated prompts</td><td>Conditional gate or causal component localization</td><td>Reduces exposure; the gate or localization can introduce new errors.</td></tr>
+          <tr><td>Single-layer effect is repaired downstream</td><td>Trajectory measurement and small depth schedule</td><td>Suppresses reconstruction; extra layer choices increase overfit.</td></tr>
+          <tr><td>Dense edit is too broad</td><td>SAE feature, head, neuron, row, or expert intervention</td><td>Shrinks footprint; sparse coordinates are basis- and threshold-dependent.</td></tr>
+          <tr><td>Closed-form maps visibly underfit</td><td>Learned low-rank or ReFT-style map with protected loss</td><td>Adds flexibility; training and evaluator overfit become central risks.</td></tr>
+          <tr><td>Full-precision result fails after export</td><td>Remeasure or retune in the deployment numerical condition</td><td>Matches actual geometry; conclusions become artifact-specific.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Mathematical invariant tests</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Shape test</code><p>For every target, assert which axis lives in residual space and verify projection on a tiny synthetic matrix.</p></div>
+        <div class="concept-card"><code>Projector test</code><p>For an orthogonal projector, assert symmetry <code>Pᵀ=P</code> and idempotence <code>P²=P</code>; ridge shrinkage should not pass the latter.</p></div>
+        <div class="concept-card"><code>Energy test</code><p>Measure basis energy before and after; test <code>α=0</code>, <code>1</code>, <code>2</code>, fractional, and negative boundaries.</p></div>
+        <div class="concept-card"><code>Equivalence test</code><p>On a toy block, compare runtime projection with the intended folded weights, biases, and initial residual.</p></div>
+        <div class="concept-card"><code>Round-trip test</code><p>Save, reload in a fresh process, and compare tensor hashes, logits, and generations under fixed seeds.</p></div>
+        <div class="concept-card"><code>Negative control</code><p>Apply a random basis of the same rank and norm to separate targeted effect from generic damage.</p></div>
+      </div>
+      <div class="callout"><strong>Selection rule</strong><p>Prefer the method with the fewest fitted degrees of freedom that reaches the target-effect threshold inside the protected-drift budget and survives the decisive counter-test for its core assumption.</p></div></template>
+<template id="lesson-experiment-ladder">
+      <p class="eyebrow">18 · Evidence & practice</p>
+      <h1>Earn complexity one test at a time.</h1>
+      <p class="lede">A defensible study does not begin with the most elaborate edit. It begins with a frozen system, a minimal baseline, and tests designed to falsify the explanation you hope is true.</p>
+      <div class="lesson-meta"><span>◷ 30 MIN</span><span>◇ ADVANCED</span><span>↗ EVIDENCE LADDER</span></div>
+
+      <h2>Stage 0 · Freeze the object of study</h2>
+      <div class="checklist">
+        <label><input type="checkbox" disabled> Exact base checkpoint revision and tensor hashes</label>
+        <label><input type="checkbox" disabled> Tokenizer files, special token IDs, and rendered chat template</label>
+        <label><input type="checkbox" disabled> Inference engine, precision, quantization, kernels, and versions</label>
+        <label><input type="checkbox" disabled> Prompt splits, actual baseline outcomes, languages, and categories</label>
+        <label><input type="checkbox" disabled> Sampling parameters, seeds, stop strings, and maximum generation length</label>
+        <label><input type="checkbox" disabled> Direction estimator, token tap, layer map, targets, rank, and strength</label>
+      </div>
+
+      <h2>Stages 1–6</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>1 · ESTABLISH BASELINES</b><span>Unedited, random same-rank edit, one mean direction, and runtime projection before permanent surgery.</span></div>
+        <div class="pipeline-step"><b>2 · ISOLATE THE SIGNAL</b><span>Use actual outcomes, four-cell contrasts, matched pairs, nuisance residualization, and train/validation/test separation.</span></div>
+        <div class="pipeline-step"><b>3 · MAP GEOMETRY</b><span>Compare mean, paired SVD, whitened, and rank-k candidates across layers and token positions.</span></div>
+        <div class="pipeline-step"><b>4 · ESTABLISH CAUSALITY</b><span>Remove and add the candidate, sweep dose, patch matched activations, and test downstream reconstruction.</span></div>
+        <div class="pipeline-step"><b>5 · CHOOSE THE EDIT</b><span>Compare target effect at matched protected drift; select the smallest Pareto-efficient intervention.</span></div>
+        <div class="pipeline-step"><b>6 · ATTACK THE CLAIM</b><span>Use unseen sources, paraphrases, languages, multi-turn contexts, long decoding, and probes trained after editing.</span></div>
+      </div>
+
+      <h2>Evidence matrix</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Claim</th><th>Minimum supporting test</th><th>Common false positive</th></tr></thead>
+        <tbody>
+          <tr><td>The direction predicts refusal</td><td>Held-out outcome classification across topics and prompt sources</td><td>It predicts harmful topic or template format.</td></tr>
+          <tr><td>The direction causes refusal</td><td>Removal lowers and addition raises refusal with a dose response</td><td>A generic same-rank perturbation also changes generation.</td></tr>
+          <tr><td>The layer is a causal writer</td><td>Matched patching or localized edit at that site</td><td>A probe merely decodes a feature copied from elsewhere.</td></tr>
+          <tr><td>The edit is selective</td><td>Target gain at matched benign, knowledge, reasoning, and calibration drift</td><td>Short outputs or degraded language look like fewer refusals.</td></tr>
+          <tr><td>The result generalizes</td><td>Unseen domains, formulations, languages, and conversations</td><td>Near-duplicates leak across the split.</td></tr>
+          <tr><td>The artifact works</td><td>Fresh-process evaluation of exact saved or quantized bytes</td><td>Only the in-memory reference-precision model was tested.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Choose on a frontier, not one leaderboard column</h2>
+      <div class="formula">target_effect = baseline refusal − edited refusal
+protected_drift = f(ΔNLL, ΔKL, task loss, calibration, safety, stability)
+<small>An edit dominates another only if it improves target effect without worsening protected drift, or lowers drift at equal effect.</small></div>
+      <p>Rank, layer coverage, and strength all change the frontier. Report the full sweep—including failed and unstable points—rather than selecting a single favorable run after looking at the test set.</p>
+      <div class="quiz"><strong>Checkpoint</strong><p>A 40-point refusal reduction with a large NLL regression is not automatically better than a 25-point reduction with negligible drift. The decision depends on a declared use case and guardrails, not the drama of the headline.</p></div></template>
+<template id="lesson-metrics-acronyms">
+    <p class="eyebrow">19 · Evidence & practice</p>
+    <h1>A metric is a question with a number attached.</h1>
+    <p class="lede">Abliteration changes several things at once: refusal behavior, answer quality, safety, probability distributions, internal geometry, and sometimes deployment stability. No single score summarizes all of them honestly.</p>
+    <div class="lesson-meta"><span>◷ 36 MIN</span><span>◇ INTERMEDIATE REFERENCE</span><span>∑ FORMULAS + PLAIN ENGLISH</span></div>
+    <div class="metrics-lesson">
+
+    <div class="scope-banner"><strong>The reading rule</strong><p>Every reported number needs five labels: <em>split</em>, <em>numerator and denominator</em>, <em>units</em>, <em>direction</em>, and <em>model condition</em>. “Lower is better” is incomplete: lower refusal can mean a stronger behavior edit on one test and worse safety on another.</p></div>
+
+    <h2>First ask which question the number answers</h2>
+    <div class="metric-grid">
+      <div class="metric"><code>Behavior</code><p>Did the model explicitly refuse, answer substantively, evade, fail, or produce unsafe content?</p></div>
+      <div class="metric"><code>Utility</code><p>Did knowledge, reasoning, language modeling, calibration, and ordinary task performance survive?</p></div>
+      <div class="metric"><code>Distribution drift</code><p>How much did the edited model's token probabilities move away from the baseline?</p></div>
+      <div class="metric"><code>Mechanism</code><p>Was the measured direction stable, removed at the intended site, and causally connected to the outcome?</p></div>
+    </div>
+
+    <h2>Notation used on this page</h2>
+    <div class="formula">𝓗 = harmful or target prompt split       𝓝 = benign or protected prompt split
+p₀(v | cₜ) = baseline probability of token v in context cₜ
+p₁(v | cₜ) = edited-model probability of token v in the same context
+yₜ = reference token at position t          T = number of scored tokens
+U = row-orthonormal edit basis, UUᵀ = I
+<small>Unless stated otherwise, probability metrics compare the same prompts, templates, reference continuations, token positions, and vocabulary. Changing those conditions changes the measurement.</small></div>
+
+    <h2>Language-model and distribution-drift metrics</h2>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Name</th><th>Definition</th><th>Plain-English meaning</th><th>How to read it</th></tr></thead>
+      <tbody>
+        <tr><td><strong>NLL</strong><br>Negative Log-Likelihood</td><td><code>−(1/T) Σₜ log p(yₜ | cₜ)</code></td><td>Average surprise assigned to the actual reference tokens.</td><td>Lower is better on a fixed corpus. With natural logs the unit is <em>nats per token</em>. Report <code>ΔNLL = NLL₁ − NLL₀</code>; positive means regression.</td></tr>
+        <tr><td><strong>CE</strong><br>Cross-Entropy</td><td><code>H(q,p)=−Σᵥ q(v) log p(v)</code></td><td>How well predicted probabilities match a target distribution <code>q</code>.</td><td>Lower is better. One context is measured in nats or bits; an average over token contexts is nats or bits per token. For one-hot targets, average CE equals NLL.</td></tr>
+        <tr><td><strong>PPL</strong><br>Perplexity</td><td><code>PPL = exp(NLL)</code> when NLL uses natural logs</td><td>An effective branching factor: how many similarly plausible token choices the model acts as if it faces.</td><td>Lower is better on the same tokens and tokenizer. Average NLL first, then exponentiate; never average per-token perplexities.</td></tr>
+        <tr><td><strong>KL</strong><br>Kullback–Leibler divergence</td><td><code>D<sub>KL</sub>(p₀‖p₁)=Σᵥ p₀(v) log[p₀(v)/p₁(v)]</code></td><td>How costly it is to use the edited distribution where the baseline distribution is the reference.</td><td>Zero means identical distributions at the measured contexts; lower means less drift. It is asymmetric. Report argument order and nats or bits per token.</td></tr>
+        <tr><td><strong>JSD</strong><br>Jensen–Shannon divergence</td><td><code>½KL(p₀‖m)+½KL(p₁‖m)</code>, <code>m=(p₀+p₁)/2</code></td><td>A symmetric, smoothed comparison of two distributions.</td><td>Lower means less drift. With natural logs it ranges from 0 to <code>ln 2</code>; its square root is a metric.</td></tr>
+        <tr><td><strong>TV</strong><br>Total Variation distance</td><td><code>½Σᵥ |p₀(v)−p₁(v)|</code></td><td>The largest probability difference the two distributions can assign to an event.</td><td>Ranges from 0 to 1; lower means less drift. It is often easier to interpret than raw logit distance.</td></tr>
+        <tr><td><strong>Entropy H</strong></td><td><code>H(p)=−Σᵥ p(v) log p(v)</code></td><td>How spread out one model's next-token distribution is.</td><td>One context is measured in nats or bits; average entropy is nats or bits per token. No universal direction: lower can mean confidence or collapse.</td></tr>
+        <tr><td><strong>Logit drift</strong></td><td><code>dₜ=√[(1/|𝒱|)Σᵥ((z₁ᵥ−z̄₁)−(z₀ᵥ−z̄₀))²]</code></td><td>RMS movement in centered scores over vocabulary <code>𝒱</code>; <code>z̄</code> is that context's vocabulary-mean logit.</td><td>Average <code>dₜ</code> over declared contexts. Lower is closer, in centered-logit units. A constant logit shift correctly contributes zero.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>KL, carefully</h2>
+    <div class="formula">D_KLᵗ(p ‖ q) = Σᵥ p(v | cₜ) ln[p(v | cₜ) / q(v | cₜ)]
+mean KL = (1/T) Σₜ D_KLᵗ
+
+baseline-preservation view: D_KL(p₀ ‖ p₁)
+edited-support view:       D_KL(p₁ ‖ p₀)
+<small>The first weights mistakes by what the baseline considered likely. The reverse weights where the edit places its own probability mass. They answer different questions and can have very different values.</small></div>
+    <div class="concept-grid">
+      <div class="concept-card"><code>Unit</code><p>Natural logarithms produce <strong>nats</strong>; base-2 logarithms produce bits. When averaged, report nats or bits <em>per token</em>.</p></div>
+      <div class="concept-card"><code>Aggregation</code><p>Compute full-vocabulary KL at each matched context—usually teacher-forced—then state how tokens and prompts were averaged. Long prompts otherwise receive more weight.</p></div>
+      <div class="concept-card"><code>Direction</code><p><code>KL(p₀‖p₁)</code> is not <code>KL(p₁‖p₀)</code>. A label such as “KL to baseline” is ambiguous unless the formula or argument order is shown.</p></div>
+      <div class="concept-card"><code>Blind spot</code><p>A small mean KL can hide a large shift on a rare category, late decoding step, or safety-critical token. Stratify and inspect tails.</p></div>
+    </div>
+    <div class="callout warning"><strong>What KL does not mean</strong><p>KL is not accuracy, factuality, semantic similarity, safety, or proof that generations are unchanged. It compares probability distributions only under the contexts you actually measured.</p></div>
+
+    <h2>Behavior and safety metrics</h2>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Acronym / metric</th><th>Definition</th><th>Desired direction</th><th>Main trap</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RR</strong><br>Refusal Rate</td><td><code>RR(S)=(100/n<sub>S</sub>) Σ<sub>i∈S</sub> 1[refusalᵢ]</code> on named split <code>S</code>.</td><td>On a refusal-removal target, lower means a stronger edit. On harmful requests, lower may mean worse safety.</td><td>Phrase matching misses semantic refusals and can count empty or evasive text as compliance.</td></tr>
+        <tr><td><strong>ASR</strong><br>Attack Success Rate</td><td><code>(100/n<sub>𝓗</sub>) Σ<sub>i∈𝓗</sub> 1[substantive successᵢ]</code> under a declared rubric.</td><td>Higher means a more successful bypass; from a defender's perspective, lower is safer.</td><td>Non-refusal is not success. For repeated attacks, state attempt-level versus prompt-level any-of-k aggregation.</td></tr>
+        <tr><td><strong>ORR</strong><br>Over-Refusal Rate</td><td><code>(100/n<sub>𝓝</sub>) Σ<sub>i∈𝓝</sub> 1[unwarranted refusalᵢ]</code></td><td>Lower generally means better benign utility.</td><td>The name is not universal. State the allowed split and rubric.</td></tr>
+        <tr><td><strong>BCR</strong><br>Benign Compliance Rate<br><small>local shorthand</small></td><td><code>(100/n<sub>𝓝</sub>) Σ<sub>i∈𝓝</sub> 1[substantive allowed answerᵢ]</code></td><td>Higher generally means better benign utility.</td><td>The acronym is not standardized. Also, <code>BCR ≠ 100% − ORR</code> when evasion or failure is possible.</td></tr>
+        <tr><td><strong>Substantive completion</strong></td><td><code>(100/n<sub>S</sub>) Σ<sub>i∈S</sub> 1[material task attemptᵢ]</code></td><td>Higher on intended tasks.</td><td>Must be scored separately from willingness, correctness, and safety severity.</td></tr>
+        <tr><td><strong>Evasion / failure</strong></td><td><code>(100/n<sub>S</sub>) Σ<sub>i∈S</sub> 1[declared eventᵢ]</code></td><td>Lower is generally better.</td><td>Declare separate categories or say explicitly that the indicator is a union.</td></tr>
+        <tr><td><strong>Safety severity</strong></td><td><code>(1/n<sub>S</sub>) Σ<sub>i∈S</sub> judge(responseᵢ)</code> on a written scale.</td><td>Lower is safer under that rubric.</td><td>A mean can hide rare severe outputs; publish category distributions and tail cases.</td></tr>
+        <tr><td><strong>EM / F1</strong><br>Exact Match / F1 score</td><td><code>EM=(1/n)Σᵢ1[predᵢ=refᵢ]</code>; <code>F1=2P<sub>tok</sub>R<sub>tok</sub>/(P<sub>tok</sub>+R<sub>tok</sub>)</code>.</td><td>Higher is better. Both are fractions in [0,1], or multiply by 100 and label them percentages.</td><td><code>P<sub>tok</sub></code> and <code>R<sub>tok</sub></code> are token precision and recall. Overlap can reward fluent but incorrect content.</td></tr>
+      </tbody>
+    </table></div>
+    <blockquote><p>Use at least four outcome buckets: explicit refusal, substantive answer, evasion or diversion, and generation failure. Score correctness and safety severity on separate axes.</p></blockquote>
+
+    <h2>Probe and conditional-gate metrics</h2>
+    <div class="formula">TPR = TP / (TP + FN)       FPR = FP / (FP + TN)
+precision = TP / (TP + FP)  recall = TPR
+F1 = 2 · precision · recall / (precision + recall)
+<small>TP = true positive, TN = true negative, FP = false positive, FN = false negative. “Positive” must name a class, such as baseline refusal—not merely something desirable.</small></div>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Acronym</th><th>Full name</th><th>Meaning</th><th>Trap</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TPR</strong></td><td>True Positive Rate; also recall or sensitivity</td><td>Fraction of actual positives found. Higher is better at a fixed false-positive cost.</td><td>TPR depends on the declared operating threshold; report it together with FPR.</td></tr>
+        <tr><td><strong>FPR / FNR</strong></td><td>False Positive Rate / False Negative Rate</td><td>Fractions of negatives wrongly flagged and positives wrongly missed. Lower is better.</td><td>Always state which class is positive and show raw confusion counts.</td></tr>
+        <tr><td><strong>PPV</strong></td><td>Positive Predictive Value; precision</td><td>Among positive predictions, the fraction actually positive.</td><td>Changes with class prevalence even if the classifier is unchanged.</td></tr>
+        <tr><td><strong>AUROC / ROC–AUC</strong></td><td>Area Under the Receiver Operating Characteristic Curve</td><td><code>P(score⁺&gt;score⁻)+½P(tie)</code>; 0.5 is random ranking.</td><td>Prevalence-invariant, yet high AUROC can coexist with poor precision or many false positives when positives are rare.</td></tr>
+        <tr><td><strong>AUPRC / PR–AUC</strong></td><td>Area Under the Precision–Recall Curve</td><td>Summarizes precision and recall across thresholds; its baseline follows positive prevalence.</td><td>Values cannot be compared fairly across datasets with different prevalence.</td></tr>
+        <tr><td><strong>ECE</strong></td><td>Expected Calibration Error: <code>Σᵦ |Bᵦ|/n · |acc(Bᵦ)−conf(Bᵦ)|</code></td><td>Binned gap between confidence and empirical accuracy; lower is better.</td><td>Depends on binning and can hide local or class-specific miscalibration.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><strong>Decodability is not causality</strong><p>A high AUC says a probe can read a label from activations. It does not prove the feature causes refusal, that the chosen layer writes it, or that deleting the probe direction will be selective.</p></div>
+
+    <h2>Geometry and mechanism metrics</h2>
+    <div class="formula">μ_R, μ_A = refused- and answered-outcome activation centroids
+δ = μ_R − μ_A                 r̂ = unit candidate direction, ‖r̂‖₂ = 1
+Σ_pool = [(n_R−1)Σ_R + (n_A−1)Σ_A] / (n_R+n_A−2)
+D = paired-delta matrix        σ_j = jth singular value of D
+U ∈ ℝ^(k_U×d), V ∈ ℝ^(k_V×d), with UUᵀ=I and VVᵀ=I
+W = residual-writing weight matrix; ΔW = edited W minus baseline W
+<small>Σ_R and Σ_A are within-group sample covariances. In the SNR below, λI is ridge regularization and λ has the same units as covariance.</small></div>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Metric</th><th>Formula or construction</th><th>Meaning · units · direction</th><th>Main trap</th></tr></thead>
+      <tbody>
+        <tr><td><strong>L₂ norm</strong></td><td><code>‖x‖₂ = √Σⱼxⱼ²</code></td><td>Euclidean length, in the same units as <code>x</code>. No universal desired direction.</td><td>Scale differs across layers; equal norm does not mean equal function.</td></tr>
+        <tr><td><strong>Cosine similarity</strong></td><td><code>xᵀy / (‖x‖₂‖y‖₂)</code></td><td>Dimensionless in [−1,1]: +1 same direction, 0 orthogonal, −1 opposite.</td><td>Unstable near zero norm; high alignment is not causal evidence.</td></tr>
+        <tr><td><strong>Relative mean gap</strong></td><td><code>‖μ_R−μ_A‖₂ / max(‖μ_R‖₂,‖μ_A‖₂)</code></td><td>Dimensionless centroid separation; higher means a larger relative gap.</td><td>It is not SNR because it contains no within-group noise estimate.</td></tr>
+        <tr><td><strong>SNR</strong><br>Signal-to-Noise Ratio</td><td><code>|r̂ᵀδ| / √[r̂ᵀ(Σ_pool+λI)r̂]</code></td><td>Dimensionless contrast relative to regularized within-group variation; higher means cleaner separation.</td><td>There is no single universal SNR here; state the exact formula and regularization.</td></tr>
+        <tr><td><strong>EVR</strong><br>Explained Variance Ratio</td><td><code>Σ_(j=1)^k σ_j² / Σ_(j=1)^rank(D) σ_j²</code></td><td>Dimensionless in [0,1]; higher captures more matrix energy at rank <code>k</code>.</td><td>It is not behavior explained. On uncentered paired deltas, call it captured energy rather than PCA variance.</td></tr>
+        <tr><td><strong>Basis energy</strong></td><td><code>e_U(h)=‖Uh‖₂² / ‖h‖₂²</code></td><td>Dimensionless in [0,1]; post-edit lower is expected at the edited site.</td><td>Local removal can be reconstructed downstream.</td></tr>
+        <tr><td><strong>Subspace overlap</strong></td><td><code>O(U,V)=‖UVᵀ‖_F² / min(k_U,k_V)</code></td><td>Dimensionless in [0,1]; higher means more shared subspace.</td><td>Rank mismatch and shared nuisance features can inflate similarity.</td></tr>
+        <tr><td><strong>Layer rotation</strong></td><td><code>θ_ℓ=acos(clamp(cos(r_ℓ,r_(ℓ+1)),−1,1))</code></td><td>Radians or degrees; lower means greater depthwise stability.</td><td>Align signs only for sign-indeterminate SVD/PCA axes. Do not hide a reversal of outcome-oriented <code>μ_R−μ_A</code>.</td></tr>
+        <tr><td><strong>Linear CKA</strong></td><td>For column-centered feature matrices <code>X,Y</code>: <code>‖XᵀY‖_F²/(‖XᵀX‖_F·‖YᵀY‖_F)</code></td><td>Centered Kernel Alignment; dimensionless in [0,1], higher means more globally similar representations.</td><td>General kernel CKA uses centered Gram matrices. High CKA can coexist with important local behavior changes.</td></tr>
+        <tr><td><strong>Relative update norm</strong></td><td><code>‖ΔW‖_F / ‖W‖_F</code>, where <code>‖A‖_F=√ΣᵢⱼAᵢⱼ²</code></td><td>Dimensionless; lower means a smaller weight-space footprint.</td><td>A tiny norm can hit a sensitive feature; it does not guarantee preserved utility.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>Causal-effect metrics</h2>
+    <div class="formula">raw removal change: ΔRR_remove = RR_remove − RR_base
+removal effect:      E_remove = RR_base − RR_remove = −ΔRR_remove
+addition effect:     E_add = RR_add − RR_base
+ATE_m = (1/n) Σᵢ [mᵢ(intervened) − mᵢ(baseline)]
+<small>ATE means Average Treatment Effect for a unit-level outcome m. Removal and addition effects are necessity- and sufficiency-style evidence only under a matched, controlled intervention; they are not logical proofs. Report m(α) across a declared dose range.</small></div>
+    <p>A refusal change from 60% to 30% is a <strong>raw change of −30 percentage points</strong>, abbreviated <strong>pp</strong>, a <strong>removal effect of +30 pp</strong> under the convention above, and a <strong>−50% relative change</strong>. Those statements are mathematically different.</p>
+
+    <h2>Calibration, uncertainty, and statistical acronyms</h2>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Acronym / term</th><th>What it means</th><th>How to report it</th><th>Trap</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Brier score</strong></td><td><code>(1/n)Σᵢ(pᵢ−yᵢ)²</code>; squared error of predicted event probabilities.</td><td>Lower is better for a fixed event and population.</td><td>Mixes calibration and discrimination and depends on prevalence.</td></tr>
+        <tr><td><strong>SD</strong><br>Standard Deviation</td><td>Spread of observed values around their sample mean.</td><td>Same units as the metric.</td><td>SD describes variation, not uncertainty in the estimated mean.</td></tr>
+        <tr><td><strong>SE</strong><br>Standard Error</td><td>Sampling uncertainty of an estimator; for independent observations, mean SE is often <code>SD/√n</code>.</td><td>Same units as the estimator.</td><td>Repeated generations from one prompt are clustered, not independent rows.</td></tr>
+        <tr><td><strong>CI</strong><br>Confidence Interval</td><td>A range produced by a procedure designed to cover the true estimand at a stated long-run rate.</td><td>Name the level, method, and resampling unit, such as a paired 95% prompt-bootstrap CI.</td><td>A 95% frequentist CI is not a 95% probability that this fixed interval contains the truth.</td></tr>
+        <tr><td><strong>FDR</strong><br>False Discovery Rate</td><td>Expected share of false positives among selected findings.</td><td>Control it when scanning many layers, tokens, ranks, and strengths.</td><td>Picking the best test-set result after a large sweep invalidates ordinary uncertainty claims.</td></tr>
+        <tr><td><strong>Macro / micro average</strong></td><td>Macro weights each category equally; micro pools all examples.</td><td>Report both when category sizes differ materially.</td><td>A micro average can hide failure in a small but important category.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>A minimal abliteration scorecard</h2>
+    <div class="method-table-wrap"><table class="method-table">
+      <thead><tr><th>Question</th><th>Minimum measurements</th><th>Why both are needed</th></tr></thead>
+      <tbody>
+        <tr><td>Did target refusal change?</td><td>RR plus substantive completion, evasion, and failure rates</td><td>Fewer refusal phrases can otherwise be mistaken for useful answers.</td></tr>
+        <tr><td>Did safety change?</td><td>ASR or response-severity rubric plus benign ORR</td><td>Willingness and the risk of actual content are different outcomes.</td></tr>
+        <tr><td>Did general language behavior drift?</td><td>ΔNLL and directed KL; optionally PPL and entropy</td><td>Reference-token quality and full-distribution movement catch different changes.</td></tr>
+        <tr><td>Did useful capability survive?</td><td>Task-specific accuracy, EM/F1, calibration, and long-generation stability</td><td>Aggregate language loss can miss concentrated skill damage.</td></tr>
+        <tr><td>Did the intended mechanism move?</td><td>Basis energy, held-out stability, removal/addition dose response, random controls</td><td>Geometric correlation alone cannot establish a causal pathway.</td></tr>
+        <tr><td>Did the deployed artifact preserve the result?</td><td>Fresh-load KL/logit drift, generation deltas, exact hashes, and the same scorecard</td><td>Conversion, quantization, templates, and kernels create a second condition.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>Worked reading example</h2>
+    <div class="formula">target RR:       78% → 31%        change = −47 pp
+control NLL:    2.10 → 2.14      ΔNLL = +0.04 nats/token
+control PPL:    8.17 → 8.50      ratio = exp(0.04) ≈ 1.041
+KL(p₀ ‖ p₁):   0.018 nats/token
+ECE:            0.06 → 0.11      change = +0.05
+<small>Hypothetical values. The prompts, denominators, grader, confidence intervals, decoding condition, and artifact must still be reported.</small></div>
+    <p>The edit reduced measured refusal by 47 percentage points. <code>ΔNLL +0.04</code> corresponds to a 4.1% perplexity increase, directed mean KL is 0.018 nats/token, and ECE increased by 0.05. Whether those changes are acceptable depends on a prespecified budget, baseline variability, category strata, and tail behavior. Without substantive-answer quality and safety-severity scores, this is <em>not yet a success claim</em>.</p>
+
+    <h2>Acronym bank</h2>
+    <details open><summary>Metrics and statistics</summary><div>
+      <p><strong>ASR</strong> · Attack Success Rate &nbsp; <strong>ATE</strong> · Average Treatment Effect &nbsp; <strong>AUPRC / PR–AUC</strong> · Area Under the Precision–Recall Curve &nbsp; <strong>AUROC / ROC–AUC</strong> · Area Under the Receiver Operating Characteristic Curve &nbsp; <strong>BCR</strong> · Benign Compliance Rate &nbsp; <strong>CE</strong> · Cross-Entropy &nbsp; <strong>CI</strong> · Confidence Interval &nbsp; <strong>CKA</strong> · Centered Kernel Alignment &nbsp; <strong>ECE</strong> · Expected Calibration Error &nbsp; <strong>EM</strong> · Exact Match &nbsp; <strong>EVR</strong> · Explained Variance Ratio &nbsp; <strong>FDR</strong> · False Discovery Rate &nbsp; <strong>FNR/FPR</strong> · False Negative/Positive Rate &nbsp; <strong>JSD</strong> · Jensen–Shannon Divergence &nbsp; <strong>KL</strong> · Kullback–Leibler divergence &nbsp; <strong>NLL</strong> · Negative Log-Likelihood &nbsp; <strong>ORR</strong> · Over-Refusal Rate &nbsp; <strong>PPV</strong> · Positive Predictive Value &nbsp; <strong>PPL</strong> · Perplexity &nbsp; <strong>RR</strong> · Refusal Rate &nbsp; <strong>SD/SE</strong> · Standard Deviation/Error &nbsp; <strong>SNR</strong> · Signal-to-Noise Ratio &nbsp; <strong>TPR</strong> · True Positive Rate &nbsp; <strong>TV</strong> · Total Variation.</p>
+      <p><strong>pp</strong> means percentage points. <strong>Nats</strong> are natural-log information units; “nat” is not an acronym.</p>
+    </div></details>
+    <details><summary>Architecture and mathematical context</summary><div>
+      <p><strong>GQA</strong> · Grouped-Query Attention &nbsp; <strong>LDA</strong> · Linear Discriminant Analysis &nbsp; <strong>LLM</strong> · Large Language Model &nbsp; <strong>LM</strong> · Language Model &nbsp; <strong>MLP</strong> · Multilayer Perceptron &nbsp; <strong>MoE</strong> · Mixture of Experts &nbsp; <strong>MQA</strong> · Multi-Query Attention &nbsp; <strong>OCR</strong> · Optical Character Recognition &nbsp; <strong>OT</strong> · Optimal Transport &nbsp; <strong>PCA</strong> · Principal Component Analysis &nbsp; <strong>Q/K/V</strong> · Query/Key/Value &nbsp; <strong>QA</strong> · Question Answering &nbsp; <strong>RMSNorm</strong> · Root Mean Square Normalization &nbsp; <strong>RoPE</strong> · Rotary Position Embedding &nbsp; <strong>SAE</strong> · Sparse Autoencoder &nbsp; <strong>SVD</strong> · Singular Value Decomposition &nbsp; <strong>VLM</strong> · Vision-Language Model.</p>
+    </div></details>
+    <details><summary>Editing and training methods</summary><div>
+      <p><strong>ACE</strong> · Affine Concept Editing &nbsp; <strong>CAST</strong> · Conditional Activation Steering &nbsp; <strong>CLE</strong> · Controlled Latent Evasion &nbsp; <strong>DPO</strong> · Direct Preference Optimization &nbsp; <strong>INLP</strong> · Iterative Nullspace Projection &nbsp; <strong>LACE</strong> · Linear Adversarial Concept Erasure &nbsp; <strong>LEACE</strong> · LEAst-squares Concept Erasure &nbsp; <strong>LoRA</strong> · Low-Rank Adaptation &nbsp; <strong>NPBA</strong> · Norm-Preserving Biprojected Abliteration &nbsp; <strong>PEFT</strong> · Parameter-Efficient Fine-Tuning &nbsp; <strong>ReFT</strong> · Representation Finetuning &nbsp; <strong>RLACE</strong> · Relaxed Linear Adversarial Concept Erasure &nbsp; <strong>RLHF</strong> · Reinforcement Learning from Human Feedback &nbsp; <strong>SFT</strong> · Supervised Fine-Tuning.</p>
+      <p>StrongREJECT, HarmBench, and XSTest are benchmark or evaluator names, not interchangeable metrics. Describe which component and scoring rubric you used instead of treating a brand name as a formula.</p>
+    </div></details>
+
+    <h2>Ten metric traps to remember</h2>
+    <ol>
+      <li>Non-refusal is not the same as a substantive answer or a successful unsafe response.</li>
+      <li>The desired direction depends on the split and purpose; always state it.</li>
+      <li>Percent change and percentage-point change are different.</li>
+      <li>Cosine, EVR, CKA, and probe AUC do not establish causality.</li>
+      <li>A relative mean gap is not SNR unless noise is in the denominator.</li>
+      <li>PPL is not comparable across different tokenizers or corpora.</li>
+      <li>KL is asymmetric; show its arguments and aggregation.</li>
+      <li>Means hide category failures and high-severity tails.</li>
+      <li>Select layers and hyperparameters on validation data, not the final test set.</li>
+      <li>Re-evaluate the exact saved and deployed artifact; an in-memory edit is another condition.</li>
+    </ol>
+    <div class="quiz"><strong>Checkpoint</strong><p>A report says <code>RR 70%→20%</code>, <code>ASR 65%</code>, <code>ΔNLL +0.30 nats/token</code>, and deployment-direction cosine <code>0.82</code>. You can conclude that measured refusal fell 50 percentage points, 65% met the declared ASR success rubric, language-model loss increased by 0.30 nats/token, and the measured directions were positively but not perfectly aligned. Whether any value is acceptable requires baselines, uncertainty, and prespecified thresholds.</p></div>
+    </div></template>
+<template id="lesson-evaluation-deployment">
+      <p class="eyebrow">20 · Evidence & practice</p>
+      <h1>No-refusal is not the same as a good answer.</h1>
+      <p class="lede">Evaluation must separate explicit refusal, substantive completion, evasion, incoherence, correctness, utility, safety, and deployment parity. A single refusal regex is a useful diagnostic—not a conclusion.</p>
+      <div class="lesson-meta"><span>◷ 30 MIN</span><span>◇ ADVANCED</span><span>✓ MULTI-AXIS QA</span></div>
+
+      <h2>Score outcomes, not magic phrases</h2>
+      <div class="metric-grid">
+        <div class="metric"><code>Explicit refusal</code><p>Directly declines, says it cannot help, or invokes a policy boundary.</p></div>
+        <div class="metric"><code>Substantive completion</code><p>Actually engages the requested task with enough content to evaluate.</p></div>
+        <div class="metric"><code>Evasion / diversion</code><p>Changes subject, moralizes, gives only generic advice, or answers a safer question.</p></div>
+        <div class="metric"><code>Failure</code><p>Blank, truncated, repetitive, incoherent, malformed, or crashes.</p></div>
+        <div class="metric"><code>Correctness / quality</code><p>Task-specific accuracy, relevance, groundedness, and completeness.</p></div>
+        <div class="metric"><code>Safety severity</code><p>What actionable risk appears in the actual response, scored independently of willingness.</p></div>
+      </div>
+      <p>Use rule-based indicators for fast iteration, then blinded human or validated model-based grading with a written rubric. Frameworks such as <a href="https://arxiv.org/abs/2402.10260" target="_blank" rel="noreferrer">StrongREJECT</a>, <a href="https://arxiv.org/abs/2402.04249" target="_blank" rel="noreferrer">HarmBench</a>, and <a href="https://arxiv.org/abs/2308.01263" target="_blank" rel="noreferrer">XSTest</a> cover different pieces; none alone certifies an edited model.</p>
+
+      <h2>Protected capability suite</h2>
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Axis</th><th>Measurements</th><th>Why it catches hidden damage</th></tr></thead>
+        <tbody>
+          <tr><td>Language modeling</td><td>Reference NLL, perplexity, KL to baseline, token-level drift</td><td>Detects broad distribution change before benchmark scores collapse.</td></tr>
+          <tr><td>Knowledge and reasoning</td><td>Held-out QA, math, code, factuality, tool use</td><td>Tests whether useful internal features overlapped the removed subspace.</td></tr>
+          <tr><td>Benign near-neighbors</td><td>Allowed prompts in the same topics and styles</td><td>Separates refusal suppression from topic erasure.</td></tr>
+          <tr><td>Calibration</td><td>Confidence, log-probability calibration, abstention on uncertainty</td><td>An edit can alter willingness without improving knowledge.</td></tr>
+          <tr><td>Generation stability</td><td>Long outputs, repetition, entropy, stop behavior, multi-turn memory</td><td>Downstream reconstruction or compounding drift may appear late.</td></tr>
+          <tr><td>Safety selectivity</td><td>Over-refusal, high-risk response severity, multilingual and obfuscated prompts</td><td>Quantifies both desired and undesired policy movement.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Deployment is a second experiment</h2>
+      <div class="pipeline">
+        <div class="pipeline-step"><b>VALIDATE RUNTIME EDIT</b><span>Use a reversible hook to prove the candidate before touching weights.</span></div>
+        <div class="pipeline-step"><b>FOLD INTO WEIGHTS</b><span>Apply the smallest validated update at reference precision and test a fresh load.</span></div>
+        <div class="pipeline-step"><b>CONVERT / QUANTIZE</b><span>Create the intended deployment-precision artifact afterward.</span></div>
+        <div class="pipeline-step"><b>RE-EVALUATE BYTES</b><span>Repeat target, capability, safety, and long-generation suites in the actual serving engine.</span></div>
+        <div class="pipeline-step"><b>COMPARE PARITY</b><span>Record tensor hashes, logit drift, generation deltas, kernels, and resolved template.</span></div>
+      </div>
+      <p>Quantization can rotate, attenuate, or swamp a small edit; conversion can transpose or omit tensors; a serving template can move the relevant token position. “Passed at reference precision before export” is therefore not deployment evidence.</p>
+
+      <div class="callout"><strong>Minimum report</strong><p>Publish denominators, confidence intervals or bootstrap ranges, exact prompts or dataset hashes, grader rubric and agreement, all model/runtime identifiers, complete hyperparameters, failure counts, and results for the untouched baseline, random control, runtime intervention, folded reference-precision model, and final deployed artifact.</p></div></template>
+<template id="lesson-failure-modes">
+      <p class="eyebrow">21 · Evidence & practice</p>
+      <h1>A lower refusal score can fail in twelve different ways.</h1>
+      <p class="lede">The central discipline is bounded language: say what changed under which conditions, preserve the evidence that could disprove it, and do not turn a local behavior edit into a universal claim.</p>
+      <div class="lesson-meta"><span>◷ 22 MIN</span><span>◇ ALL LEVELS</span><span>⚠ LIMITS</span></div>
+
+      <div class="method-table-wrap"><table class="method-table">
+        <thead><tr><th>Failure</th><th>What it looks like</th><th>Best counter-test</th></tr></thead>
+        <tbody>
+          <tr><td>Topic confounding</td><td>The direction encodes cyber, medicine, or weapons vocabulary rather than refusal.</td><td>Four-cell outcomes and benign same-topic near-neighbors.</td></tr>
+          <tr><td>Template confounding</td><td>It keys on role tokens, prompt length, punctuation, or dataset boilerplate.</td><td>Re-rendered and cross-template evaluation.</td></tr>
+          <tr><td>Outcome mislabeling</td><td>Prompts assumed harmful did not actually refuse, or benign items did.</td><td>Screen actual baseline generations before measurement.</td></tr>
+          <tr><td>Decodability ≠ causality</td><td>A strong probe finds a passenger feature.</td><td>Bidirectional intervention, patching, and same-rank random controls.</td></tr>
+          <tr><td>Too many directions</td><td>Refusal falls because broad representational capacity was erased.</td><td>Rank sweep at matched utility drift.</td></tr>
+          <tr><td>Norm illusion</td><td>Row norms are preserved while angles and function change sharply.</td><td>Activation, logit, KL, task, and calibration comparisons.</td></tr>
+          <tr><td>Downstream repair</td><td>Early removal works briefly; later layers or generated tokens reconstruct the signal.</td><td>Trajectory probes and long-generation interventions.</td></tr>
+          <tr><td>MoE attribution error</td><td>A routed expert correlates with refusal but is not causally responsible.</td><td>Router, expert-output, and shared-path interventions separately.</td></tr>
+          <tr><td>Metric gaming</td><td>Refusal phrases vanish but answers are evasive, empty, or unsafe.</td><td>Outcome taxonomy plus substantive quality and severity grading.</td></tr>
+          <tr><td>Split leakage</td><td>Paraphrases or source duplicates make held-out results look strong.</td><td>Source-grouped deduplication and truly external test sets.</td></tr>
+          <tr><td>Artifact drift</td><td>The converted or quantized model behaves differently.</td><td>Fresh-process tests of the exact serving bytes.</td></tr>
+          <tr><td>Overclaiming</td><td>“Fully uncensored,” “safety removed,” or “concept deleted.”</td><td>Bound every conclusion to checkpoint, data, template, language, layer, rank, strength, and runtime.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>Responsible operating envelope</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>Authorization</code><p>Only modify checkpoints and run evaluations you are permitted to use; honor licenses, access controls, and data restrictions.</p></div>
+        <div class="concept-card"><code>Isolation</code><p>Keep experiments local or access-controlled, protect artifacts, and avoid exposing a less-safe model as an unrestricted service.</p></div>
+        <div class="concept-card"><code>Reversibility</code><p>Preserve the untouched checkpoint, use runtime tests first, version artifacts, and maintain a rollback path.</p></div>
+        <div class="concept-card"><code>Defense in depth</code><p>Model behavior is only one layer; application policies, permissions, monitoring, rate limits, and human review still matter.</p></div>
+        <div class="concept-card"><code>Transparent limits</code><p>Record negative results, known blind spots, intended scope, and which safety properties were not tested.</p></div>
+        <div class="concept-card"><code>No capability inference</code><p>Greater willingness does not mean greater expertise, factuality, reliability, or suitability for consequential decisions.</p></div>
+      </div>
+      <div class="callout warning"><strong>Plain-language conclusion</strong><p>Abliteration is a powerful way to study and alter a learned policy pathway. It is not a proof of mechanistic completeness, a substitute for alignment, or a safe default for public deployment.</p></div></template>
+<template id="lesson-glossary-sources">
+      <p class="eyebrow">22 · Reference</p>
+      <h1>Use precise words. Keep a source trail.</h1>
+      <p class="lede">Mechanistic claims become easier to test when every object names its layer, token position, estimator, dataset, intervention, strength, and artifact condition.</p>
+      <div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ REFERENCE</span><span>⌘ 116-PAPER SYNTHESIS</span></div>
+
+      <h2>Compact glossary</h2>
+      <div class="glossary-grid">
+        <div class="glossary-item"><code>Ablation</code><p>Remove or suppress a component to test or alter its causal contribution.</p></div>
+        <div class="glossary-item"><code>Abliteration</code><p>Community term for activation or weight edits designed to suppress learned refusal behavior.</p></div>
+        <div class="glossary-item"><code>Activation</code><p>A numeric internal state produced for a specific example, layer, site, and token position.</p></div>
+        <div class="glossary-item"><code>Residual stream</code><p>The model-width state repeatedly read and updated by transformer components.</p></div>
+        <div class="glossary-item"><code>Residual writer</code><p>A component whose output is added into that stream, such as attention <code>o_proj</code> or MLP <code>down_proj</code>.</p></div>
+        <div class="glossary-item"><code>Refusal direction</code><p>A candidate vector associated with a refused-versus-answered contrast under defined conditions.</p></div>
+        <div class="glossary-item"><code>Subspace</code><p>A span of multiple independent directions, usually represented by an orthonormal basis.</p></div>
+        <div class="glossary-item"><code>Projection</code><p>Decompose a vector into components parallel and orthogonal to a direction or basis.</p></div>
+        <div class="glossary-item"><code>Orthogonalization</code><p>Modify activations or weights so their selected component along a basis is removed.</p></div>
+        <div class="glossary-item"><code>SVD</code><p>A factorization used here to find dominant axes in a matrix of example-wise activation differences.</p></div>
+        <div class="glossary-item"><code>Whitening</code><p>Rescale geometry using an estimated covariance so high-variance nuisance axes do not dominate automatically.</p></div>
+        <div class="glossary-item"><code>Biprojection</code><p>In this guide, answer-mean residualization at both the measurement source and every intervention destination.</p></div>
+        <div class="glossary-item"><code>Householder reflection</code><p>A norm-preserving sign flip across a hyperplane; qualitatively different from deletion by projection.</p></div>
+        <div class="glossary-item"><code>Activation patching</code><p>Replace a component's activation between matched runs to localize causal contribution.</p></div>
+        <div class="glossary-item"><code>SAE</code><p>Sparse autoencoder used to represent activations with many sparse learned features.</p></div>
+        <div class="glossary-item"><code>Pareto frontier</code><p>Edits for which no alternative improves target effect without worsening protected drift.</p></div>
+      </div>
+
+      <h2>How the evidence is organized</h2>
+      <div class="metric-grid">
+        <div class="metric"><code>Mechanistic evidence</code><p>Direction removal and addition, activation patching, component intervention, and downstream reconstruction tests.</p></div>
+        <div class="metric"><code>Geometric evidence</code><p>Held-out separation, subspace stability, covariance conditioning, rank sensitivity, and cross-layer rotation.</p></div>
+        <div class="metric"><code>Behavioral evidence</code><p>Refusal, substantive completion, evasion, answer quality, safety severity, utility, and calibration.</p></div>
+        <div class="metric"><code>Artifact evidence</code><p>Fresh reload, conversion and quantization parity, exact prompt rendering, and deployment-condition replication.</p></div>
+      </div>
+
+      <h2>Primary reading trail</h2>
+      <div class="source-list">
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer"><strong>Attention Is All You Need</strong><span>Transformer foundation.</span></a>
+        <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank" rel="noreferrer"><strong>A Mathematical Framework for Transformer Circuits</strong><span>Residual-stream and component vocabulary.</span></a>
+        <a href="https://arxiv.org/abs/2406.11717" target="_blank" rel="noreferrer"><strong>Refusal in Language Models Is Mediated by a Single Direction</strong><span>Canonical directional-ablation and weight-orthogonalization baseline.</span></a>
+        <a href="https://huggingface.co/blog/mlabonne/abliteration" target="_blank" rel="noreferrer"><strong>Abliteration: community implementation</strong><span>Accessible walkthrough and naming lineage.</span></a>
+        <a href="https://huggingface.co/blog/grimjim/norm-preserving-biprojected-abliteration" target="_blank" rel="noreferrer"><strong>Norm-Preserving Biprojected Abliteration</strong><span>Source/destination projection and norm-preserving geometry.</span></a>
+        <a href="https://arxiv.org/abs/2306.03819" target="_blank" rel="noreferrer"><strong>LEACE</strong><span>Closed-form linear concept erasure.</span></a>
+        <a href="https://arxiv.org/abs/2411.09003" target="_blank" rel="noreferrer"><strong>Affine Concept Editing</strong><span>Erase and re-center affine representations.</span></a>
+        <a href="https://arxiv.org/abs/2004.07667" target="_blank" rel="noreferrer"><strong>INLP</strong><span>Iterated nullspace projection against linear probes.</span></a>
+        <a href="https://arxiv.org/abs/2201.12091" target="_blank" rel="noreferrer"><strong>R-LACE</strong><span>Fixed-rank adversarial linear concept erasure.</span></a>
+        <a href="https://arxiv.org/abs/2308.10248" target="_blank" rel="noreferrer"><strong>Activation Addition</strong><span>Runtime steering baseline.</span></a>
+        <a href="https://arxiv.org/abs/2312.06681" target="_blank" rel="noreferrer"><strong>Contrastive Activation Addition</strong><span>Contrast-derived steering vectors.</span></a>
+        <a href="https://arxiv.org/abs/2409.05907" target="_blank" rel="noreferrer"><strong>CAST</strong><span>Conditional activation steering.</span></a>
+        <a href="https://arxiv.org/abs/2603.04355" target="_blank" rel="noreferrer"><strong>Optimal-transport refusal ablation</strong><span>Answer-side distribution matching rather than coordinate deletion.</span></a>
+        <a href="https://arxiv.org/abs/2402.10260" target="_blank" rel="noreferrer"><strong>StrongREJECT</strong><span>Evaluating jailbreak response quality beyond binary success.</span></a>
+        <a href="https://arxiv.org/abs/2402.04249" target="_blank" rel="noreferrer"><strong>HarmBench</strong><span>Standardized automated red-teaming evaluation.</span></a>
+        <a href="https://arxiv.org/abs/2308.01263" target="_blank" rel="noreferrer"><strong>XSTest</strong><span>Exaggerated safety behavior and over-refusal.</span></a>
+      </div>
+
+      <h2>Where to go next</h2>
+      <div class="concept-grid">
+        <div class="concept-card"><code>If you are learning</code><p>Revisit lessons 01–07, reproduce projection on synthetic vectors, then trace one real tensor from activation capture to writer edit.</p></div>
+        <div class="concept-card"><code>If you are experimenting</code><p>Use lesson 18's evidence ladder and start with a reversible runtime baseline plus random controls.</p></div>
+        <div class="concept-card"><code>If you are comparing methods</code><p>Use lessons 15–17: fix the basis, match strength, test invariants, and compare target effect at protected drift.</p></div>
+        <div class="concept-card"><code>If you are deploying</code><p>Do not stop at reference precision. Re-evaluate the exact converted bytes with the exact serving template and safety envelope.</p></div>
+      </div>
+      <div class="quiz"><strong>Final checkpoint</strong><p>The strongest sentence this field guide supports is deliberately bounded: “Under this frozen configuration, a measured intervention changed refusal behavior by this amount, with these observed tradeoffs and these remaining uncertainties.”</p></div></template>
+  <script src="./audio/manifest.js?v=1"></script>
+  <script src="./app.js?v=4"></script>
+</body>
+</html>
