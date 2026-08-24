@@ -7,13 +7,12 @@ The published folder does not require AI, a backend, Swift, Node.js, a database,
 build step. Progress is stored locally in the visitor's browser with `localStorage`. External
 research links require internet access, but the guide itself does not.
 
-The editable lesson sources live in `Content/abliterate/*.md`. From the repository root, run
-`swift run site-builder` to regenerate this folder and the Hummingbird-served copy.
+This repository is the generated publishing output. The Markdown authoring sources and Swift
+generator are intentionally not required to host or browse it.
 
 ## GitHub Pages
 
-- To publish the guide at the root of a Pages site, use the contents of this folder as the publishing source.
-- To keep it inside an existing Pages site, publish the repository root and visit `/abliterate/`
-  beneath the repository's Pages URL.
+- Live guide: <https://standrze.github.io/llm-abliteration/>
+- Pages publishes the root of the `main` branch.
 
 All site assets use relative URLs, so repository and project-page base paths both work.
