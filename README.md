@@ -1,23 +1,27 @@
-# Abliteration Methods Guide
+# Field Guide Library
 
-This folder is a completely static website. It uses only HTML, CSS, and a small amount of
-browser-side JavaScript.
+This repository is the static publishing output for a growing collection of technical training
+guides. Each guide lives in its own folder, while the repository root is a shared library page.
 
-The published folder does not require AI, a backend, Swift, Node.js, a database, API keys, or a
-build step. Progress is stored locally in the visitor's browser with `localStorage`. External
-research links require internet access, but the guide itself does not.
+Live library: <https://standrze.github.io/field-guides/>
 
-This repository is the generated publishing output. The Markdown authoring sources and Swift
-generator are intentionally not required to host or browse it.
+## Published guides
 
-## GitHub Pages
+| Guide | Folder | Live path | Lessons |
+|---|---|---|---:|
+| Abliteration Methods Guide | abliteration/ | <https://standrze.github.io/field-guides/abliteration/> | 23 |
+| MLX Swift Field Guide | mlx/ | <https://standrze.github.io/field-guides/mlx/> | 26 |
 
-- Live guide: <https://standrze.github.io/llm-abliteration/>
-- MLX Swift training: <https://standrze.github.io/llm-abliteration/mlx/>
-- Pages publishes the root of the `main` branch.
+The MLX Sources lesson serves fifteen downloaded academic papers from mlx/papers/. The published
+guides use relative asset URLs, so they remain portable across GitHub Pages project paths.
 
-All site assets use relative URLs, so repository and project-page base paths both work.
+## Hosting model
 
-The MLX training is kept in its own `mlx/` subtree. Its Sources lesson serves fifteen downloaded
-academic papers locally from `mlx/papers/`; no external research link is required while reading
-the guide.
+- GitHub Pages publishes the root of the main branch.
+- The site is static HTML, CSS, JavaScript, audio manifests, and local PDF sources.
+- No backend, database, API key, AI service, Swift runtime, or Node.js process is required.
+- Lesson progress and appearance choices are stored only in the visitor's browser.
+- The root .nojekyll file keeps the generated directory structure unchanged.
+
+To publish another training, add its generated static folder, add one project entry to the library
+page and admin script, then push to main.
