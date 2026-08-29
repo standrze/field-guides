@@ -302,6 +302,28 @@ kbd {
   font-size: 9px;
 }
 
+.lesson-stage { position: relative; }
+.lesson-home-grid {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  right: max(24px, calc((100% - 1080px) / 2 + 24px));
+  display: block;
+  width: 90px;
+  height: 90px;
+  border: 1px solid var(--ink);
+  background-color: transparent;
+  background-image: radial-gradient(var(--ink) 1.15px, transparent 1.15px);
+  background-size: 6px 6px;
+  opacity: .85;
+  cursor: pointer;
+  transition: background-color .15s ease, opacity .15s ease;
+}
+.lesson-home-grid:hover,
+.lesson-home-grid:focus-visible {
+  background-color: var(--green);
+  opacity: 1;
+}
 #lesson {
   position: relative;
   max-width: 1080px;
@@ -309,20 +331,6 @@ kbd {
   border-right: 1px solid var(--ink);
   border-left: 1px solid var(--ink);
   background: var(--panel);
-}
-#lesson::before {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  top: 22px;
-  right: 24px;
-  width: 90px;
-  height: 90px;
-  border: 1px solid var(--ink);
-  background-image: radial-gradient(var(--ink) 1.15px, transparent 1.15px);
-  background-size: 6px 6px;
-  opacity: .85;
-  pointer-events: none;
 }
 #lesson > * { position: relative; }
 .eyebrow {
@@ -528,7 +536,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   .key-hint { min-width: 58px; padding: 0 15px; font-size: 0; }
   .key-hint kbd { font-size: 10px; }
   #lesson { padding: 62px 24px 58px; border-right: 0; border-left: 0; }
-  #lesson::before { top: 16px; right: 18px; width: 62px; height: 62px; }
+  .lesson-home-grid { top: 16px; right: 18px; width: 62px; height: 62px; }
   .eyebrow { max-width: calc(100% - 85px); }
   h1 { margin-top: 22px; font-size: clamp(48px, 14vw, 78px); }
   .lesson-meta { grid-template-columns: 1fr; }
