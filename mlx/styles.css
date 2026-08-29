@@ -1,0 +1,179 @@
+:root {
+  --ink: #101827;
+  --muted: #596679;
+  --paper: #eef3fb;
+  --panel: #fbfdff;
+  --panel-2: #dce7ff;
+  --line: #101827;
+  --green: #80a7ff;
+  --green-deep: #dce7ff;
+  --amber: #ffc86b;
+  --red: #d45278;
+}
+
+::selection { color: var(--ink); background: var(--green); }
+
+body {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(128, 167, 255, .24), transparent 30%),
+    radial-gradient(circle at 88% 74%, rgba(117, 223, 220, .13), transparent 27%),
+    linear-gradient(rgba(46, 84, 151, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 84, 151, .055) 1px, transparent 1px),
+    var(--paper);
+  background-size: auto, auto, 34px 34px, 34px 34px, auto;
+}
+
+.sidebar { background: #101827; }
+main { background: transparent; }
+.topbar { background: rgba(238, 243, 251, .94); }
+#lesson, .lesson-footer { background: var(--panel); }
+.brand-mark { letter-spacing: -.13em; }
+
+a { color: #285fca; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: #173d86; text-decoration-thickness: 2px; }
+code { color: #2055b7; }
+
+h1 { font-size: clamp(48px, 6.5vw, 88px); }
+
+.version-banner,
+.scope-banner {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 22px;
+  margin: 32px 0;
+  padding: 24px;
+  border: 1px solid var(--ink);
+  border-left: 10px solid var(--green);
+  background: #e5edff;
+}
+
+.version-banner strong,
+.scope-banner strong {
+  font: 700 10px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.version-banner p,
+.scope-banner p { margin: 0; }
+
+blockquote,
+.callout {
+  margin: 28px 0;
+  padding: 20px 24px;
+  border: 1px solid var(--ink);
+  border-left: 10px solid var(--green);
+  background: #e8efff;
+}
+
+.callout strong {
+  display: block;
+  margin-bottom: 8px;
+  font: 800 10px var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.callout p,
+blockquote p { margin: 0; }
+
+.callout.warning {
+  border-left-color: #ef7b9e;
+  background: #fff0f5;
+}
+
+#lesson table {
+  width: 100%;
+  margin: 28px 0 36px;
+  border: 1px solid var(--ink);
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 13px;
+}
+
+#lesson th,
+#lesson td {
+  padding: 13px 14px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  overflow-wrap: anywhere;
+  text-align: left;
+  vertical-align: top;
+}
+
+#lesson th:last-child,
+#lesson td:last-child { border-right: 0; }
+#lesson tr:last-child td { border-bottom: 0; }
+
+#lesson th {
+  color: var(--ink);
+  background: var(--green);
+  font: 700 10px/1.35 var(--mono);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+#lesson td { color: #445167; line-height: 1.55; }
+
+#lesson hr { margin: 54px 0; border: 0; border-top: 1px solid var(--ink); }
+#lesson > ol,
+#lesson > ul { padding-left: 26px; }
+#lesson li { margin: 8px 0; }
+
+#lesson pre {
+  border-left-color: var(--green);
+  background: #0c1422;
+}
+
+.reading-list {
+  margin: 30px 0 42px;
+  border: 1px solid var(--ink);
+  background: #fff;
+}
+
+.reading-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 128px;
+  padding: 22px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+  text-decoration: none;
+}
+
+.reading-card:last-child { border-bottom: 0; }
+.reading-card:hover { color: var(--ink); background: var(--green-deep); }
+
+.reading-number {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid var(--ink);
+  background: var(--green);
+  font: 800 12px var(--mono);
+}
+
+.reading-copy strong { display: block; font-size: 18px; line-height: 1.2; }
+.reading-copy small {
+  display: block;
+  margin: 7px 0;
+  color: #285fca;
+  font: 700 10px var(--mono);
+  text-transform: uppercase;
+}
+.reading-copy > span { display: block; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.reading-card > b { white-space: nowrap; font: 800 9px var(--mono); letter-spacing: .08em; }
+
+@media (max-width: 700px) {
+  .version-banner,
+  .scope-banner { grid-template-columns: 1fr; gap: 8px; }
+  .reading-card { grid-template-columns: 44px minmax(0, 1fr); padding: 18px; }
+  .reading-number { width: 40px; height: 40px; }
+  .reading-card > b { grid-column: 2; }
+  #lesson table { display: block; overflow-x: auto; }
+  #lesson thead, #lesson tbody { display: table; width: 680px; table-layout: fixed; }
+}
+

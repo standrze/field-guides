@@ -1,0 +1,1753 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A current guide to MLX arrays, transforms, training, local inference, and MLX Swift LM on Apple silicon.">
+  <meta name="theme-color" content="#80a7ff">
+  <title>MLX Swift Field Guide</title>
+  <link rel="stylesheet" href="./base.css?v=2">
+  <link rel="stylesheet" href="./styles.css?v=4">
+</head>
+<body data-guide-id="mlx">
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#orientation" aria-label="MLX Swift Field Guide home">
+        <span class="brand-mark">M/</span>
+        <span><strong>MLX Swift</strong><small>ARRAYS · TRAINING · LOCAL MODELS</small></span>
+      </a>
+      <div class="progress-card">
+        <div class="progress-copy"><span>Your progress</span><strong id="progress-label">0%</strong></div>
+        <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
+      </div>
+      <nav id="course-nav" aria-label="Field guide chapters"></nav>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span> APPLE SILICON · UNIFIED MEMORY · METAL
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button class="menu-button" id="menu-button" type="button" aria-label="Open guide navigation" aria-expanded="false">☰</button>
+        <div class="crumb" id="crumb">00 / Start here</div>
+        <button class="key-hint" id="search-button" type="button"><kbd>/</kbd> Jump to Lesson</button>
+      </header>
+      <div class="lesson-stage">
+        <a class="lesson-home-grid" href="../" aria-label="Go to the learning library homepage" title="Learning library home"></a>
+        <article id="lesson" tabindex="-1"></article>
+      </div>
+      <footer class="lesson-footer">
+        <button id="previous" class="nav-button" type="button">← Previous</button>
+        <button id="complete" class="complete-button" type="button">Mark complete</button>
+        <button id="next" class="nav-button" type="button">Next →</button>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="search-dialog">
+    <div class="search-box">
+      <label for="search-input">Jump to Lesson</label>
+      <input id="search-input" type="search" placeholder="Try “lazy evaluation”, “LoRA”, or “KV cache”…" autocomplete="off">
+      <div id="search-results"></div>
+      <small><kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>enter</kbd> open · <kbd>esc</kbd> close</small>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="guide-data">{"slug":"mlx","storageKey":"mlx-swift-field-guide-progress-v1","title":"MLX Swift Field Guide"}</script>
+  <script type="application/json" id="course-data">[{"group":"Start here","id":"orientation","level":"Orientation","summary":"Understand what MLX, MLX Swift, the examples collection, and MLX Swift LM each contribute before writing code.","terms":"MLX Swift Apple silicon arrays training inference local models","time":"8 min","title":"MLX Swift is a complete local ML stack"},{"group":"Foundations","id":"ecosystem-map","level":"Foundations","summary":"Map each MLX Swift package product to the job it owns and avoid coupling application code to the wrong layer.","terms":"repository products packages MLXNN MLXOptimizers MLXLMCommon MLXLLM MLXRerankers preview","time":"9 min","title":"Choose the right layer of the MLX ecosystem"},{"group":"Foundations","id":"unified-memory","level":"Foundations","summary":"Reason about Apple silicon memory as a shared resource while keeping device execution and synchronization explicit.","terms":"unified memory CPU GPU Metal bandwidth residency working set","time":"10 min","title":"Unified memory changes the bottlenecks"},{"group":"Foundations","id":"build-and-pin","level":"Practical","summary":"Set up an MLX Swift target, understand the Metal build constraint, and record an exact reproducible dependency baseline.","terms":"Xcode SwiftPM Metal shaders CMake package pinning versions","time":"10 min","title":"Build with Xcode and pin the version contract"},{"group":"Arrays","id":"arrays-shapes-dtypes","level":"Core API","summary":"Create MLX arrays deliberately and make shape and dtype contracts visible before composing larger models.","terms":"MLXArray shape dtype strides scalar broadcasting","time":"11 min","title":"Arrays carry shape, dtype, and deferred work"},{"group":"Arrays","id":"indexing-and-broadcasting","level":"Core API","summary":"Use MLX Swift indexing and shape transforms while preserving an explicit account of every axis.","terms":"slicing indexing newAxis ellipsis transpose concatenate stack mask","time":"11 min","title":"Slice and broadcast without losing axis meaning"},{"group":"Execution","id":"lazy-evaluation","level":"Core API","summary":"Control when deferred MLX computations are realized so timing, memory, errors, and side effects stay comprehensible.","terms":"lazy evaluation eval graph synchronization materialization benchmark","time":"14 min","title":"Lazy evaluation makes boundaries a design choice"},{"group":"Execution","id":"transforms","level":"Intermediate","summary":"Use MLX function transformations as composable tools and know the assumptions each transformation adds.","terms":"automatic differentiation grad valueAndGrad vmap compile pure functions","time":"12 min","title":"Compose grad, vmap, and compile deliberately"},{"group":"Neural networks","id":"modules-and-parameters","level":"Intermediate","summary":"Define MLX neural modules whose tracked submodules and parameters can be trained, saved, and loaded predictably.","terms":"Module ModuleInfo ParameterInfo parameters state tree Linear","time":"12 min","title":"Modules make parameters discoverable"},{"group":"Neural networks","id":"layers-and-attention","level":"Intermediate","summary":"Connect common MLXNN layers to the shapes and numerical operations inside transformer attention.","terms":"Linear normalization attention heads query key value softmax mask","time":"14 min","title":"Build attention from explicit tensor contracts"},{"group":"Training","id":"training-loop","level":"Intermediate","summary":"Assemble loss, gradients, optimizer updates, evaluation, and logging into a bounded MLX training loop.","terms":"loss optimizer Adam valueAndGrad update evaluation training loop","time":"14 min","title":"A training step is a state transaction"},{"group":"Training","id":"data-and-checkpoints","level":"Practical","summary":"Build deterministic data boundaries and save weight artifacts with enough metadata to reproduce and verify a run.","terms":"dataset batching safetensors checkpoint metadata loading validation","time":"12 min","title":"Data and checkpoints define reproducibility"},{"group":"Performance","id":"custom-metal-kernels","level":"Advanced","summary":"Add an MLX custom Metal kernel with explicit launch and output contracts while retaining a tested array reference.","terms":"MLXFast Metal kernel grid threadgroup fusion benchmark reference","time":"13 min","title":"Reach for custom Metal only after measurement"},{"group":"Practice","id":"examples-laboratory","level":"Practical","summary":"Navigate the official MLX Swift examples by learning objective and extract reusable tests rather than cloning an app architecture blindly.","terms":"examples MNIST LLM VLM diffusion command line numerical laboratory","time":"10 min","title":"Use the examples repository as a laboratory"},{"group":"Language models","id":"swift-lm-architecture","level":"Intermediate","summary":"Understand the package architecture and the major 3.x loading changes before building an LLM feature.","terms":"MLX Swift LM ModelContainer ModelContext downloader tokenizer 3.x migration","time":"11 min","title":"MLX Swift LM 3.x separates policy from plumbing"},{"group":"Language models","id":"loading-and-tokenizers","level":"Practical","summary":"Load a registered model, preserve tokenizer and template compatibility, and design a local artifact path that can be verified.","terms":"model loading tokenizer chat template registry local directory revision","time":"13 min","title":"Load models as a verified artifact set"},{"group":"Language models","id":"chat-and-generation","level":"Practical","summary":"Build single- and multi-turn generation around session ownership, streaming, cancellation, and bounded output.","terms":"ChatSession generation streaming cancellation sampling history async","time":"13 min","title":"Treat generation as an async lifecycle"},{"group":"Language models","id":"caches-and-speculation","level":"Advanced","summary":"Choose cache capacity, compression, compatibility policy, and speculative decoding from an explicit memory, quality, and latency budget.","terms":"KV cache context capacity rotating affine TurboQuant variance normalized speculative decoding","time":"20 min","title":"KV caches trade memory for generation speed"},{"group":"Language models","id":"guided-generation-and-tools","level":"Advanced","summary":"Separate grammar-constrained output from semantic validation and authorize every tool call in trusted Swift code.","terms":"guided generation JSON schema grammar tools dispatch validation authorization","time":"13 min","title":"Constrain structure before dispatching tools"},{"group":"Applications","id":"vlm-embeddings-foundation-models","level":"Intermediate","summary":"Choose among text generation, vision-language models, embeddings, rerankers, and the Foundation Models bridge by task rather than novelty.","terms":"MLXVLM MLXEmbedders MLXRerankers vision language embeddings reranking Foundation Models multimodal","time":"12 min","title":"One package supports several model families"},{"group":"Performance","id":"quantization-and-performance","level":"Advanced","summary":"Map MLX's real low-bit formats to the strongest academic methods, then test a converter-compatible scale search and measured per-layer plan.","terms":"quantization affine NVFP4 MXFP4 MXFP8 ScaleSearch ScalePlan HIGGS latency memory benchmark","time":"22 min","title":"Choose the format, scale rule, and measured path"},{"group":"Training","id":"fine-tuning","level":"Advanced","summary":"Choose LoRA, DoRA, quantized-base adapters, or full tuning from measured constraints and preserve a reproducible baseline.","terms":"LoRA DoRA QLoRA full fine tuning adapters validation dataset","time":"15 min","title":"Fine-tune only after a frozen baseline"},{"group":"Applications","id":"model-porting-and-app-architecture","level":"Advanced","summary":"Implement an unsupported model by matching its configuration and weights, then isolate model ownership from UI and product logic.","terms":"model port config weight keys registry actor view model architecture","time":"14 min","title":"Port models behind an application boundary"},{"group":"Production","id":"validation-privacy-security","level":"Production","summary":"Validate numerical and product behavior while protecting local data, model artifacts, tools, and user expectations.","terms":"testing privacy security provenance prompt injection model artifacts observability","time":"15 min","title":"Local inference still needs a trust model"},{"group":"Practice","id":"capstone","level":"Project","summary":"Combine model loading, session lifecycle, local artifacts, measurement, and privacy controls into one reviewable MLX Swift project.","terms":"capstone local assistant architecture benchmark evaluation release","time":"18 min","title":"Capstone: ship a bounded local assistant"},{"group":"Sources","id":"sources","level":"Reference","summary":"Read fifteen downloaded academic papers covering the MLX conceptual foundations and the strongest current quantization directions.","terms":"sources papers transformers adapters quantization ScaleSearch HIGGS KV cache local PDFs","time":"18 min","title":"Sources: fifteen local papers to read"}]</script>
+<template id="lesson-orientation"><p class="eyebrow">00 · Start here</p>
+<h1>Learn the stack, not just the chat demo.</h1>
+<p class="lede">MLX Swift can take you from array operations and automatic differentiation to training, custom GPU kernels, and local language-model applications on Apple silicon.</p>
+<div class="lesson-meta"><span>◷ 8 MIN</span><span>◇ ORIENTATION</span><span>APPLE SILICON</span></div>
+<div class="version-banner"><strong>Course baseline</strong><p><code>mlx-swift 0.31.6</code> and <code>mlx-swift-lm 3.31.4</code>. The LM package’s 3.x line introduced breaking integration changes, especially around downloading and tokenization. Treat every unpinned snippet from another version as a migration candidate.</p></div>
+<p>The repository numbers are independent. On this August 26, 2026 research snapshot, standalone core MLX is <code>0.32.2</code>, while <code>mlx-swift 0.31.6</code> embeds core <code>0.31.1</code>; <code>mlx-swift-lm 3.31.4</code> in turn resolves a compatible MLX Swift line. Python MLX and MLX Swift are parallel APIs over shared concepts—not a Python runtime inside Swift—and a newer Python/core tag does not prove that a Swift binding contains the same implementation.</p>
+<p>MLX is an array framework designed for machine learning. Its defining ideas are lazy computation, composable transformations, dynamic graphs, CPU and GPU execution, and efficient use of unified memory. The Swift API exposes those ideas without requiring a Python process.</p>
+<p>Four repositories form the learning map:</p>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Use it for</th>
+<th>Mental model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MLX</td>
+<td>Core engine and cross-language semantics</td>
+<td>The computation system</td>
+</tr>
+<tr>
+<td>MLX Swift</td>
+<td>Swift arrays, transforms, neural layers, optimizers, and fast operations</td>
+<td>The native Swift API</td>
+</tr>
+<tr>
+<td>MLX Swift Examples</td>
+<td>Runnable numerical, training, diffusion, LLM, and command-line examples; tag 2.29.1 is older than current <code>main</code></td>
+<td>The living laboratory, not a dependency baseline</td>
+</tr>
+<tr>
+<td>MLX Swift LM</td>
+<td>Reusable LLM, VLM, embedding, generation, adapter, and model-loading libraries</td>
+<td>The application stack</td>
+</tr>
+</tbody>
+</table>
+<p>This guide begins below the model layer because model wrappers make more sense after you understand arrays, evaluation, parameter trees, and memory. The path is:</p>
+<ol>
+<li><p>Build and manipulate <code>MLXArray</code> values.</p>
+</li>
+<li><p>Control lazy evaluation, devices, and transformations.</p>
+</li>
+<li><p>Define and train a small <code>Module</code>.</p>
+</li>
+<li><p>Load, generate with, tune, and ship language models.</p>
+</li>
+<li><p>Measure memory, correctness, privacy, and performance in the actual app.</p>
+</li>
+</ol>
+<p>The smallest useful experiment is intentionally plain:</p>
+<pre><code class="language-swift">import MLX
+
+let x = MLXArray([1.0, 2.0, 3.0])
+let y = sum(x * x)
+eval(y)
+print(y.item(Float.self))
+</code></pre>
+<p><code>y</code> describes work before <code>eval(y)</code> realizes it. That distinction—Swift objects can represent deferred MLX computation—is the thread running through the entire course.</p>
+<blockquote>
+<p>MLX is not Core ML under another name. Core ML is a deployment framework centered on converted models and platform integration. MLX is a research-and-development array framework that lets you express, train, transform, and run models directly.</p>
+</blockquote>
+<p><strong>Checkpoint:</strong> if you only need a stable production model format supported by Core ML, use that tool. Choose MLX when native Swift experimentation, flexible model code, local fine-tuning, or rapidly evolving model architectures matter.</p>
+</template>
+<template id="lesson-ecosystem-map"><p class="eyebrow">01 · Foundations</p>
+<h1>Import the smallest layer that owns the job.</h1>
+<p class="lede">MLX Swift is a family of package products. Separating numerical code, model architecture, and application orchestration keeps upgrades understandable.</p>
+<div class="lesson-meta"><span>◷ 9 MIN</span><span>◇ FOUNDATIONS</span><span>PACKAGE MAP</span></div>
+<p>At the core, <code>MLX</code> owns arrays, operations, devices, streams, evaluation, and transforms. Neural-network code adds <code>MLXNN</code>; optimizers add <code>MLXOptimizers</code>. Performance-sensitive primitives live behind the core package’s fast-operation facilities.</p>
+<p>The language-model package is similarly layered:</p>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Responsibility</th>
+<th>Availability in this guide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MLXLMCommon</code></td>
+<td>Model containers, generation types, chat sessions, caches, shared protocols</td>
+<td>stable 3.31.4 product</td>
+</tr>
+<tr>
+<td><code>MLXLLM</code></td>
+<td>Text-only language-model architectures and registries</td>
+<td>stable 3.31.4 product</td>
+</tr>
+<tr>
+<td><code>MLXVLM</code></td>
+<td>Vision-language architectures and registries</td>
+<td>stable 3.31.4 product</td>
+</tr>
+<tr>
+<td><code>MLXEmbedders</code></td>
+<td>Embedding model implementations</td>
+<td>stable 3.31.4 product</td>
+</tr>
+<tr>
+<td><code>MLXRerankers</code></td>
+<td>Cross-encoder scoring for reranking query-document candidates</td>
+<td>current-<code>main</code> preview; absent from 3.31.4 manifest</td>
+</tr>
+<tr>
+<td><code>MLXHuggingFace</code></td>
+<td>Standard model and artifact loading integration</td>
+<td>stable 3.31.4 product</td>
+</tr>
+<tr>
+<td><code>MLXGuidedGeneration</code></td>
+<td>Constraint-aware generation facilities</td>
+<td>current-<code>main</code> preview; absent from 3.31.4 manifest</td>
+</tr>
+<tr>
+<td><code>MLXFoundationModels</code></td>
+<td>Newer Foundation Models SDK integration</td>
+<td>current-<code>main</code> preview; absent from 3.31.4 manifest</td>
+</tr>
+</tbody>
+</table>
+<p>The 3.x design deliberately decouples model code from one mandatory downloader and tokenizer implementation. An application can select integrations appropriate to its deployment while the model and generation layers remain reusable.</p>
+<p>A clean target starts with explicit products:</p>
+<pre><code class="language-swift">import MLX
+import MLXNN
+import MLXOptimizers
+
+// Numerical and training target: no language-model application layer required.
+</code></pre>
+<p>A chat target imports the higher-level pieces it actually uses:</p>
+<pre><code class="language-swift">import MLXLLM
+import MLXLMCommon
+import MLXHuggingFace
+import HuggingFace
+import Tokenizers
+</code></pre>
+<p>Keep these boundaries in your own source tree:</p>
+<pre><code class="language-text">Numerics/       MLXArray operations and kernels
+Models/         Module definitions and weight mapping
+Inference/      generation policy and ModelContainer access
+Features/       chat, search, summarization, or embeddings
+App/            UI, persistence, lifecycle, permissions
+</code></pre>
+<p>This prevents a view from owning model downloads, makes numerical code independently testable, and gives version migrations a clear boundary.</p>
+<div class="callout"><strong>Current-version caution</strong><p>This guide pins <code>mlx-swift 0.31.6</code> and <code>mlx-swift-lm 3.31.4</code>. Do not add <code>MLXRerankers</code>, <code>MLXGuidedGeneration</code>, or <code>MLXFoundationModels</code> to a 3.31.4 target: those products appear on current <code>main</code>, not in the tagged manifest. Preview lessons explain their design separately from the stable labs.</p></div>
+<p><strong>Rule of thumb:</strong> use the examples repository to learn and validate a workflow, then depend on the reusable library products rather than copying an entire example application into production.</p>
+</template>
+<template id="lesson-unified-memory"><p class="eyebrow">02 · Foundations</p>
+<h1>Shared memory is not unlimited memory.</h1>
+<p class="lede">CPU and GPU can operate on the same physical memory pool, reducing copies—but weights, caches, activations, application state, and the operating system still compete for capacity and bandwidth.</p>
+<div class="lesson-meta"><span>◷ 10 MIN</span><span>◇ SYSTEMS</span><span>UNIFIED MEMORY</span></div>
+<p>On a discrete-GPU system, moving a tensor between host and device is an obvious boundary. Apple silicon’s unified memory removes many explicit copies, which is excellent for interactive model work. It does <strong>not</strong> make execution location irrelevant. Operations still run on a CPU or GPU stream, and materializing results can still synchronize queued work.</p>
+<p>Model-memory accounting should include more than parameter bytes:</p>
+<table>
+<thead>
+<tr>
+<th>Consumer</th>
+<th>What grows it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights</td>
+<td>parameter count and quantization format</td>
+</tr>
+<tr>
+<td>KV cache</td>
+<td>context length, layers, heads, batch size, cache precision</td>
+</tr>
+<tr>
+<td>Activations</td>
+<td>batch, sequence length, hidden width, training graph</td>
+</tr>
+<tr>
+<td>Optimizer state</td>
+<td>optimizer choice and trainable parameter count</td>
+</tr>
+<tr>
+<td>Temporary buffers</td>
+<td>kernels, compilation, sampling, image processing</td>
+</tr>
+<tr>
+<td>App state</td>
+<td>UI assets, histories, documents, indexes, other processes</td>
+</tr>
+</tbody>
+</table>
+<p>Use shapes and data types to make a first estimate:</p>
+<pre><code class="language-swift">import MLX
+
+let weights = MLXArray.zeros([4096, 4096], dtype: .float16)
+let estimatedBytes = weights.size * weights.dtype.size
+print("matrix bytes:", estimatedBytes)
+</code></pre>
+<p>That estimate covers the array’s payload, not every runtime allocation. Measure the process and GPU working set while exercising the real path.</p>
+<p>Three practical consequences follow:</p>
+<ol>
+<li><p><strong>Quantization buys capacity and often bandwidth.</strong> It may add dequantization work and numerical tradeoffs; benchmark the complete generation path.</p>
+</li>
+<li><p><strong>Long context can dominate.</strong> A model that loads comfortably may fail after a long conversation because its KV cache keeps growing.</p>
+</li>
+<li><p><strong>Training is materially heavier than inference.</strong> Gradients, saved activations, and optimizer state can exceed the parameter footprint.</p>
+</li>
+</ol>
+<p>Shared capacity also means shared bandwidth. CPU tokenization, media decoding, GPU inference, and another process can contend for the same memory system even when no explicit host-to-device copy occurs. A resident tensor is not free to read.</p>
+<p>Layout repairs and explicit dequantization can create temporary buffers that are easy to miss in file-size accounting. Track peak active memory around the exact operation, and inspect whether a quantized kernel consumes packed data directly or first expands it. A smaller artifact can still produce a larger transient working set.</p>
+<p>MLX provides memory and GPU controls, but they are operational tools, not substitutes for bounded workloads. Put maximum input size, context length, output length, and concurrent-session count into the product design.</p>
+<blockquote>
+<p>A successful model load proves only that the initial state fits. A release gate should include the longest supported conversation, worst supported media input, and app background/foreground transitions.</p>
+</blockquote>
+<p><strong>Checkpoint:</strong> draw one budget with weights, caches, activations, application memory, and safety margin. If your budget contains only the model file size, it is incomplete.</p>
+</template>
+<template id="lesson-build-and-pin"><p class="eyebrow">03 · Foundations</p>
+<h1>The build route is part of correctness.</h1>
+<p class="lede">MLX Swift includes Metal shader work that ordinary command-line SwiftPM cannot complete by itself. Use Xcode or <code>xcodebuild</code> for Apple-platform products.</p>
+<div class="lesson-meta"><span>◷ 10 MIN</span><span>◇ PRACTICAL</span><span>PIN EXACTLY</span></div>
+<p>This course uses two exact package baselines:</p>
+<pre><code class="language-text">mlx-swift       0.31.6
+mlx-swift-lm    3.31.4
+</code></pre>
+<p><code>mlx-swift 0.31.6</code> requires a Swift 6.3-capable toolchain. The tagged Apple deployment floors are macOS 14, iOS 17, tvOS 17, and visionOS 1; the LM package uses the same floors. Check them against the app target before resolution, not after building the feature.</p>
+<p>Add the packages with Xcode’s package-dependency interface and select exact versions for the learning project. If you work from local checkouts, SwiftPM can declare paths without embedding an internet address:</p>
+<pre><code class="language-swift">// Package.swift excerpt for a local development workspace
+dependencies: [
+    .package(path: "../mlx-swift"),
+    .package(path: "../mlx-swift-lm")
+]
+</code></pre>
+<p>Then attach only the target products you need. A numerical executable might use:</p>
+<pre><code class="language-swift">.executableTarget(
+    name: "ArrayLab",
+    dependencies: [
+        .product(name: "MLX", package: "mlx-swift"),
+        .product(name: "MLXNN", package: "mlx-swift"),
+        .product(name: "MLXOptimizers", package: "mlx-swift")
+    ]
+)
+</code></pre>
+<p>For a native Apple-platform build, prefer an Xcode project or workspace. A reliable baseline check is:</p>
+<pre><code class="language-text">xcodebuild -scheme ArrayLab -configuration Debug build
+</code></pre>
+<p>Why not rely on <code>swift build</code> alone? The package includes Metal shader compilation, and command-line SwiftPM does not supply the complete Apple Metal build path. A package may resolve successfully and still fail later when shader assets are needed.</p>
+<p>Record this contract beside the code:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Pin or capture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package versions</td>
+<td>exact resolved versions</td>
+</tr>
+<tr>
+<td>Xcode and SDK</td>
+<td>version used in CI and release</td>
+</tr>
+<tr>
+<td>Deployment targets</td>
+<td>macOS/iOS minimums</td>
+</tr>
+<tr>
+<td>Model artifacts</td>
+<td>repository ID or local path plus revision/checksum</td>
+</tr>
+<tr>
+<td>Tokenizer/config files</td>
+<td>revision/checksum</td>
+</tr>
+<tr>
+<td>Build route</td>
+<td>scheme and command</td>
+</tr>
+</tbody>
+</table>
+<p>MLX Swift LM 3.x is a major-version boundary. Old code may assume bundled downloader/tokenizer behavior that 3.x intentionally decouples. Migrate the integration layer; do not “fix” compilation by mixing products from incompatible package versions.</p>
+<div class="callout warning"><strong>Linux is a different route</strong><p>Current MLX work includes CPU/CUDA paths through CMake. That does not make an Apple Metal-oriented Xcode target portable without changes. Treat platform support, build system, device backend, and available package products as separate compatibility questions.</p></div>
+<p><strong>Definition of ready:</strong> a clean checkout resolves the exact dependency graph, builds through the documented Xcode scheme, and runs a one-array evaluation test on every supported platform.</p>
+</template>
+<template id="lesson-arrays-shapes-dtypes"><p class="eyebrow">04 · Arrays</p>
+<h1>Most model bugs begin as silent shape assumptions.</h1>
+<p class="lede"><code>MLXArray</code> is the common currency of the framework. Read every value as a triple: shape, dtype, and an expression that may not yet be evaluated.</p>
+<div class="lesson-meta"><span>◷ 11 MIN</span><span>◇ CORE API</span><span>SHAPE FIRST</span></div>
+<p>Create arrays from Swift collections or factory functions:</p>
+<pre><code class="language-swift">import MLX
+
+let vector = MLXArray([1.0, 2.0, 3.0])
+let matrix = MLXArray(0 ..&lt; 12, [3, 4])
+let zeros = MLXArray.zeros([2, 3])
+let ones = MLXArray.ones([4, 4], dtype: .float16)
+let steps = arange(0, 10, 2)
+
+print(matrix.shape)   // [3, 4]
+print(matrix.ndim)    // 2
+print(matrix.size)    // 12
+print(ones.dtype)     // float16
+</code></pre>
+<p>Shape is ordered. A language-model activation often looks like <code>[batch, sequence, hidden]</code>; a weight matrix might be <code>[output, input]</code>. Name those axes in comments or wrapper types instead of trusting memory.</p>
+<p>Reshape only when element count is preserved:</p>
+<pre><code class="language-swift">let a = MLXArray(0 ..&lt; 24, [2, 3, 4])
+let flatBatches = a.reshaped([2, 12])
+let inferred = a.reshaped(-1, 6)
+</code></pre>
+<p>Broadcasting aligns dimensions from the right. This makes bias addition concise:</p>
+<pre><code class="language-swift">let batch = MLXArray.zeros([8, 16, 64])
+let bias = MLXArray.ones([64])
+let shifted = batch + bias              // bias spans batch and sequence axes
+</code></pre>
+<p>It can also hide a wrong axis that happens to fit. Before a critical operation, assert the contract:</p>
+<pre><code class="language-swift">precondition(batch.shape.last == bias.size)
+</code></pre>
+<p>Choose dtypes intentionally. Floating-point types trade precision, bandwidth, and capacity; integer types often represent indices or quantized payloads. Mixed operations follow promotion rules, but implicit promotion is not a numerical design.</p>
+<pre><code class="language-swift">let logits = MLXArray.zeros([1, 32_000], dtype: .float16)
+let stable = logits.asType(.float32)
+let probabilities = softmax(stable, axis: -1)
+</code></pre>
+<p>Use higher precision where a reduction or normalization needs it, then convert only when you have measured the error.</p>
+<p><strong>Shape review:</strong> for each public numerical function, document input axes, output axes, accepted dtypes, and the dimension over which each reduction occurs. A test should exercise batch size one, an empty-or-minimal sequence where supported, and a non-square shape.</p>
+</template>
+<template id="lesson-indexing-and-broadcasting"><p class="eyebrow">05 · Arrays</p>
+<h1>An index operation is an axis operation.</h1>
+<p class="lede">Treat slicing, expansion, transposition, concatenation, and masking as changes to a shape contract—not as cosmetic syntax.</p>
+<div class="lesson-meta"><span>◷ 11 MIN</span><span>◇ CORE API</span><span>AXIS DISCIPLINE</span></div>
+<p>MLX Swift supports scalar and range-like indexing:</p>
+<pre><code class="language-swift">import MLX
+
+let tokens = MLXArray(0 ..&lt; 24, [2, 3, 4])
+
+let firstBatch = tokens[0]
+let firstTwoSteps = tokens[0..., ..&lt;2, 0...]
+let firstFeature = tokens[.ellipsis, 0]
+let batchedAgain = firstBatch[.newAxis, .ellipsis]
+</code></pre>
+<p>Write down expected shapes before running:</p>
+<pre><code class="language-text">tokens          [2, 3, 4]
+firstBatch      [3, 4]
+batchedAgain    [1, 3, 4]
+</code></pre>
+<p>Use <code>transposed</code> or axis-moving operations when semantics change. A matrix multiplication that compiles after an accidental transpose can still be conceptually wrong.</p>
+<pre><code class="language-swift">let q = MLXArray.zeros([2, 8, 32, 64])  // batch, heads, time, width
+let k = MLXArray.zeros([2, 8, 32, 64])
+let scores = matmul(q, k.transposed(0, 1, 3, 2))
+precondition(scores.shape == [2, 8, 32, 32])
+</code></pre>
+<p>Concatenation extends an existing axis; stacking creates a new one:</p>
+<pre><code class="language-swift">let left = MLXArray.ones([2, 3])
+let right = MLXArray.zeros([2, 3])
+
+let wider = concatenated([left, right], axis: 1) // [2, 6]
+let paired = stacked([left, right], axis: 0)     // [2, 2, 3]
+</code></pre>
+<p>Masking deserves special care in attention. A causal mask must broadcast to the score tensor and exclude future positions without introducing <code>NaN</code> values at the working dtype. Build the mask once, assert its shape, and test the first and last rows explicitly.</p>
+<pre><code class="language-swift">let time = 4
+let row = arange(0, time)[.newAxis, .ellipsis]
+let column = arange(0, time)[.ellipsis, .newAxis]
+let allowed = column .&gt;= row
+print(allowed.shape) // [4, 4]
+</code></pre>
+<div class="callout"><strong>Debugging habit</strong><p>Print or assert shapes at the boundary between tokenization, model input preparation, attention, and logits. Remove noisy logging later; keep executable preconditions and focused tests.</p></div>
+<p><strong>Checkpoint:</strong> if a broadcasted expression works only because two unrelated axes share the same length, rename the axes in a comment and add a deliberately unequal-shape test. That test often reveals the bug immediately.</p>
+</template>
+<template id="lesson-lazy-evaluation"><p class="eyebrow">06 · Execution</p>
+<h1>Building the graph is not running the graph.</h1>
+<p class="lede">MLX operations generally construct deferred computations. <code>eval</code> materializes selected results and gives you an explicit synchronization boundary.</p>
+<div class="lesson-meta"><span>◷ 14 MIN</span><span>◇ EXECUTION</span><span>LAZY GRAPHS</span></div>
+<p>Consider this sequence:</p>
+<pre><code class="language-swift">import MLX
+
+let x = MLXArray(0 ..&lt; 1_000_000).asType(.float32)
+let normalized = (x - mean(x)) / sqrt(variance(x) + 1e-5)
+
+// The expression exists; selected work may still be deferred.
+eval(normalized)
+let first = normalized[0].item(Float.self)
+</code></pre>
+<p>Lazy execution lets MLX optimize a graph and avoid intermediate materialization. It also means naïve timing can measure only graph construction.</p>
+<pre><code class="language-swift">let output = model(input)
+eval(output)                 // end the measured inference interval here
+</code></pre>
+<p>Use evaluation boundaries for four reasons:</p>
+<ol>
+<li><p><strong>Consume a result.</strong> Converting an element to a Swift scalar requires realized data.</p>
+</li>
+<li><p><strong>Bound a loop.</strong> Training loops should evaluate model and optimizer state rather than accumulating an ever-growing graph.</p>
+</li>
+<li><p><strong>Locate an error.</strong> An invalid deferred operation can surface at a later evaluation point; tighter boundaries help attribution.</p>
+</li>
+<li><p><strong>Benchmark honestly.</strong> Warm up, evaluate inside the timed region, and synchronize the same outputs in every comparison.</p>
+</li>
+</ol>
+<p>When training, evaluate related state together:</p>
+<pre><code class="language-swift">optimizer.update(model: model, gradients: gradients)
+eval(loss, model, optimizer)
+</code></pre>
+<p>This keeps the step’s parameter and optimizer updates inside a deliberate lifecycle. Avoid calling <code>eval</code> after every tiny operation; excessive synchronization can destroy the advantages of deferred execution.</p>
+<p>Arrays can retain references to computation graphs. Do not append every per-step <code>MLXArray</code> loss to a Swift array. Extract a scalar after evaluation or maintain a bounded summary:</p>
+<pre><code class="language-swift">eval(loss)
+let loggedLoss = loss.item(Float.self)
+history.append(loggedLoss)   // Swift Float, not a retained graph
+</code></pre>
+<h2>Separate compilation from steady-state execution</h2>
+<p>Compilation adds another first-use boundary when a path uses compiled transforms or generates a specialized kernel. The first evaluation can include tracing or compilation that later evaluations reuse. A changed shape, data type, input tree, or operation path can require another compiled variant.</p>
+<p>Keep compiled functions outside hot loops, stabilize the signatures you expect to serve, and warm each supported shape deliberately. Report cold first-use latency separately from warm throughput; silently discarding the first sample hides a real product cost.</p>
+<p>For a benchmark, record four timestamps: graph construction, first forced evaluation, first repeated evaluation, and steady-state repetitions. This distinguishes Swift-side setup, deferred work, compilation, and sustained execution.</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely boundary mistake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Impossibly fast benchmark</td>
+<td>timed only graph construction</td>
+</tr>
+<tr>
+<td>Memory grows every iteration</td>
+<td>retained arrays or unevaluated step graph</td>
+</tr>
+<tr>
+<td>Error appears far from cause</td>
+<td>evaluation boundary too broad</td>
+</tr>
+<tr>
+<td>GPU utilization is fragmented</td>
+<td>evaluation boundary too frequent</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Checkpoint:</strong> mark the evaluation points in your data flow. Each should have a reason: consume, commit a step, diagnose, or measure.</p>
+</template>
+<template id="lesson-transforms"><p class="eyebrow">07 · Execution</p>
+<h1>Transforms turn functions into better functions.</h1>
+<p class="lede">MLX treats differentiation, vectorization, and compilation as composable transformations over array programs.</p>
+<div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ INTERMEDIATE</span><span>COMPOSABLE</span></div>
+<p>Automatic differentiation starts with an ordinary Swift closure:</p>
+<pre><code class="language-swift">import MLX
+
+let squaredNorm: (MLXArray) -&gt; MLXArray = { x in
+    sum(x * x)
+}
+
+let gradient = grad(squaredNorm)
+let x = MLXArray([1.0, 2.0, 3.0])
+let dx = gradient(x)
+eval(dx)
+</code></pre>
+<p>When both the scalar objective and its gradient are needed, calculate them together:</p>
+<pre><code class="language-swift">let valueAndGradient = valueAndGrad(squaredNorm)
+let (value, dx) = valueAndGradient(x)
+eval(value, dx)
+</code></pre>
+<p>The differentiated function must return a differentiable scalar objective for the usual optimization case. Make argument selection explicit when a function has multiple array inputs; constants and labels should not accidentally become trainable arguments.</p>
+<p><code>vmap</code> vectorizes a per-example function across a chosen axis. Think of it as “make this single-example function operate over a batch” rather than “write a Swift loop.” It preserves MLX’s ability to reason about the complete computation. Verify the input and output axes because a vectorized function can be mathematically valid while batching the wrong dimension.</p>
+<p><code>compile</code> can reduce dispatch and graph overhead for stable, pure array functions:</p>
+<pre><code class="language-swift">let compiledEnergy = compile { (a: MLXArray, b: MLXArray) -&gt; MLXArray in
+    let difference = a - b
+    return sum(difference * difference)
+}
+
+let energy = compiledEnergy(x, MLXArray.zeros([3]))
+eval(energy)
+</code></pre>
+<p>Compilation is not a blanket annotation for an entire application. It works best when:</p>
+<ul>
+<li><p>inputs and outputs are MLX arrays;</p>
+</li>
+<li><p>control flow and shapes are stable enough to reuse work;</p>
+</li>
+<li><p>the function does not depend on hidden Swift side effects;</p>
+</li>
+<li><p>benchmarks show that graph or dispatch overhead matters.</p>
+</li>
+</ul>
+<p>Use transformations in layers. First prove the ordinary function with known values. Then differentiate or vectorize it. Finally compile only the hot, stable portion. Each stage should share correctness tests with the baseline.</p>
+<table>
+<thead>
+<tr>
+<th>Transform</th>
+<th>Primary question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grad</code></td>
+<td>How does a scalar output change with an input?</td>
+</tr>
+<tr>
+<td><code>valueAndGrad</code></td>
+<td>Can value and derivative share work?</td>
+</tr>
+<tr>
+<td><code>vmap</code></td>
+<td>Can one-example logic become batched logic?</td>
+</tr>
+<tr>
+<td><code>compile</code></td>
+<td>Can repeated pure graph work be specialized?</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Checkpoint:</strong> for every transformed function, retain an untransformed reference path and compare values, shapes, dtypes, and tolerances on representative inputs.</p>
+</template>
+<template id="lesson-modules-and-parameters"><p class="eyebrow">08 · Neural networks</p>
+<h1>A layer is more than a function.</h1>
+<p class="lede"><code>Module</code> gives MLX a traversable parameter tree. Property wrappers tell the framework which children and arrays belong to that tree.</p>
+<div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ INTERMEDIATE</span><span>TRACKED STATE</span></div>
+<p>A compact multilayer perceptron illustrates the pattern:</p>
+<pre><code class="language-swift">import MLX
+import MLXNN
+
+final class MLP: Module {
+    @ModuleInfo var input: Linear
+    @ModuleInfo var output: Linear
+
+    init(inputSize: Int, hiddenSize: Int, outputSize: Int) {
+        self._input.wrappedValue = Linear(inputSize, hiddenSize)
+        self._output.wrappedValue = Linear(hiddenSize, outputSize)
+        super.init()
+    }
+
+    func callAsFunction(_ x: MLXArray) -&gt; MLXArray {
+        output(relu(input(x)))
+    }
+}
+
+let model = MLP(inputSize: 4, hiddenSize: 16, outputSize: 2)
+eval(model)
+</code></pre>
+<p><code>@ModuleInfo</code> marks a child module. <code>@ParameterInfo</code> marks an array that is a direct parameter. An unwrapped <code>let constant: MLXArray</code> is ordinary state and is not automatically a trainable parameter.</p>
+<p>Explicit keys matter when loading saved weights:</p>
+<pre><code class="language-swift">final class Projection: Module {
+    @ModuleInfo(key: "output_proj") var output: Linear
+
+    init(width: Int) {
+        self._output.wrappedValue = Linear(width, width, bias: false)
+        super.init()
+    }
+}
+</code></pre>
+<p>The serialized key, not the Swift property spelling, controls weight matching. This becomes crucial when porting a model whose <code>safetensors</code> keys follow another implementation’s naming scheme.</p>
+<p>Treat the parameter tree as an API:</p>
+<ul>
+<li><p>inspect names and shapes before loading weights;</p>
+</li>
+<li><p>fail on unexpected missing or extra keys unless a documented sanitizer handles them;</p>
+</li>
+<li><p>distinguish all parameters from trainable parameters;</p>
+</li>
+<li><p>evaluate the module after initialization or updates at intentional boundaries;</p>
+</li>
+<li><p>do not mutate tracked structure while an inference operation is using it.</p>
+</li>
+</ul>
+<p>Modules are reference types, which is useful for updating weights but demands clear ownership. In application code, place a loaded model behind the package’s container abstraction instead of sharing a raw mutable module across unrelated tasks.</p>
+<div class="callout"><strong>Porting invariant</strong><p>A model that produces the right output shape is not necessarily loaded correctly. Compare every expected weight key and dimension, then validate numerical output against a trusted fixture.</p></div>
+<p><strong>Checkpoint:</strong> list <code>namedModules()</code> and flattened parameters for your smallest model. If a layer you expect to train is absent, fix tracking before writing the optimizer loop.</p>
+</template>
+<template id="lesson-layers-and-attention"><p class="eyebrow">09 · Neural networks</p>
+<h1>Attention is a sequence of shape promises.</h1>
+<p class="lede">The familiar query–key–value equation becomes reliable code only when batch, head, time, and head-width axes remain explicit.</p>
+<div class="lesson-meta"><span>◷ 14 MIN</span><span>◇ INTERMEDIATE</span><span>TRANSFORMERS</span></div>
+<p>MLXNN supplies building blocks including <code>Linear</code>, convolutional layers, normalization, recurrent layers, dropout, embeddings, and attention-oriented primitives. Start with the highest-level correct layer. Drop lower only when architecture compatibility or measurement demands it.</p>
+<p>A simplified attention core shows the essential layout:</p>
+<pre><code class="language-swift">import MLX
+import MLXNN
+
+func attention(
+    queries: MLXArray, // [B, H, Lq, D]
+    keys: MLXArray,    // [B, H, Lk, D]
+    values: MLXArray,  // [B, H, Lk, D]
+    mask: MLXArray?
+) -&gt; MLXArray {
+    let scale = 1.0 / sqrt(Float(queries.dim(-1)))
+    var scores = matmul(queries, keys.transposed(0, 1, 3, 2)) * scale
+    if let mask { scores = scores + mask }
+    let weights = softmax(scores, axis: -1)
+    return matmul(weights, values) // [B, H, Lq, D]
+}
+</code></pre>
+<p>Production transformer implementations add grouped-query attention, rotary position embeddings, specialized fast attention, cache updates, dtype management, and model-specific masks. The contract remains recognizable:</p>
+<pre><code class="language-text">Q × Kᵀ  -&gt; compatibility scores
+mask    -&gt; which key positions are legal
+softmax -&gt; normalized weights over key positions
+weights × V -&gt; mixed value vectors
+</code></pre>
+<p>Common mistakes are structural:</p>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Softmax on the head axis</td>
+<td>attention normalizes the wrong dimension</td>
+</tr>
+<tr>
+<td>Missing causal mask</td>
+<td>token can read future tokens during autoregressive use</td>
+</tr>
+<tr>
+<td>Wrong transpose</td>
+<td>scores mix time or feature axes incorrectly</td>
+</tr>
+<tr>
+<td>Cache append on wrong axis</td>
+<td>generation corrupts after the first token</td>
+</tr>
+<tr>
+<td>Scale omitted or wrong</td>
+<td>logits saturate and numerical behavior drifts</td>
+</tr>
+</tbody>
+</table>
+<p>For a model port, do not translate only the mathematical class names. Mirror configuration defaults, bias choices, normalization placement, rotary settings, head counts, tied embeddings, and saved weight keys.</p>
+<p>Fast fused attention can improve performance and memory, but keep a straightforward reference implementation for tiny tensors. Compare the fused and reference outputs within dtype-appropriate tolerances, including a causal mask and unequal query/key lengths.</p>
+<p><strong>Checkpoint:</strong> annotate one real model block with every intermediate shape. If an axis is described only as “dimension 2,” the contract is not yet clear enough to review.</p>
+</template>
+<template id="lesson-training-loop"><p class="eyebrow">10 · Training</p>
+<h1>Compute, update, evaluate, record.</h1>
+<p class="lede">A correct training loop advances model and optimizer state together and prevents deferred graphs from leaking across steps.</p>
+<div class="lesson-meta"><span>◷ 14 MIN</span><span>◇ INTERMEDIATE</span><span>STATEFUL LOOP</span></div>
+<p>Start with a model, a scalar loss, and an optimizer:</p>
+<pre><code class="language-swift">import MLX
+import MLXNN
+import MLXOptimizers
+
+let model = MLP(inputSize: 4, hiddenSize: 16, outputSize: 3)
+let optimizer = Adam(learningRate: 1e-3)
+
+func loss(model: MLP, x: MLXArray, y: MLXArray) -&gt; MLXArray {
+    let logits = model(x)
+    return crossEntropy(logits: logits, targets: y, reduction: .mean)
+}
+
+let lossAndGrad = valueAndGrad(model: model, loss)
+</code></pre>
+<p>One bounded step then follows the same order every time:</p>
+<pre><code class="language-swift">let (lossValue, gradients) = lossAndGrad(model, features, labels)
+optimizer.update(model: model, gradients: gradients)
+eval(lossValue, model, optimizer)
+
+let scalarLoss = lossValue.item(Float.self)
+</code></pre>
+<p>The exact model-aware <code>valueAndGrad</code> overload lets MLX traverse tracked parameters. It is different from differentiating a standalone array function. If a parameter is not tracked or is frozen, it should not appear in the trainable gradient tree.</p>
+<p>Build the loop around explicit policies:</p>
+<ul>
+<li><p>shuffle deterministically from a recorded seed;</p>
+</li>
+<li><p>define batch construction and final partial-batch behavior;</p>
+</li>
+<li><p>report training loss on a stable cadence;</p>
+</li>
+<li><p>evaluate a separate validation split without updating state;</p>
+</li>
+<li><p>checkpoint model, optimizer, iteration, and configuration together;</p>
+</li>
+<li><p>stop on non-finite loss or violated gradient limits;</p>
+</li>
+<li><p>retain Swift scalar metrics, not per-step computation graphs.</p>
+</li>
+</ul>
+<p>Use a schedule only after a constant learning-rate baseline works. Record the effective learning rate at each checkpoint; “Adam” alone does not reproduce a run.</p>
+<pre><code class="language-swift">guard scalarLoss.isFinite else {
+    throw TrainingError.nonFiniteLoss
+}
+</code></pre>
+<p>Training and evaluation modes can affect dropout or normalization behavior. Set the intended mode around validation, and write a test that repeated evaluation is stable when stochastic layers are disabled.</p>
+<div class="callout warning"><strong>Do not optimize the dashboard</strong><p>A falling training loss can coexist with data leakage, overfitting, label mistakes, or a broken validation path. Release decisions need task metrics on held-out examples and qualitative error inspection.</p></div>
+<p><strong>Minimum training record:</strong> code revision, package versions, model configuration, starting weights, data split checksum, seed, optimizer configuration, step count, checkpoints, and held-out metrics.</p>
+</template>
+<template id="lesson-data-and-checkpoints"><p class="eyebrow">11 · Training</p>
+<h1>A tensor file without a contract is not a checkpoint.</h1>
+<p class="lede">Weights become useful only when their names, shapes, model configuration, tokenizer, training state, and provenance stay aligned.</p>
+<div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ PRACTICAL</span><span>ARTIFACTS</span></div>
+<p>At the data boundary, separate decoding from numerical batching. Parse and validate records into Swift domain values first; turn one bounded batch into <code>MLXArray</code> values second. That makes malformed examples observable before they reach a deferred graph.</p>
+<p>For supervised examples, a batch contract might say:</p>
+<pre><code class="language-text">features: float32 [batch, inputWidth]
+labels:   int32   [batch]
+padding:  not permitted
+order:    shuffled by recorded seed per epoch
+</code></pre>
+<p>For model weights, <code>safetensors</code> preserves a dictionary of named arrays:</p>
+<pre><code class="language-swift">import Foundation
+import MLX
+
+let checkpointURL = URL(fileURLWithPath: "/local/run/model.safetensors")
+let weights = Dictionary(uniqueKeysWithValues: model.parameters().flattened())
+
+try save(
+    arrays: weights,
+    metadata: [
+        "mlx-swift": "0.31.6",
+        "run": "baseline-001"
+    ],
+    url: checkpointURL
+)
+</code></pre>
+<p>Load into CPU-backed arrays first when inspection is the immediate job:</p>
+<pre><code class="language-swift">let loaded = try loadArrays(url: checkpointURL, stream: .cpu)
+for (name, value) in loaded.sorted(by: { $0.key &lt; $1.key }) {
+    print(name, value.shape, value.dtype)
+}
+</code></pre>
+<p>Before updating a module, compare the loaded key set and every expected shape. A model-specific sanitizer may intentionally remove generated rotary frequencies, rename prefixes, or handle tied embeddings. Make each rule explicit and test it with a real fixture.</p>
+<p>A complete checkpoint directory should contain:</p>
+<pre><code class="language-text">model.safetensors
+model-config.json
+training-state.json
+metrics.jsonl
+data-manifest.json
+README.txt
+</code></pre>
+<p>Never silently overwrite the last known-good artifact. Write to a temporary sibling, close and verify it, then atomically promote it. Keep periodic and best-validation checkpoints separately.</p>
+<p>Security belongs here too: treat downloaded or shared model directories as untrusted data; allow only expected file types; bound sizes; verify recorded digests; avoid executing repository-provided scripts; and keep credentials out of metadata.</p>
+<p><strong>Recovery test:</strong> terminate a short training run, reload the checkpoint into a fresh process, resume for one step, and compare its next loss and state with an uninterrupted control run within a declared tolerance.</p>
+</template>
+<template id="lesson-custom-metal-kernels"><p class="eyebrow">12 · Performance</p>
+<h1>A custom kernel is a maintained implementation.</h1>
+<p class="lede">MLX fast operations and custom Metal kernels can remove bottlenecks, but they add dtype, layout, bounds, launch, and portability obligations.</p>
+<div class="lesson-meta"><span>◷ 13 MIN</span><span>◇ ADVANCED</span><span>MEASURE FIRST</span></div>
+<p>Begin with ordinary MLX operations. Profile the representative workload, identify a hot operation, and prove that a custom kernel can materially improve the end-to-end path—not just a tiny synthetic loop.</p>
+<p>A minimal copying kernel demonstrates the interface:</p>
+<pre><code class="language-swift">import MLX
+
+let input = MLXArray(0 ..&lt; 4).asType(.float32).reshaped([2, 2])
+
+let kernel = MLXFast.metalKernel(
+    name: "copy4",
+    inputNames: ["input"],
+    outputNames: ["output"],
+    source: """
+    uint index = thread_position_in_grid.x;
+    output[index] = input[index];
+    """
+)
+
+let outputs = kernel(
+    [input],
+    grid: (4, 1, 1),
+    threadGroup: (2, 1, 1),
+    outputShapes: [[2, 2]],
+    outputDTypes: [.float32]
+)
+eval(outputs)
+</code></pre>
+<p>Real kernels need bounds checks whenever the launch grid can exceed element count. They also need documented assumptions about row contiguity, dtype, alignment, reduction ordering, atomic updates, and numerical accumulation.</p>
+<p>Keep a reference implementation:</p>
+<pre><code class="language-swift">func reference(_ input: MLXArray) -&gt; MLXArray { input }
+</code></pre>
+<p>Test kernel versus reference across:</p>
+<ul>
+<li><p>small, odd, and non-power-of-two shapes;</p>
+</li>
+<li><p>every supported dtype;</p>
+</li>
+<li><p>non-contiguous inputs if permitted;</p>
+</li>
+<li><p>zero or minimum dimensions where supported;</p>
+</li>
+<li><p>values containing zeros, extremes, infinities, or <code>NaN</code> as appropriate;</p>
+</li>
+<li><p>repeated runs for nondeterministic race symptoms.</p>
+</li>
+</ul>
+<p>Benchmark after warmup and force evaluation inside the timed region. Record device, OS, Xcode, package version, shape, dtype, launch geometry, and iteration count.</p>
+<div class="callout warning"><strong>Portability boundary</strong><p>A custom Metal kernel is an Apple GPU implementation. Preserve a supported fallback or make the platform requirement explicit; current non-Metal MLX backends do not automatically make that source portable.</p></div>
+<p><strong>Ship gate:</strong> the kernel has a correctness oracle, declared tolerance, bounds proof, representative performance win, fallback decision, and a test that runs on every supported Apple GPU family available to CI.</p>
+</template>
+<template id="lesson-examples-laboratory"><p class="eyebrow">13 · Practice</p>
+<h1>Run examples to answer a question.</h1>
+<p class="lede">The examples collection spans training, inference, tools, diffusion, and numerical computing. Choose the smallest example that isolates the concept you need.</p>
+<div class="lesson-meta"><span>◷ 10 MIN</span><span>◇ PRACTICAL</span><span>OFFICIAL EXAMPLES</span></div>
+<p>The current examples collection includes several useful families:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Representative examples</th>
+<th>What to study</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td>MNIST trainer, linear-model training, LoRA training</td>
+<td>batches, loss, optimizer, checkpoints</td>
+</tr>
+<tr>
+<td>Language models</td>
+<td>basic LLM, evaluation, chat</td>
+<td>loading, generation, session state</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td><code>llm-tool</code>, <code>image-tool</code>, <code>mnist-tool</code></td>
+<td>command design and repeatable workflows</td>
+</tr>
+<tr>
+<td>Generative media</td>
+<td>Stable Diffusion</td>
+<td>large pipelines and staged memory use</td>
+</tr>
+<tr>
+<td>Numerical computing</td>
+<td>curve fit, heat transfer, Mandelbrot</td>
+<td>MLX beyond neural networks</td>
+</tr>
+<tr>
+<td>Kernel work</td>
+<td>custom Metal examples</td>
+<td>launch contracts and verification</td>
+</tr>
+</tbody>
+</table>
+<p>Reusable LLM, VLM, and embedding libraries moved into MLX Swift LM. Older example tags can remain useful as historical snapshots, but new application code should use the maintained library products rather than depending on old copies embedded in the examples tree.</p>
+<p>Use a four-pass study method:</p>
+<ol>
+<li><p><strong>Run unchanged.</strong> Record exact package versions, scheme, input, output, elapsed time, and peak memory.</p>
+</li>
+<li><p><strong>Trace one path.</strong> Follow a single input from command or UI through preprocessing, arrays, model call, evaluation, and output.</p>
+</li>
+<li><p><strong>Change one variable.</strong> Alter batch size, dtype, model, cache, or kernel—not several at once.</p>
+</li>
+<li><p><strong>Extract a test.</strong> Preserve one learned invariant in your own small test target.</p>
+</li>
+</ol>
+<p>For example, after running a curve-fitting sample, extract the numerical essence:</p>
+<pre><code class="language-swift">let prediction = slope * x + intercept
+let loss = mean(square(prediction - target))
+let gradients = grad { parameters in
+    let y = parameters[0] * x + parameters[1]
+    return mean(square(y - target))
+}(MLXArray([slope, intercept]))
+</code></pre>
+<p>Do not copy an example’s model ID, memory policy, UI ownership, or download behavior without review. Example code optimizes for demonstrating a feature; a product must add cancellation, progress, storage policy, error recovery, privacy controls, and compatibility tests.</p>
+<p><strong>Laboratory notebook:</strong> for each example, keep the question, baseline versions, modification, observation, conclusion, and next test. “It ran” is a starting observation, not a finding.</p>
+</template>
+<template id="lesson-swift-lm-architecture"><p class="eyebrow">14 · Language models</p>
+<h1>The model is not the download strategy.</h1>
+<p class="lede">MLX Swift LM 3.x separates model implementations from downloader and tokenizer integrations, making local-only and custom deployments first-class choices.</p>
+<div class="lesson-meta"><span>◷ 11 MIN</span><span>◇ INTERMEDIATE</span><span>3.x BASELINE</span></div>
+<div class="version-banner"><strong>Pinned here</strong><p>All language-model lessons target <code>mlx-swift-lm 3.31.4</code> with <code>mlx-swift 0.31.6</code>. Code written against 2.x loading helpers should be migrated, not mixed into this dependency graph.</p></div>
+<p>The central types have distinct roles:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModelConfiguration</code></td>
+<td>identity, local resolution, stop behavior, tokenizer source, model-specific settings</td>
+</tr>
+<tr>
+<td>Model factory</td>
+<td>decodes configuration, chooses the registered architecture, loads weights and tokenizer</td>
+</tr>
+<tr>
+<td><code>ModelContext</code></td>
+<td>model, tokenizer/processor, and resolved configuration together</td>
+</tr>
+<tr>
+<td><code>ModelContainer</code></td>
+<td>thread-safe access to model resources</td>
+</tr>
+<tr>
+<td><code>ChatSession</code></td>
+<td>one conversation’s transcript, caches, generation policy, and optional tools</td>
+</tr>
+</tbody>
+</table>
+<p>The 3.x migration changes the loading boundary. Old examples often assumed one built-in hub client and tokenizer. The current architecture accepts a <code>Downloader</code> and <code>TokenizerLoader</code>, or a convenience integration that supplies them.</p>
+<p>That separation enables three deployments:</p>
+<pre><code class="language-text">Development     integration package downloads a known model
+Managed app     custom downloader enforces cache, revision, and policy
+Offline app     local directory plus approved tokenizer files
+</code></pre>
+<p>Keep one model container shared when memory policy permits, but create a distinct chat session per conversation. <code>ChatSession</code> is stateful and is not intended for concurrent use by several tasks. The underlying container exists to serialize safe model access.</p>
+<pre><code class="language-swift">let session = ChatSession(model, instructions: "Answer concisely.")
+let answer = try await session.respond(to: "Explain unified memory.")
+</code></pre>
+<p>Do not make <code>ChatSession</code> a global singleton. Its transcript and KV cache belong to a conversation; a global session risks cross-user context leakage and unbounded retention.</p>
+<div class="callout"><strong>Migration checklist</strong><p>Replace 2.x free loading helpers, choose downloader and tokenizer integrations explicitly, update renamed decode methods, verify registry cases, and retest local-directory loading. Read compiler errors as architecture changes, not as invitations to add incompatible compatibility shims.</p></div>
+<p><strong>Checkpoint:</strong> your application should be able to explain, independently, where bytes come from, how tokens are produced, which Swift architecture loads them, who owns the container, and when a session is cleared.</p>
+</template>
+<template id="lesson-loading-and-tokenizers"><p class="eyebrow">15 · Language models</p>
+<h1>Weights, config, tokenizer, and template must agree.</h1>
+<p class="lede">A model directory is a coupled artifact set. A correct weight file with the wrong tokenizer or chat template can produce plausible-looking failure.</p>
+<div class="lesson-meta"><span>◷ 13 MIN</span><span>◇ PRACTICAL</span><span>VERIFIED LOAD</span></div>
+<p>With the standard integration products, the pinned 3.x baseline offers a concise loading path:</p>
+<pre><code class="language-swift">import MLXLLM
+import MLXLMCommon
+import MLXHuggingFace
+import HuggingFace
+import Tokenizers
+
+let model = try await #huggingFaceLoadModelContainer(
+    configuration: LLMRegistry.gemma3_1B_qat_4bit
+)
+</code></pre>
+<p>The registry entry is more than a string: it identifies a known configuration. Support still depends on the model directory’s <code>model_type</code> mapping to a Swift implementation. “MLX-format weights” alone do not guarantee that MLX Swift LM contains the corresponding architecture.</p>
+<p>For a local-only product, resolve an approved directory and pass it through the 3.x local loading path with your chosen tokenizer loader. Keep all inputs inside the application’s controlled storage boundary:</p>
+<pre><code class="language-text">ApprovedModel/
+  config.json
+  tokenizer.json
+  tokenizer_config.json
+  model.safetensors
+  generation_config.json        if required
+  manifest.json                 app-owned checksums and revision
+</code></pre>
+<p>Tokenization is part of inference behavior:</p>
+<pre><code class="language-swift">let ids = tokenizer.encode(text: "Hello, MLX")
+let roundTrip = tokenizer.decode(tokenIds: ids)
+</code></pre>
+<p>For chat, use the model’s chat template through the package rather than manually concatenating role labels. Templates determine special tokens, system-message placement, assistant prefixes, and tool formatting.</p>
+<p>Validate loading at four levels:</p>
+<ol>
+<li><p><strong>Artifact:</strong> allowlisted files, expected sizes, checksums, revision, license record.</p>
+</li>
+<li><p><strong>Structure:</strong> supported <code>model_type</code>, expected weight keys and shapes, tokenizer availability.</p>
+</li>
+<li><p><strong>Numerical:</strong> a frozen prompt produces expected first-token logits or a stable short output within declared tolerance.</p>
+</li>
+<li><p><strong>Behavioral:</strong> chat roles, stop tokens, multi-turn history, Unicode, empty input, and maximum supported input all work.</p>
+</li>
+</ol>
+<p>Model registries evolve. Pinning <code>mlx-swift-lm 3.31.4</code> freezes the code contract; pin the model artifact revision separately. A mutable model name is not a reproducible release input.</p>
+<div class="callout warning"><strong>Never execute the model repository</strong><p>Treat model content as data. Do not run bundled scripts or dynamically load native code to make an unsupported artifact work. Add a reviewed Swift model implementation or reject the artifact.</p></div>
+<p><strong>Checkpoint:</strong> disconnect the network, clear transient caches in a test environment, and prove that an explicitly installed local model still loads with the expected tokenizer and prompt template.</p>
+</template>
+<template id="lesson-chat-and-generation"><p class="eyebrow">16 · Language models</p>
+<h1>A response is a process, not a string.</h1>
+<p class="lede">Generation consumes memory and time token by token. A robust Swift feature exposes progress, cancellation, output limits, errors, and conversation ownership.</p>
+<div class="lesson-meta"><span>◷ 13 MIN</span><span>◇ PRACTICAL</span><span>ASYNC STREAM</span></div>
+<p>For a complete response, <code>ChatSession</code> is intentionally simple:</p>
+<pre><code class="language-swift">let session = ChatSession(
+    model,
+    instructions: "Answer with one short paragraph."
+)
+
+let first = try await session.respond(to: "What is lazy evaluation?")
+let followUp = try await session.respond(to: "Why does timing need eval?")
+</code></pre>
+<p>The second turn reuses the same structured conversation and cache. To restore a saved transcript, construct a session from <code>Chat.Message</code> history:</p>
+<pre><code class="language-swift">let history: [Chat.Message] = [
+    .system("Answer with one short paragraph."),
+    .user("What is lazy evaluation?"),
+    .assistant(first)
+]
+
+let restored = ChatSession(model, history: history)
+</code></pre>
+<p>Restoration must prefill history once. Reuse that restored session for later turns instead of rebuilding it for every prompt.</p>
+<p>For user interfaces, stream text:</p>
+<pre><code class="language-swift">for try await chunk in session.streamResponse(to: "List three MLX transforms.") {
+    await MainActor.run {
+        displayedText += chunk
+    }
+}
+</code></pre>
+<p>Place the loop inside a task that the view model owns. Cancelling a screen, replacing a prompt, or moving the app to a constrained state should cancel generation and leave the session in a known state. Do not start two concurrent generation calls on one session.</p>
+<p>Generation policy should bound:</p>
+<ul>
+<li><p>maximum input tokens and generated tokens;</p>
+</li>
+<li><p>context/cache size;</p>
+</li>
+<li><p>sampling versus deterministic evaluation mode;</p>
+</li>
+<li><p>stop tokens and stop strings from model configuration;</p>
+</li>
+<li><p>timeout and cancellation behavior;</p>
+</li>
+<li><p>which transcript and media are retained;</p>
+</li>
+<li><p>whether partial output is persisted after failure.</p>
+</li>
+</ul>
+<p>Sampling parameters change output distribution, so keep a deterministic evaluation profile separate from a creative product profile. Record parameters with every benchmark or quality comparison.</p>
+<p>Call <code>await session.clear()</code> when a conversation ends or its context must be discarded. VLM sessions can retain referenced media as part of structured history, making explicit clearing especially important.</p>
+<p><strong>Checkpoint:</strong> test cancel-before-first-token, cancel-mid-stream, model error, app backgrounding, two rapid prompts, empty prompt, output limit, and session reset. A demo that only tests one successful response has not exercised the lifecycle.</p>
+</template>
+<template id="lesson-caches-and-speculation"><p class="eyebrow">17 · Language models</p>
+<h1>Context has a recurring memory bill.</h1>
+<p class="lede">A KV cache avoids recomputing prior keys and values during autoregressive generation. Its footprint grows with context and can consume the capacity saved by low-bit weights.</p>
+<div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ ADVANCED</span><span>MEMORY POLICY</span></div>
+<div class="version-banner"><strong>Two API generations</strong><p>The pinned <code>mlx-swift-lm 3.31.4</code> labs use the legacy cache fields. Current-main source at audited commit <code>37688d2cf7d3</code> adds a typed <code>KVCacheConfiguration</code>. Keep the version boundary explicit; do not combine the typed value with legacy fields.</p></div>
+<h2>Pinned-tag configuration</h2>
+<p>At the course baseline, generation parameters can request a bounded affine cache:</p>
+<pre><code class="language-swift">let parameters = GenerateParameters(
+    maxKVSize: 4096,
+    kvBits: 4
+)
+
+let session = ChatSession(model, generateParameters: parameters)
+</code></pre>
+<p>Choose the limit from the product promise rather than the model’s theoretical maximum. Test short, typical, and maximum supported conversations.</p>
+<h2>Current-main strategy model</h2>
+<p>The audited current source groups capacity, compression, and failure semantics into one request:</p>
+<pre><code class="language-swift">let parameters = GenerateParameters(
+    kvCache: KVCacheConfiguration(
+        strategy: .turboQuant(.balanced)))
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Representation</th>
+<th>Main tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.fullPrecision</code></td>
+<td>uncompressed cache</td>
+<td>highest fidelity; footprint grows fastest</td>
+</tr>
+<tr>
+<td><code>.affine(.fourBit)</code></td>
+<td>affine K and V; 2, 3, 4, 5, 6, or 8 bits are supported</td>
+<td>smaller cache with model-dependent numerical effects</td>
+</tr>
+<tr>
+<td><code>.turboQuant(.qualityFirst)</code></td>
+<td>FP16 keys and 4-bit values</td>
+<td>conservative asymmetric compression</td>
+</tr>
+<tr>
+<td><code>.turboQuant(.balanced)</code></td>
+<td>affine 8-bit keys and 3-bit values</td>
+<td>current general preset; validate every model family</td>
+</tr>
+<tr>
+<td><code>.turboQuant(.memoryFirst)</code></td>
+<td>affine 8-bit keys and 2-bit values</td>
+<td>more aggressive value compression</td>
+</tr>
+<tr>
+<td><code>.varianceNormalized(.balanced)</code></td>
+<td>rotated, dual-axis normalized 4-bit keys and values</td>
+<td>experimental; models must use the supported attention update path</td>
+</tr>
+<tr>
+<td><code>.varianceNormalized(.memoryFirst)</code></td>
+<td>4-bit keys and 2-bit values in 128-token tiles</td>
+<td>experimental long-context memory-first path</td>
+</tr>
+</tbody>
+</table>
+<p>TurboQuant prefill stays in raw FP16, compresses on the first decode step, and then encodes new tokens incrementally. Consequently, a decode-memory choice is not automatically a prefill-speed choice.</p>
+<p>Capacity creates rotating caches for model factories that support the generic bounded path. Rotating caches are not compressible in the audited implementation, and model-native sliding-window layers keep their architecture-defined behavior. A bounded compressed ring cache is not implemented.</p>
+<p>Typed configuration makes partial support explicit:</p>
+<ul>
+<li><p><code>.allowPartial</code> compresses eligible global layers and leaves other layers unchanged.</p>
+</li>
+<li><p><code>.requireAtLeastOneLayer</code>, the default, rejects a request that would compress nothing.</p>
+</li>
+<li><p><code>.requireAllLayers</code> rejects any uncompressed layer.</p>
+</li>
+</ul>
+<p>Use <code>cacheStatus()</code> to inspect the realized topology, skipped layers, requested strategy, and capacity application instead of inferring them from one headline setting.</p>
+<h2>Read cache papers as designs, not labels</h2>
+<p><a href="./papers/05-kivi.pdf">KIVI</a> establishes that keys and values can require different quantization axes. That does not make every asymmetric cache a KIVI implementation. Current Swift LM already contains affine, TurboQuant, and variance-normalized paths, so a generic KIVI port is not the strongest new research target.</p>
+<p><a href="./papers/11-commvq.pdf">CommVQ</a> and <a href="./papers/15-kitty.pdf">Kitty</a> are more ambitious future directions because they couple learned or channel-sensitive representations to the cache consumer. They also require new layouts or kernels. <a href="./papers/13-rethinking-kv-compression.pdf">Rethinking KV Compression</a> supplies the necessary warning: reduced cache bytes can fail to improve throughput and can change end-to-end latency through output behavior.</p>
+<p>Measure:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Required observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quality</td>
+<td>teacher/student KL, answer flips, long-context retrieval, deterministic parity where expected</td>
+</tr>
+<tr>
+<td>Latency</td>
+<td>prefill, first decode, warm per-token median and tail, full request</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>cache bytes per token, active memory, peak process memory, allocator state after clear</td>
+</tr>
+<tr>
+<td>Semantics</td>
+<td>reset, rollover, save/restore, configuration change, unsupported-layer policy</td>
+</tr>
+</tbody>
+</table>
+<h2>Speculative decoding</h2>
+<p>Speculative decoding uses a smaller draft model to propose several tokens. The main model verifies those proposals in fewer forward passes:</p>
+<pre><code class="language-swift">let session = ChatSession(
+    mainModel,
+    speculativeDecoding: SpeculativeDecodingConfig(
+        draftModel: draftModel,
+        numDraftTokens: 5,
+        memoryPolicy: .recommendedWorkingSet
+    )
+)
+</code></pre>
+<p>The draft and main models need compatible tokenizer vocabularies. Speedup depends on acceptance rate, small-matrix kernel behavior, model sizes, device, prompt, and available memory. A second model can make the system slower or create memory pressure even when it reduces main-model steps.</p>
+<p>Test cancellation during draft and verify phases, rollback after rejected tokens, cache reset between sessions, and fallback when the memory policy rejects the draft. Verify distribution preservation under the exact sampling path rather than assuming every custom sampler is compatible.</p>
+<p><strong>Checkpoint:</strong> reject “fastest tokens per second” when the configuration exceeds the supported memory envelope, silently leaves layers uncompressed, changes the output policy, or retains context beyond the user’s expectation.</p>
+</template>
+<template id="lesson-guided-generation-and-tools"><p class="eyebrow">18 · Language models</p>
+<h1>Valid JSON is not authorized intent.</h1>
+<p class="lede">The current-main Guided Generation preview can constrain token output to a schema or grammar. Your application must still validate meanings, enforce policy, and control side effects.</p>
+<div class="lesson-meta"><span>◷ 13 MIN</span><span>◇ PREVIEW</span><span>NOT IN TAG 3.31.4</span></div>
+<div class="version-banner"><strong>Preview boundary</strong><p><code>MLXRerankers</code>, <code>MLXGuidedGeneration</code>, and <code>MLXFoundationModels</code> are not products in the pinned <code>mlx-swift-lm 3.31.4</code> manifest. This lesson examines APIs visible on current <code>main</code>; do not copy their imports into the stable-tag labs.</p></div>
+<p><code>MLXGuidedGeneration</code> masks invalid next tokens during decoding so an output can conform to JSON Schema, EBNF, or a supported structural-tag grammar. This is stronger than asking in prose for “JSON only,” because invalid syntax is excluded at the token-selection step.</p>
+<p>Use it when the model’s output becomes program data:</p>
+<pre><code class="language-text">Form extraction      known fields and types
+Local search plan    bounded query object
+UI composition       allowlisted component schema
+Tool arguments       typed, size-limited parameters
+</code></pre>
+<p>Structural validity does not establish any of the following:</p>
+<ul>
+<li><p>a place, file, or account exists;</p>
+</li>
+<li><p>a numeric value is within an allowed business range;</p>
+</li>
+<li><p>a path stays inside an approved directory;</p>
+</li>
+<li><p>a user authorized an operation;</p>
+</li>
+<li><p>the tool is safe to invoke now;</p>
+</li>
+<li><p>the model’s factual claim is correct.</p>
+</li>
+</ul>
+<p>Design tool dispatch as a trusted switch:</p>
+<pre><code class="language-swift">func dispatch(_ call: ApprovedToolCall) async throws -&gt; String {
+    switch call {
+    case .lookupDocument(let id):
+        return try await documents.readApproved(id: id)
+    case .summarizeSelection(let text):
+        return summarizer.summarizeBounded(text)
+    }
+}
+</code></pre>
+<p>The decoded model output should first pass schema validation, semantic validation, authorization, rate and size limits, and—where effects matter—an explicit confirmation step. Never map an arbitrary model-supplied command name to reflection, a shell, unrestricted file access, or a general network request.</p>
+<p><code>ChatSession</code> can be configured with tool specifications and a dispatch closure. Keep that closure narrow, typed, cancellable, and observable. If you stream raw generation details, handle accepted, rejected, and malformed tool calls as distinct states rather than flattening them into text.</p>
+<p>On current <code>main</code>, <code>MLXFoundationModels</code> can bridge an MLX model into Apple’s newer Foundation Models session interfaces and pair with generable types. That preview integration is a platform feature, not a reason to skip the same semantic checks.</p>
+<div class="callout warning"><strong>Prompt injection boundary</strong><p>Text retrieved from documents, webpages, messages, or model output is untrusted data. It cannot grant itself tool authority. Authorization comes from app policy and the user’s current action.</p></div>
+<p><strong>Checkpoint:</strong> unit-test every tool with maliciously large values, unknown enum cases, traversal-like paths, duplicate calls, cancellation, and unauthorized requests. The model never gets the final say over a side effect.</p>
+</template>
+<template id="lesson-vlm-embeddings-foundation-models"><p class="eyebrow">19 · Applications</p>
+<h1>Not every feature is a chat feature.</h1>
+<p class="lede">The tagged package has stable text, vision-language, and embedding libraries; current main also previews reranking, guided output, and platform-session integration.</p>
+<div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ INTERMEDIATE</span><span>MODEL FAMILIES</span></div>
+<p>Choose the smallest model family that matches the task:</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Product</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generate or transform text</td>
+<td><code>MLXLLM</code></td>
+<td>tokens or text</td>
+</tr>
+<tr>
+<td>Reason over images and text</td>
+<td><code>MLXVLM</code></td>
+<td>tokens or structured generation</td>
+</tr>
+<tr>
+<td>Search, cluster, or compare text</td>
+<td><code>MLXEmbedders</code></td>
+<td>fixed-width vectors</td>
+</tr>
+<tr>
+<td>Rerank retrieved candidates</td>
+<td><code>MLXRerankers</code> on current <code>main</code> only</td>
+<td>per-candidate relevance scores</td>
+</tr>
+<tr>
+<td>Enforce structural grammar</td>
+<td><code>MLXGuidedGeneration</code> on current <code>main</code> only</td>
+<td>constrained tokens</td>
+</tr>
+<tr>
+<td>Use Apple session APIs with an MLX model</td>
+<td><code>MLXFoundationModels</code> on current <code>main</code> only</td>
+<td>platform session interface</td>
+</tr>
+</tbody>
+</table>
+<p>VLM input adds media preprocessing and retention. A structured message can carry a local image:</p>
+<pre><code class="language-swift">let message = Chat.Message.user(
+    "Describe the chart without guessing hidden values.",
+    images: [.url(localImageURL)]
+)
+
+let response = try await session.respond(to: [message])
+</code></pre>
+<p>Resize policy, color handling, image token count, and the model’s supported media format all affect results. A session can retain referenced media in conversation history; clear it when no longer needed.</p>
+<p>Embeddings are usually a better tool for semantic retrieval than asking a generator to compare every document. In the 3.x architecture, <code>EmbedderModelFactory</code> uses the same explicit downloader/tokenizer pattern as the other model factories. Keep document and query preprocessing identical, normalize only if the model expects it, and record model revision with the index.</p>
+<p>A local retrieval flow is:</p>
+<pre><code class="language-text">approved documents -&gt; chunk -&gt; embed -&gt; local index
+user query -&gt; same embedder -&gt; nearest candidates -&gt; permission filter -&gt; answer context
+</code></pre>
+<p>Permission filtering must happen before content enters the prompt, even if all inference is local.</p>
+<p>The current-main <code>MLXRerankers</code> preview adds cross-encoder scoring after retrieval. It can improve final ordering by evaluating a query and candidate together, at the cost of more work per candidate than embedding similarity. Retrieve a bounded shortlist first, rerank only that shortlist, and keep a stable 3.31.4 path if the application cannot follow <code>main</code>.</p>
+<p>The current-main <code>MLXFoundationModels</code> preview is a bridge for SDK 27-era platform APIs and is gated by platform availability. It is absent from the tagged 3.31.4 manifest. Keep the stable <code>MLXLLM</code> or <code>MLXVLM</code> path available when supporting the pinned release or earlier operating systems, or make the newer branch and OS requirement explicit.</p>
+<p><strong>Checkpoint:</strong> write the task in one sentence and name the required output type. If the output is “a vector for similarity,” do not select a generative chat model merely because it is more visible.</p>
+</template>
+<template id="lesson-quantization-and-performance"><p class="eyebrow">20 · Performance</p>
+<h1>A bit width is not a complete quantization method.</h1>
+<p class="lede">A useful MLX result must name the value format, grouping, scale rule, quantized layers, consumer kernel, quality change, and workload shape—not merely “4-bit.”</p>
+<div class="lesson-meta"><span>◷ 22 MIN</span><span>◇ ADVANCED</span><span>RESEARCH PATH</span></div>
+<div class="version-banner"><strong>Research boundary</strong><p>The course labs remain pinned to <code>mlx-swift 0.31.6</code> and <code>mlx-swift-lm 3.31.4</code>. The format audit below also inspected current MLX source at commit <code>99e45f71dcb4</code>. Confirm API availability before copying a current-main configuration into the pinned project.</p></div>
+<h2>What MLX can represent</h2>
+<p>At the audited core revision, MLX accepts these native quantization configurations:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Valid configuration</th>
+<th>Stored representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Affine</td>
+<td>groups 32, 64, or 128; 2, 3, 4, 5, 6, or 8 bits</td>
+<td>packed integer codes plus a floating scale and bias per group</td>
+</tr>
+<tr>
+<td>NVFP4</td>
+<td>group 16; 4 bits</td>
+<td>E2M1 values, E4M3 block scales, and an optional FP32 global scale</td>
+</tr>
+<tr>
+<td>MXFP4</td>
+<td>group 32; 4 bits</td>
+<td>E2M1 values with E8M0 block scales</td>
+</tr>
+<tr>
+<td>MXFP8</td>
+<td>group 32; 8 bits</td>
+<td>E4M3 values with E8M0 block scales</td>
+</tr>
+</tbody>
+</table>
+<p>A registry name can identify a prepared model:</p>
+<pre><code class="language-swift">let configuration = LLMRegistry.gemma3_1B_qat_4bit
+</code></pre>
+<p>The name does not disclose the complete recipe. Record group size, value format, scale and bias representation, eligible and excluded layers, calibration data, quantization-aware training status, source revision, and converter revision. Compute artifact bytes from the serialized tensors; nominal payload bits omit scale, bias, alignment, codebook, and outlier metadata.</p>
+<h2>Follow the packed representation to its consumer</h2>
+<p>MLX quantized linear kernels can decode packed weights while multiplying, without materializing one complete floating weight matrix. Explicitly requesting a dequantized weight does materialize it. Row-contiguity repairs can also introduce a copy before dispatch.</p>
+<p>This makes performance shape-specific:</p>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th align="right">Representative matrix rows</th>
+<th>What to measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single-token decode</td>
+<td align="right"><code>M = 1</code></td>
+<td>quantized matrix-vector path and per-token tail latency</td>
+</tr>
+<tr>
+<td>Speculative verification</td>
+<td align="right"><code>M = 2…8</code></td>
+<td>small-matrix dispatch and draft acceptance</td>
+</tr>
+<tr>
+<td>Prompt prefill</td>
+<td align="right"><code>M ≥ 128</code></td>
+<td>matrix-matrix throughput and compilation state</td>
+</tr>
+</tbody>
+</table>
+<p>Do not assume fewer bits means faster execution. A format can reduce memory traffic yet lose time to unpacking, conversion, a less favorable kernel, compilation, or a hidden copy. Benchmark every real layer shape on every supported chip.</p>
+<h2>What the papers contribute</h2>
+<table>
+<thead>
+<tr>
+<th>Paper</th>
+<th>Established contribution</th>
+<th>MLX interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="./papers/06-gptq.pdf">GPTQ</a> and <a href="./papers/08-awq.pdf">AWQ</a></td>
+<td>calibrated weight-only PTQ baselines</td>
+<td>compare quality; their CUDA timings are not Metal results</td>
+</tr>
+<tr>
+<td><a href="./papers/07-smoothquant.pdf">SmoothQuant</a> and <a href="./papers/09-quarot.pdf">QuaRot</a></td>
+<td>equivalent scaling or rotation can reduce outlier difficulty</td>
+<td>absorb transforms where possible; charge any remaining runtime work</td>
+</tr>
+<tr>
+<td><a href="./papers/10-higgs.pdf">HIGGS</a></td>
+<td>a layer-error model and discrete non-uniform allocation</td>
+<td>replace fixed mixed recipes only if the predictor works on held-out MLX models</td>
+</tr>
+<tr>
+<td><a href="./papers/14-scalesearch.pdf">ScaleSearch</a></td>
+<td>search nearby representable block scales</td>
+<td>strongest converter-only candidate for MLX NVFP4</td>
+</tr>
+<tr>
+<td><a href="./papers/13-rethinking-kv-compression.pdf">Rethinking KV Compression</a></td>
+<td>systems counterevidence to memory-only cache claims</td>
+<td>require end-to-end latency, output-length, and peak-memory gates</td>
+</tr>
+</tbody>
+</table>
+<p>These methods are not interchangeable. Importing a GPTQ or AWQ checkpoint and repacking it into an affine MLX tensor does not mean the native MLX quantizer performed that paper’s optimization.</p>
+<h2>Immediate experiment: ScaleSearch for NVFP4</h2>
+<p>Ordinary block floating-point conversion typically derives one block scale from its largest magnitude. ScaleSearch evaluates nearby <em>representable</em> scale values, quantizes and reconstructs the block under each candidate, and retains the scale with the lowest reconstruction error.</p>
+<p>The peer-reviewed MLSys 2026 paper reports 27% lower NVFP4 quantization error and, in one Qwen3-8B comparison, up to 15 points on MATH500. Those are the authors’ NVIDIA-based results—not measurements on MLX or Apple silicon.</p>
+<p>The compatibility is what makes the idea useful here: MLX already accepts NVFP4’s E2M1 values and E4M3 block scale. A converter can choose a better valid scale while preserving the stored format and current inference kernel. Conversion becomes more expensive; warm inference should remain on the same path, but that is a hypothesis to verify.</p>
+<h2>Proposed research technique: ScalePlan-MLX</h2>
+<p>ScalePlan-MLX combines compatible ideas without claiming that the combination is already novel or proven:</p>
+<ol>
+<li><p>Enumerate MLX-native candidates for each eligible linear layer: affine groups and bit widths, MXFP4, MXFP8, ordinary NVFP4, and ScaleSearch-NVFP4.</p>
+</li>
+<li><p>Measure exact layer shapes for decode, small speculative batches, and prefill on the target Apple GPU.</p>
+</li>
+<li><p>Record stored bytes, metadata, reconstruction error, teacher/student divergence, peak memory, hidden-copy bytes, and cold compilation.</p>
+</li>
+<li><p>Fit a HIGGS-style per-layer sensitivity model, then reject that proxy if it fails to predict held-out model loss.</p>
+</li>
+<li><p>Select one candidate per layer under explicit quality, size, and latency budgets using dynamic programming or constraint solving.</p>
+</li>
+<li><p>Produce separate static decode-first and prefill-first plans; do not keep duplicate weights for live switching unless measurements justify the memory.</p>
+</li>
+</ol>
+<p>An optional Hadamard-preconditioned candidate belongs after the base experiment. MLX exposes a Hadamard transform, but an unabsorbed rotation still has runtime and fusion costs.</p>
+<h2>Falsification gates</h2>
+<p>Compare FP16/BF16, affine-4 group 64, ordinary MXFP4/NVFP4, existing fixed mixed recipes, ScaleSearch-NVFP4, planning without scale search, and full ScalePlan. Use multiple model families, at least two Apple GPU generations, three calibration seeds, and both short and long prompts.</p>
+<p>Pre-register failure conditions:</p>
+<ul>
+<li><p>ScaleSearch must reduce median block or layer reconstruction error by at least 15% on two model families.</p>
+</li>
+<li><p>The same-format ScaleSearch model must keep warm latency within 2% of ordinary NVFP4; otherwise the runtime path was not equivalent.</p>
+</li>
+<li><p>At matched quality, ScalePlan must reduce model bytes or decode latency by at least 10% versus the best uniform or fixed recipe on two chips.</p>
+</li>
+<li><p>Peak memory, answer flips, long-context retrieval, output length, energy, and thermal behavior are release metrics—not footnotes.</p>
+</li>
+<li><p>A result confined to one model, prompt shape, or chip must be reported as configuration-specific.</p>
+</li>
+</ul>
+<p>Warm and cold runs answer different questions. Force lazy work inside the measured interval, record compilation separately, and report variation rather than the single best run.</p>
+<h2>Why KV cache is a second research track</h2>
+<p>Current MLX Swift LM source already contains affine, TurboQuant, and variance-normalized cache strategies. A generic “add KIVI” proposal is therefore not a fresh starting point. <a href="./papers/11-commvq.pdf">CommVQ</a>, <a href="./papers/12-turboattention.pdf">TurboAttention</a>, and <a href="./papers/15-kitty.pdf">Kitty</a> suggest higher-upside designs, but each couples its representation to new attention or cache-layout work. Benchmark the existing paths consistently before designing those kernels.</p>
+<p><strong>Ship gate:</strong> a quantization win exists only when the exact artifact preserves required quality and improves the measured user path within the real memory and thermal envelope.</p>
+</template>
+<template id="lesson-fine-tuning"><p class="eyebrow">21 · Training</p>
+<h1>Adaptation is an experiment, not a feature toggle.</h1>
+<p class="lede">MLX Swift LM supports parameter-efficient adapters and full fine-tuning. Begin by proving that data, evaluation, and a prompt-only baseline are sound.</p>
+<div class="lesson-meta"><span>◷ 15 MIN</span><span>◇ ADVANCED</span><span>CONTROLLED TRAINING</span></div>
+<p>Use the least invasive method that meets the goal:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Trainable state</th>
+<th>Best fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt/template change</td>
+<td>none</td>
+<td>behavior expressible through context</td>
+</tr>
+<tr>
+<td>LoRA</td>
+<td>small low-rank matrices</td>
+<td>efficient domain/style adaptation</td>
+</tr>
+<tr>
+<td>DoRA</td>
+<td>low-rank direction plus magnitude treatment</td>
+<td>adapter experiment requiring that parameterization</td>
+</tr>
+<tr>
+<td>Adapter over quantized base</td>
+<td>small adapter; base stays low bit</td>
+<td>tight memory budgets</td>
+</tr>
+<tr>
+<td>Full fine-tuning</td>
+<td>all selected model parameters</td>
+<td>sufficient data, memory, and strong justification</td>
+</tr>
+</tbody>
+</table>
+<p>At the pinned <code>mlx-swift-lm 3.31.4</code> baseline, an adapter configuration can be explicit:</p>
+<pre><code class="language-swift">let configuration = LoRAConfiguration(
+    numLayers: 16,
+    fineTuneType: .lora,
+    loraParameters: .init(
+        rank: 8,
+        scale: 10.0,
+        keys: ["self_attn.q_proj", "self_attn.v_proj"]
+    )
+)
+
+let adapter = try LoRAContainer.from(
+    model: model,
+    configuration: configuration
+)
+</code></pre>
+<p>Target keys are architecture-specific. Verify them against the actual tracked module names; a list copied from a different model can adapt nothing or the wrong layers.</p>
+<p>The training record needs dataset versions, splits, prompt format, tokenizer, base model revision, adapter configuration, optimizer, seed, iteration count, checkpoint cadence, and evaluation results. Measure a frozen zero-shot or few-shot baseline on the exact held-out set before the first update.</p>
+<p>MLX Swift LM includes adapter types for regular and quantized linear layers. It is reasonable to say “LoRA over a quantized base.” Do not label every such workflow “QLoRA”: the QLoRA paper specifies NF4, double quantization, and paged-optimizer ideas that an MLX run may not use.</p>
+<p>Before fusion, keep base and adapter artifacts separate so each can be verified or rolled back. If you fuse an adapter for deployment, produce a new immutable artifact and evaluate it against the unfused composition:</p>
+<pre><code class="language-swift">try adapter.fuse(with: model)
+</code></pre>
+<p>Fusing changes the artifact lifecycle. Preserve the base revision, adapter checksum, fusion tool version, output checksum, and parity test.</p>
+<div class="callout warning"><strong>Data boundary</strong><p>Training text can contain private data, licenses, hidden instructions, duplicates, or evaluation leakage. Local execution does not cure a bad dataset. Inventory and review data before tuning.</p></div>
+<p><strong>Decision gate:</strong> ship the adapter only if it improves the target held-out metric, preserves protected capabilities and safety tests, fits the runtime budget, and has a documented rollback path.</p>
+</template>
+<template id="lesson-model-porting-and-app-architecture"><p class="eyebrow">22 · Applications</p>
+<h1>A model port is a compatibility implementation.</h1>
+<p class="lede">Matching class names is not enough. A trustworthy port reproduces configuration defaults, tensor operations, saved keys, cache behavior, tokenization, and reference outputs.</p>
+<div class="lesson-meta"><span>◷ 14 MIN</span><span>◇ ADVANCED</span><span>PORT + INTEGRATE</span></div>
+<p>An MLX Swift LM text-model port typically needs:</p>
+<ol>
+<li><p>A <code>Codable</code> and <code>Sendable</code> configuration mirroring the artifact’s <code>config.json</code>.</p>
+</li>
+<li><p><code>Module</code> types for attention, MLP, blocks, embeddings, and output head.</p>
+</li>
+<li><p><code>@ModuleInfo(key:)</code> and <code>@ParameterInfo(key:)</code> values matching saved keys.</p>
+</li>
+<li><p>Conformance to the model and KV-cache protocols required by the package.</p>
+</li>
+<li><p>A <code>sanitize(weights:)</code> step for documented prefix, generated-value, or tied-weight differences.</p>
+</li>
+<li><p>Registration of <code>model_type</code> in the type registry.</p>
+</li>
+<li><p>Numerical fixtures against a trusted implementation.</p>
+</li>
+</ol>
+<p>The pattern for one saved projection is explicit:</p>
+<pre><code class="language-swift">final class AttentionBlock: Module {
+    @ModuleInfo(key: "q_proj") var query: Linear
+    @ModuleInfo(key: "k_proj") var key: Linear
+    @ModuleInfo(key: "v_proj") var value: Linear
+    @ModuleInfo(key: "o_proj") var output: Linear
+
+    // Initialization and forward pass must follow the source architecture.
+}
+</code></pre>
+<p>If embeddings are tied, reuse the correct weight at the output. If rotary-frequency arrays should be generated rather than loaded, remove only those documented keys. Never silence all unexpected-key errors to get a green load.</p>
+<p>Once the model works, place it behind a narrow application service:</p>
+<pre><code class="language-swift">protocol LocalTextGenerating: Sendable {
+    func respond(to prompt: String) async throws -&gt; String
+    func reset() async
+}
+</code></pre>
+<p>The concrete service owns model loading, one or more session objects, cancellation, limits, and telemetry. The view model owns presentation state and a task handle. Views never mutate a raw <code>Module</code> or choose an artifact path.</p>
+<p><code>MLXArray</code> is not <code>Sendable</code>. Keep lazy arrays, model parameters, optimizers, and session state inside one actor or the synchronization boundary supplied by <code>ModelContainer</code>; return strings, scalar statistics, or deliberately materialized value data across task boundaries. Unified memory does not make unsynchronized Swift access safe.</p>
+<pre><code class="language-text">View -&gt; ViewModel -&gt; LocalModelService -&gt; ModelContainer
+                    |                 -&gt; ChatSession per conversation
+                    -&gt; ArtifactStore  -&gt; approved local model directories
+</code></pre>
+<p>This boundary lets tests substitute a deterministic generator and lets the app change model, quantization, or loader without rewriting UI.</p>
+<p><strong>Port acceptance:</strong> exact configuration decoding, zero unexplained keys, shape audit, fixed-logit comparison, deterministic short generation, cache parity across multiple tokens, tokenizer/template tests, and memory/performance measurements on supported hardware.</p>
+</template>
+<template id="lesson-validation-privacy-security"><p class="eyebrow">23 · Production</p>
+<h1>On-device does not mean risk-free.</h1>
+<p class="lede">Local execution can reduce data exposure, but the application still processes untrusted prompts, documents, model artifacts, generated content, and optional tool calls.</p>
+<div class="lesson-meta"><span>◷ 15 MIN</span><span>◇ PRODUCTION</span><span>TRUST BOUNDARIES</span></div>
+<p>Build an assurance matrix rather than one golden prompt:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arrays</td>
+<td>shapes, dtypes, known-value operations, tolerance tests</td>
+</tr>
+<tr>
+<td>Model</td>
+<td>weight-key audit, reference logits, cache parity</td>
+</tr>
+<tr>
+<td>Tokenizer</td>
+<td>round trips, special tokens, chat templates, Unicode</td>
+</tr>
+<tr>
+<td>Generation</td>
+<td>deterministic fixtures, stop behavior, cancellation, limits</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>task metrics, error review, accessibility, lifecycle tests</td>
+</tr>
+<tr>
+<td>Operations</td>
+<td>checksums, storage protection, memory, energy, rollback</td>
+</tr>
+</tbody>
+</table>
+<p>Treat artifact installation as a security boundary. Accept only expected files, cap sizes, verify an app-owned manifest and digests, resolve paths inside an approved directory, and never execute bundled code. Record the source revision and license. A model update is a software release input even when no Swift line changes.</p>
+<p>Protect user data by design:</p>
+<ul>
+<li><p>state clearly what remains on device and what any integration may download or upload;</p>
+</li>
+<li><p>store conversation history only when the feature requires it;</p>
+</li>
+<li><p>apply file protection appropriate to sensitivity;</p>
+</li>
+<li><p>exclude sensitive model/session data from logs and crash annotations;</p>
+</li>
+<li><p>clear sessions and media references at the promised lifecycle point;</p>
+</li>
+<li><p>let users remove downloaded models and histories;</p>
+</li>
+<li><p>do not send prompts to analytics.</p>
+</li>
+</ul>
+<p>Prompt injection remains relevant when local models read external documents or can invoke tools. Retrieved text is untrusted content, not policy. Filter retrieval by the user’s permissions before prompting, constrain tool schemas, validate all arguments, and require confirmation for consequential effects.</p>
+<p>Generated output is untrusted too. Escape it before rendering rich content, never interpret it as code, and label uncertainty where the product could encourage overreliance.</p>
+<p>Operational telemetry should use bounded aggregates such as load duration, time to first token, token counts, cancellation reason, peak memory class, and typed error codes. It should not contain raw prompts or generations by default.</p>
+<div class="callout warning"><strong>Memory pressure is a correctness event</strong><p>An app terminated under pressure did not merely miss a performance target. Test admission, cancellation, session clearing, background transitions, and recovery without corrupting model state.</p></div>
+<p><strong>Release statement:</strong> name the model revision, package versions, supported devices, maximum context/output, known quality limits, data-retention behavior, network behavior, and rollback artifact.</p>
+</template>
+<template id="lesson-capstone"><p class="eyebrow">24 · Practice</p>
+<h1>Build the smallest assistant you can defend.</h1>
+<p class="lede">The capstone is a local, single-user Swift application that answers questions about a user-selected text file without general filesystem or network access.</p>
+<div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ PROJECT</span><span>END TO END</span></div>
+<h3>Product contract</h3>
+<p>The user explicitly selects one UTF-8 text file. The app chunks it locally, uses either bounded prompt context or a local embedder index, and answers with a short response. It has no tools, no background server, no arbitrary paths, and no prompt telemetry.</p>
+<h3>Pinned baseline</h3>
+<pre><code class="language-text">mlx-swift       0.31.6
+mlx-swift-lm    3.31.4
+model           exact local revision and checksum
+platform        declared Apple silicon device and OS floor
+</code></pre>
+<h3>Architecture</h3>
+<pre><code class="language-text">FileImporter
+   -&gt; TextValidator (encoding, size, permissions)
+   -&gt; ChunkStore (memory-bounded, local)
+   -&gt; Retrieval or ContextBuilder
+   -&gt; LocalModelService
+        -&gt; verified ModelContainer
+        -&gt; one ChatSession
+   -&gt; ViewModel (stream, cancel, reset)
+   -&gt; SwiftUI view
+</code></pre>
+<h3>Required implementation steps</h3>
+<ol>
+<li><p>Prove a one-array MLX smoke test and exact Xcode build route.</p>
+</li>
+<li><p>Install and verify the local model artifact before loading.</p>
+</li>
+<li><p>Load through the 3.x downloader/tokenizer boundary using a local path.</p>
+</li>
+<li><p>Enforce document, prompt, output, context, and concurrency limits.</p>
+</li>
+<li><p>Stream generation from a view-model-owned task.</p>
+</li>
+<li><p>Make cancel and reset visible; reset clears the session and selected document state.</p>
+</li>
+<li><p>Record only privacy-preserving performance metrics.</p>
+</li>
+<li><p>Add deterministic fixtures and a small human-reviewed question set.</p>
+</li>
+</ol>
+<h3>Acceptance tests</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Pass condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clean offline launch</td>
+<td>installed model loads without network access</td>
+</tr>
+<tr>
+<td>Unsupported artifact</td>
+<td>rejected before weight mutation</td>
+</tr>
+<tr>
+<td>Oversized file</td>
+<td>clear error, no partial ingestion</td>
+</tr>
+<tr>
+<td>Prompt injection in file</td>
+<td>cannot change app policy or gain tools</td>
+</tr>
+<tr>
+<td>Cancel mid-generation</td>
+<td>stream stops and next request remains healthy</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>history, cache, and document references are cleared</td>
+</tr>
+<tr>
+<td>Long supported request</td>
+<td>stays inside memory envelope</td>
+</tr>
+<tr>
+<td>Answer grounding</td>
+<td>evaluation records useful and unsupported-answer rates</td>
+</tr>
+</tbody>
+</table>
+<h3>Benchmark record</h3>
+<p>Measure cold load, time to first token, steady generation, peak memory, cancellation latency, and energy/thermal behavior. Run with the largest supported file and context on the least-capable supported machine. Compare a quantized and non-quantized candidate only if both fit.</p>
+<h3>Deliverables</h3>
+<ul>
+<li><p>source and exact dependency resolution;</p>
+</li>
+<li><p>model manifest and checksums, without redistributing unlicensed weights;</p>
+</li>
+<li><p>architecture and data-flow note;</p>
+</li>
+<li><p>automated test report;</p>
+</li>
+<li><p>evaluation examples and error analysis;</p>
+</li>
+<li><p>benchmark table;</p>
+</li>
+<li><p>privacy statement and deletion behavior;</p>
+</li>
+<li><p>known limitations and rollback plan.</p>
+</li>
+</ul>
+<p><strong>Final review question:</strong> can another engineer explain every byte that enters the model, every retained state object, every evaluation boundary, and every way the operation stops? If not, simplify before shipping.</p>
+</template>
+<template id="lesson-sources"><p class="eyebrow">25 · Sources</p>
+<h1>Fifteen reputable papers, all available locally</h1>
+<p class="lede">The first five establish the transformer, adaptation, speculative-decoding, and KV-cache foundations. The next ten form the audited quantization research set. Every link opens a downloaded PDF served with this guide.</p>
+<div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ REFERENCE</span><span>LOCAL PDFS</span></div>
+<div class="scope-banner"><strong>An important distinction</strong><p>MLX does not have a standalone framework paper. Official MLX documentation and pinned source code establish what the software implements; the papers below establish research methods and results on their stated systems. A paper result is not an MLX or Apple-silicon result until it is reproduced there. ScalePlan-MLX is the guide’s testable research proposal, not a peer-reviewed claim.</p></div>
+<h2>Foundations</h2>
+<div class="reading-list">
+<a class="reading-card" href="./papers/01-attention-is-all-you-need.pdf" target="_blank" rel="noopener"><span class="reading-number">01</span><span class="reading-copy"><strong>Attention Is All You Need</strong><small>Vaswani et al. · NeurIPS 2017</small><span>Start with the transformer architecture: multi-head attention, positional information, residual paths, and feed-forward blocks.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/02-lora.pdf" target="_blank" rel="noopener"><span class="reading-number">02</span><span class="reading-copy"><strong>LoRA: Low-Rank Adaptation of Large Language Models</strong><small>Hu et al. · ICLR 2022</small><span>Understand frozen base weights, low-rank updates, parameter savings, rank, and scaling before adapter training.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/03-qlora.pdf" target="_blank" rel="noopener"><span class="reading-number">03</span><span class="reading-copy"><strong>QLoRA: Efficient Finetuning of Quantized LLMs</strong><small>Dettmers et al. · NeurIPS 2023</small><span>Learn the paper’s quantized-base fine-tuning design while remembering that MLX groupwise quantization is not automatically its NF4 pipeline.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/04-speculative-decoding.pdf" target="_blank" rel="noopener"><span class="reading-number">04</span><span class="reading-copy"><strong>Fast Inference from Transformers via Speculative Decoding</strong><small>Leviathan, Kalman &amp; Matias · ICML 2023</small><span>Understand how a draft model proposes tokens for verification and why acceptance rate, memory, and model pairing determine real speedup.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/05-kivi.pdf" target="_blank" rel="noopener"><span class="reading-number">05</span><span class="reading-copy"><strong>KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache</strong><small>Liu et al. · ICML 2024</small><span>Study why keys and values can require different quantization axes. Do not call MLX Swift LM’s cache KIVI unless the implementation matches the method.</span></span><b>LOCAL PDF ↗</b></a>
+</div>
+<h2>Weight and activation quantization</h2>
+<div class="reading-list">
+<a class="reading-card" href="./papers/06-gptq.pdf" target="_blank" rel="noopener"><span class="reading-number">06</span><span class="reading-copy"><strong>GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers</strong><small>Frantar et al. · ICLR 2023</small><span>Use second-order, layer-wise reconstruction as a calibrated weight-only baseline. Restricted GPTQ import does not make MLX’s native quantizer GPTQ.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/07-smoothquant.pdf" target="_blank" rel="noopener"><span class="reading-number">07</span><span class="reading-copy"><strong>SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models</strong><small>Xiao et al. · ICML 2023</small><span>Learn how equivalent channel scaling moves activation-outlier difficulty into weights before low-precision execution.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/08-awq.pdf" target="_blank" rel="noopener"><span class="reading-number">08</span><span class="reading-copy"><strong>AWQ: Activation-aware Weight Quantization for On-Device LLM Compression and Acceleration</strong><small>Lin et al. · MLSys 2024</small><span>Treat activation-aware channel scaling as a strong on-device quality baseline, without transferring its non-MLX timing claims to Metal.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/09-quarot.pdf" target="_blank" rel="noopener"><span class="reading-number">09</span><span class="reading-copy"><strong>QuaRot: Outlier-Free 4-Bit Inference in Rotated LLMs</strong><small>Ashkboos et al. · NeurIPS 2024</small><span>Study exact orthogonal rotations that reduce outliers, then measure whether any unabsorbed transform is worthwhile on Apple GPUs.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/10-higgs.pdf" target="_blank" rel="noopener"><span class="reading-number">10</span><span class="reading-copy"><strong>HIGGS: Pushing the Limits of Large Language Model Quantization via the Linearity Theorem</strong><small>Malinovskii et al. · NAACL 2025</small><span>Read this for data-free grids and discrete per-layer allocation—the planning foundation for the proposed ScalePlan-MLX experiment.</span></span><b>LOCAL PDF ↗</b></a>
+</div>
+<h2>Cache, attention, and the immediate MLX opportunity</h2>
+<div class="reading-list">
+<a class="reading-card" href="./papers/11-commvq.pdf" target="_blank" rel="noopener"><span class="reading-number">11</span><span class="reading-copy"><strong>CommVQ: Commutative Vector Quantization for KV Cache Compression</strong><small>Li et al. · ICML 2025</small><span>Explore a higher-risk KV direction: a learned additive codebook constrained to commute with RoPE and integrate with attention.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/12-turboattention.pdf" target="_blank" rel="noopener"><span class="reading-number">12</span><span class="reading-copy"><strong>TurboAttention: Efficient Attention Approximation for High Throughputs LLMs</strong><small>Kang et al. · MLSys 2025</small><span>See why compressed storage is not enough: the attention consumer must stay efficient for a real systems win.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/13-rethinking-kv-compression.pdf" target="_blank" rel="noopener"><span class="reading-number">13</span><span class="reading-copy"><strong>Rethinking Key-Value Cache Compression Techniques for Large Language Model Serving</strong><small>Gao et al. · MLSys 2025</small><span>Use this systems audit to challenge memory-only claims; a smaller cache can still fail to improve throughput or end-to-end latency.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/14-scalesearch.pdf" target="_blank" rel="noopener"><span class="reading-number">14</span><span class="reading-copy"><strong>Search Your Block Floating Point Scales!</strong><small>Gupta et al. · MLSys 2026</small><span>Read this first for immediate adoption: search nearby representable NVFP4 scales while preserving the exact value and scale encodings MLX already accepts.</span></span><b>LOCAL PDF ↗</b></a>
+<a class="reading-card" href="./papers/15-kitty.pdf" target="_blank" rel="noopener"><span class="reading-number">15</span><span class="reading-copy"><strong>Kitty: Accurate and Efficient 2-bit KV Cache Quantization with Dynamic Channel-wise Precision Boost</strong><small>Xia et al. · MLSys 2026</small><span>Use this as a current mixed-precision KV baseline and evidence that channel sensitivity, layout, and the consumer kernel belong in one design.</span></span><b>LOCAL PDF ↗</b></a>
+</div>
+<p>The shortest research path is <strong>14 → 10 → 13</strong>: ScaleSearch for a compatible converter improvement, HIGGS for measured per-layer planning, and Rethinking KV Compression for the systems checks that prevent a memory win from being mislabeled as an end-to-end speedup.</p>
+</template>
+  <script src="./appearance.js?v=4"></script>
+  <script src="./app.js?v=2"></script>
+</body>
+</html>
