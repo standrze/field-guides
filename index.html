@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#ff9a62">
   <title>Field Guide Library</title>
   <link rel="stylesheet" href="./admin.css?v=1">
+  <style>[data-project="cyber-distillation"] .project-type,[data-project="cyber-distillation"] [data-progress],[data-project="cyber-distillation"] button,[data-project="cyber-distillation"] .project-actions a,[data-project-link="cyber-distillation"] small{font-size:14px;line-height:1.5}</style>
 </head>
 <body>
   <div class="admin-shell">
@@ -18,7 +19,7 @@
 
       <section class="library-status" aria-label="Library progress">
         <p>Library progress</p>
-        <strong id="library-progress">0 / 49 lessons</strong>
+        <strong id="library-progress">0 / 68 lessons</strong>
         <div class="library-track" aria-hidden="true"><i id="library-progress-bar"></i></div>
       </section>
 
@@ -26,6 +27,7 @@
         <p>Projects</p>
         <a href="./abliteration/" data-project-link="abliteration"><span class="nav-signal" data-project-mark>R/</span><span>Abliteration<small>23 lessons</small></span></a>
         <a href="./mlx/" data-project-link="mlx"><span class="nav-signal" data-project-mark>M/</span><span>MLX Swift<small>26 lessons</small></span></a>
+        <a href="./cyber-distillation/" data-project-link="cyber-distillation"><span class="nav-signal" data-project-mark>C/</span><span>Cyber Distillation<small>19 chapters</small></span></a>
       </nav>
 
       <p class="sidebar-foot"><span></span> STATIC · SOURCE-GROUNDED · BROWSER</p>
@@ -34,7 +36,7 @@
     <div class="admin-workspace">
       <header class="topbar">
         <p>00 / Library</p>
-        <span>2 field guides</span>
+        <span>3 field guides</span>
       </header>
 
       <main>
@@ -52,6 +54,20 @@
           </div>
 
           <div class="project-grid">
+            <article class="project" data-project="cyber-distillation">
+              <div class="project-mark" data-project-mark>C/</div>
+              <div class="project-copy">
+                <p class="project-type">03 · Local Models · Cybersecurity · Distillation</p>
+                <h3>Cyber Model Distillation Field Guide</h3>
+                <p>A comprehensive guide to Minitron, Laguna MoE, same-size and smaller students, Qwen architecture tradeoffs, datasets, memory, training time, and ongoing learning.</p>
+                <div class="project-progress"><span data-progress>0 of 19 lessons complete</span></div>
+              </div>
+              <div class="project-actions">
+                <a href="./cyber-distillation/">Open guide <span>↗</span></a>
+                <button type="button" data-customize="cyber-distillation">Customize</button>
+                <button type="button" data-reset="cyber-distillation">Reset</button>
+              </div>
+            </article>
             <article class="project" data-project="abliteration">
               <div class="project-mark" data-project-mark>R/</div>
               <div class="project-copy">
@@ -130,7 +146,7 @@
     </form>
   </dialog>
 
-  <script src="./appearance.js?v=1"></script>
-  <script src="./admin.js?v=1"></script>
+  <script src="./appearance.js?v=2"></script>
+  <script src="./admin.js?v=2"></script>
 </body>
 </html>

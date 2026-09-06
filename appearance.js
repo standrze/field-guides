@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = "field-guide-library-appearance-v1";
   const PALETTE = Object.freeze([
+    { name: "Light Green", color: "#a8e6b5", soft: "#ddf4e2" },
     { name: "Swift Lime", color: "#baff63", soft: "#dfffba" },
     { name: "Aqua", color: "#6fe7ff", soft: "#c9f6ff" },
     { name: "Amber", color: "#ffcb42", soft: "#fff0bd" },
@@ -15,6 +16,7 @@
   ]);
 
   const DEFAULTS = Object.freeze({
+    "cyber-distillation": { mark: "C", color: "#a8e6b5" },
     swift: { mark: "S", color: "#79e0bd" },
     "swift-basics": { mark: "C", color: "#e59b5a" },
     swiftnio: { mark: "S", color: "#baff63" },
