@@ -1,9 +1,9 @@
 const projects = {
   "cyber-distillation": {
     name: "Cyber Model Distillation Field Guide",
-    total: 19,
+    total: 21,
     keys: ["cyber-distillation-field-guide-progress-v1"],
-    validIDs: ["orientation", "memory", "minitron", "distillation", "student-choice", "moe", "architecture", "specialization", "new-knowledge", "datasets", "evaluation", "refusals", "hardware", "time", "continual", "codi", "local-evidence", "roadmap", "sources"]
+    validIDs: ["orientation", "memory", "minitron", "distillation", "student-choice", "moe", "architecture", "gpt-oss", "specialization", "new-knowledge", "datasets", "evaluation", "refusals", "hardware", "time", "continual", "codi", "local-evidence", "roadmap", "project-boundary", "sources"]
   },
   abliteration: {
     name: "Abliteration Methods Guide",

@@ -1,6 +1,6 @@
 # Cyber Model Distillation Field Guide
 
-A source-grounded, 19-chapter guide to Minitron-style compression and domain adaptation for legitimate defensive cybersecurity use. Covers same-size and smaller students, Laguna MoE, Qwen architecture differences, new knowledge, data, evaluation, refusal behavior, hardware, time, continual learning, CODI, and from-scratch training.
+A source-grounded, 21-chapter guide to Minitron-style compression and domain adaptation for legitimate defensive cybersecurity use. Covers same-size and smaller students, Laguna MoE, Qwen and GPT-OSS architecture tradeoffs, a lean-model decision rule, the Midnight/training-project boundary, new knowledge, data, evaluation, refusal behavior, hardware, time, continual learning, CODI, and from-scratch training.
 
 Live: https://standrze.github.io/field-guides/cyber-distillation/
 
