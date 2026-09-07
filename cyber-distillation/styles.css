@@ -16,7 +16,6 @@ main { background:transparent; }
 .sidebar-foot { color:#aab6ad; letter-spacing:.04em; }
 .progress-copy { color:#c4cec7; }
 .key-hint { min-width:180px; }
-.lesson-home-grid { width:52px; height:52px; top:24px; right:26px; }
 #lesson { max-width:1080px; padding:76px 60px 64px; background:#fff; min-height:calc(100vh - 140px); }
 #lesson p, #lesson li, #lesson td { color:var(--ink); }
 #lesson p, #lesson li { font-size:1.125rem; line-height:1.78; }
@@ -62,6 +61,6 @@ button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #26
 .skip-link { position:fixed; z-index:30; top:-80px; left:12px; padding:12px 18px; background:white; border:2px solid #267b42; }
 .skip-link:focus { top:12px; }
 @media(max-width:1100px) { :root { --sidebar:290px; } #lesson { padding:72px 34px 52px; } .lesson-footer { padding:24px 34px 40px; } }
-@media(max-width:820px) { .sidebar { width:min(350px,90vw); } .topbar { padding:0 16px; min-height:66px; height:auto; } .menu-button { font-size:1.4rem; min-height:48px; color:var(--ink); } .key-hint { min-width:0; padding:12px; font-size:.875rem; } .key-hint kbd { display:none; } .crumb { letter-spacing:0; } #lesson { padding:72px 22px 42px; border:0; } .lesson-home-grid { width:38px; height:38px; top:20px; right:22px; } .lesson-meta { gap:0; } .flow { grid-template-columns:1fr; } .lesson-footer { border-left:0; border-right:0; padding:22px; } .table-wrap { max-width:100%; } #lesson th,#lesson td { min-width:140px; } }
+@media(max-width:820px) { .sidebar { width:min(350px,90vw); } .topbar { padding:0 16px; min-height:66px; height:auto; } .menu-button { font-size:1.4rem; min-height:48px; color:var(--ink); } .key-hint { min-width:0; padding:12px; font-size:.875rem; } .key-hint kbd { display:none; } .crumb { letter-spacing:0; } #lesson { padding:72px 22px 42px; border:0; } .lesson-meta { gap:0; } .flow { grid-template-columns:1fr; } .lesson-footer { border-left:0; border-right:0; padding:22px; } .table-wrap { max-width:100%; } #lesson th,#lesson td { min-width:140px; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition:none!important; } }
 @media print { .sidebar,.topbar,.lesson-home-grid,.lesson-footer { display:none; } .shell { display:block; background:white; } #lesson { max-width:none; border:0; padding:0; } }
