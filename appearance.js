@@ -17,6 +17,7 @@
 
   const DEFAULTS = Object.freeze({
     "cyber-distillation": { mark: "C", color: "#a8e6b5" },
+    "model-training": { mark: "AI", color: "#79e0bd" },
     swift: { mark: "S", color: "#79e0bd" },
     "swift-basics": { mark: "C", color: "#e59b5a" },
     swiftnio: { mark: "S", color: "#baff63" },

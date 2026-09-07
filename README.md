@@ -9,6 +9,7 @@ Live library: <https://standrze.github.io/field-guides/>
 
 | Guide | Folder | Live path | Lessons |
 |---|---|---|---:|
+| Model Training Field Guide | model-training/ | <https://standrze.github.io/field-guides/model-training/> | 15 |
 | Abliteration Methods Guide | abliteration/ | <https://standrze.github.io/field-guides/abliteration/> | 23 |
 | MLX Swift Field Guide | mlx/ | <https://standrze.github.io/field-guides/mlx/> | 26 |
 | Cyber Model Distillation Field Guide | cyber-distillation/ | <https://standrze.github.io/field-guides/cyber-distillation/> | 21 |

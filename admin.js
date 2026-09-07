@@ -1,4 +1,10 @@
 const projects = {
+  "model-training": {
+    name: "Model Training Field Guide",
+    total: 15,
+    keys: ["model-training-progress-v1"],
+    validIDs: ["orientation", "inside-model", "training-objectives", "full-tuning", "lora", "qlora", "dense-moe", "model-families", "recurrent-depth", "read-checkpoint", "memory-time", "experiment", "deployment", "glossary", "self-test"]
+  },
   "cyber-distillation": {
     name: "Cyber Model Distillation Field Guide",
     total: 21,
