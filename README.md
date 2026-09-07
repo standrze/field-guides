@@ -27,3 +27,11 @@ guides use relative asset URLs, so they remain portable across GitHub Pages proj
 
 To publish another training, add its generated static folder, add one project entry to the library
 page and admin script, then push to main.
+
+## Library appearance
+
+The root library uses pure white (`#ffffff`) content, page, and header backgrounds
+with black (`#000000`) text. The black sidebar retains white text and orange branding.
+Guide colors are accents on the identifying marks; they do not tint the reading surface.
+Keep these library styles when refreshing generated publishing files, and increment the
+`admin.css` version in `index.html` whenever the stylesheet changes.
