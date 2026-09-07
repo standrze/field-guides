@@ -1,0 +1,36 @@
+/* Loaded after each page's theme so library and guide geometry stay aligned. */
+@media screen {
+  :root {
+    --sidebar: 280px;
+    --reading-width: 1280px;
+    --reading-inset: 58px;
+  }
+
+  .shell { grid-template-columns: var(--sidebar) minmax(0, 1fr); }
+  .admin-workspace > main,
+  .lesson-stage,
+  .lesson-footer {
+    width: min(var(--reading-width), 100%);
+    max-width: var(--reading-width);
+    margin-inline: auto;
+  }
+  .admin-workspace > main,
+  #lesson,
+  .lesson-footer {
+    padding-inline: var(--reading-inset);
+    background-color: #fff;
+  }
+  #lesson { width: 100%; max-width: none; }
+  .topbar { height: 61px; min-height: 61px; }
+  /* The library square sits inside its panel's 1px side border. */
+  .lesson-home-grid { right: 25px; }
+}
+
+@media screen and (max-width: 900px) {
+  :root { --reading-inset: 22px; }
+  .admin-workspace > main,
+  #lesson,
+  .lesson-footer { border-inline: 0; }
+  .lesson-home-grid,
+  .library-home-grid { top: 16px; right: 18px; width: 62px; height: 62px; }
+}

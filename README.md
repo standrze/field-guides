@@ -35,3 +35,10 @@ text. The outer margins use a pale neutral (`#f1f3f1`) grid, with a matching sol
 Guide colors are accents on the identifying marks; they do not tint the reading surface.
 Keep these library styles when refreshing generated publishing files, and increment the
 `admin.css` version in `index.html` whenever the stylesheet changes.
+
+## Shared page layout
+
+Load root `layout.css` after each page’s theme. It keeps the library and all guides
+on the same 1280px reading panel, 280px desktop sidebar, and matching text insets
+and dotted-square placement. Preserve that link when refreshing generated pages.
+Increment its version in all five index files whenever the shared layout changes.
