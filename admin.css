@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
   --ink: #000000;
-  --paper: #ffffff;
+  --paper: #f1f3f1;
   --panel: #ffffff;
   --muted: #000000;
   --line: #000000;
@@ -60,7 +60,11 @@ button { color: inherit; cursor: pointer; }
 .sidebar-foot { margin: auto 22px 26px; color: #fff; font: 11px var(--mono); letter-spacing: .1em; }
 .sidebar-foot span { display: inline-block; width: 7px; height: 7px; margin-right: 6px; background: var(--accent); }
 
-.admin-workspace { min-width: 0; }
+.admin-workspace {
+  min-width: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, .025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
 .topbar { position: sticky; z-index: 2; top: 0; height: 61px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid var(--ink); background: var(--paper); }
 .topbar p, .topbar span { margin: 0; font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
 .topbar span { align-self: stretch; display: flex; align-items: center; padding: 0 24px; color: #fff; background: var(--ink); }

@@ -30,8 +30,8 @@ page and admin script, then push to main.
 
 ## Library appearance
 
-The root library uses pure white (`#ffffff`) content, page, and header backgrounds
-with black (`#000000`) text. The black sidebar retains white text and orange branding.
+The root library uses a pure white (`#ffffff`) reading panel with black (`#000000`)
+text. The outer margins use a pale neutral (`#f1f3f1`) grid, with a matching solid header. The black sidebar retains white text and orange branding.
 Guide colors are accents on the identifying marks; they do not tint the reading surface.
 Keep these library styles when refreshing generated publishing files, and increment the
 `admin.css` version in `index.html` whenever the stylesheet changes.
