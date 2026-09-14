@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-13",
+  "template": "field-guide/starter",
+  "counts": {
+    "openai": 8,
+    "midnight": 9,
+    "mistral": 6,
+    "total": 23
+  },
+  "source_sha256": {
+    "Sources/ModelRunner/ModelHTTPServer.swift": "3b24011281137fa54f80203cd229b044ec90e5efca47a81b965490a32bcfafdb",
+    "Sources/ModelRunner/ResponsesStore.swift": "6ae5243d7563c54b1d4e37f9878ccd346607b49f3377c8fb4c741499905dd079",
+    "Sources/ModelRunnerProtocol/AudioAPIRoute.swift": "6a600b8c2918a9b336fbffa92e1d4be46c7ed54ebab6a7b1abfaa1c3681f05bb",
+    "Sources/ModelRunner/ModelHTTPVision.swift": "d2396e71c9a556c837a45354d50d82882efcae7ca34792f402eb91f445fb2162",
+    "Sources/ModelRunner/ModelHTTPRuntime.swift": "ff9a7be82e53524720b0b3a659a51545af92dcb7498cdf1cc35d1f3aff28e5de",
+    "Sources/ModelRunner/ModelHTTPResponses.swift": "1102b2bc3ebb9a15aef18eaa2b6aefc2411c586992a077907a148dccef100bb1",
+    "Sources/ModelRunner/ModelHTTPInspector.swift": "f6c6e010bc99db6561f99063eb05e22ec98255b933561d1c5e30fa348318eb2c",
+    "Sources/ModelRunner/ModelHTTPAudio.swift": "80fe92dd36767d3f67e3bf069e5ae1faf2e9cd5d17480cecb6a6cd186a912576",
+    "Sources/ModelRunner/ModelLifecycleManager.swift": "fc75843fa01b84ed290dab665a341e35c90943a3dd7173127665fcb50f2b7c93"
+  },
+  "client_source_sha256": {
+    "lowlight/Sources/ModelTransport/OpenAIWire.swift": "8efbf723bfc2f0f521bb5bba8689918c5b88596a71f231363a5d0de73cd5e90d",
+    "lowlight/Sources/ModelChatCore/EndpointModelSession.swift": "c5285a844828840276f41b6b9a6090594880947a1632ef965c29048f5c5b3c14",
+    "lowlight/Sources/lowlight/LowlightApp.swift": "244104786fa11ad566dfce70996e05fc098b9232570249c05325a06afc65dd9f",
+    "lowlight-relay/Sources/ModelTransport/OpenAIWire.swift": "089ec4b72ec5e41a45154d1d97541301151f66fd268daccba20e4000663043fb",
+    "lowlight-relay/Sources/ModelChatCore/EndpointModelSession.swift": "15cbe97faec67dcaae5a4f57d03a4d804f6926fe107e2f962d2d608207388eed",
+    "lowlight-relay/Sources/lowlight/LowlightApp.swift": "abc4a09a5fc6ce1d5bad7a8f8b4a6350ef8dd417399e8201dba8deca9f0c0d12",
+    "lowlight-experiments/Sources/ModelTransport/OpenAIWire.swift": "3a5a3a44ed3d83ef04c8d90b4ebc4b10f13d05c3e11526a7f341aa9d6bb7e464",
+    "lowlight-experiments/Sources/ModelChatCore/EndpointModelSession.swift": "68696416b90f3ef9dbb354f2c814492027fe89d01fb1fbbad21916a15d5dcba2",
+    "lowlight-experiments/Sources/lowlight/LowlightApp.swift": "ac7a0f532eca6977e709c681af0956b7e443f8ab2422544ffd912bbeef80a659"
+  },
+  "client_validation": {
+    "lowlight": 21,
+    "lowlight-relay": 21,
+    "lowlight-experiments": 25,
+    "scope": "Focused model discovery, routing, limits and card refresh tests"
+  }
+}
