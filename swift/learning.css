@@ -1,0 +1,87 @@
+.fg-learning {
+  position: relative;
+  min-height: 112px;
+  padding: 18px 120px 15px 32px;
+  border-bottom: 1px solid #d8d8d4;
+  color: #20201e;
+  background: #fff;
+  font-family: var(--sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+}
+.fg-learning *, .fg-learning *::before, .fg-learning *::after { box-sizing: border-box; }
+.fg-learning [hidden] { display: none !important; }
+.fg-learning-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 13px; }
+.fg-learning-heading > span, .fg-answer-label {
+  color: #4b4b46;
+  font: 700 10px/1.4 var(--mono, ui-monospace, monospace);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.fg-learning a { color: #20201e; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.fg-learning a:hover { color: #20201e; text-decoration-thickness: 2px; }
+.fg-learning-actions, .fg-speech-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.fg-learning-actions { justify-content: space-between; gap: 10px 18px; }
+.fg-learning button {
+  min-height: 35px;
+  margin: 0;
+  padding: 7px 12px;
+  border: 1px solid #c9c9c3;
+  border-radius: 0;
+  color: #20201e;
+  background: #fff;
+  box-shadow: none;
+  font: 600 12px/1.35 var(--sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  cursor: pointer;
+}
+.fg-learning button:hover:not(:disabled) { border-color: #20201e; background: #f3f3ef; }
+.fg-learning button.fg-primary { border-color: #20201e; background: var(--green, #ff9a65); color: #171715; }
+.fg-learning button.fg-primary:hover:not(:disabled) { background: var(--green-deep, #ffe2cf); }
+.fg-learning button:disabled { opacity: .42; cursor: default; }
+.fg-learning :is(button, a, textarea):focus-visible { outline: 2px solid #20201e; outline-offset: 3px; }
+.fg-learning button.fg-ask-toggle { border-color: #20201e; white-space: nowrap; }
+.fg-ask-toggle span { display: inline-block; min-width: 12px; margin-left: 8px; }
+.fg-learning .fg-speech-status { min-height: 17px; margin: 10px 0 0; color: #5a5a53; font-size: 11px; line-height: 1.5; }
+.fg-learning[data-playback="error"] .fg-speech-status { color: #923529; }
+.fg-ask-panel { padding-top: 22px; margin-top: 17px; border-top: 1px solid #d8d8d4; }
+.fg-ask-form label { display: block; color: #20201e; font-size: 17px; font-weight: 650; letter-spacing: -.02em; }
+.fg-learning .fg-ask-context { margin: 6px 0 12px; color: #5a5a53; font-size: 12px; line-height: 1.6; }
+.fg-learning textarea {
+  display: block;
+  resize: vertical;
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  border: 1px solid #a8a8a0;
+  border-radius: 0;
+  color: #20201e;
+  background: #fff;
+  font: 14px/1.6 var(--sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+}
+.fg-learning textarea::placeholder { color: #77776e; opacity: 1; }
+.fg-learning textarea:disabled { background: #f5f5f2; }
+.fg-ask-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.fg-ask-status { flex: 1 1 180px; color: #5a5a53; font-size: 12px; line-height: 1.6; }
+.fg-answer { margin-top: 22px; padding: 18px 0 0; border-top: 1px solid #d8d8d4; }
+.fg-answer-text { margin-top: 9px; color: #20201e; font-size: 14px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.fg-answer-model { display: block; margin-top: 12px; color: #64645c; font: 10px/1.5 var(--mono, ui-monospace, monospace); }
+#lesson .fg-narrating, .lesson-stage article .fg-narrating {
+  outline: 2px solid var(--green, #ff9a65);
+  outline-offset: 7px;
+  scroll-margin-top: 110px;
+}
+@media (max-width: 900px) {
+  .fg-learning { padding-left: 22px; }
+  .fg-learning-actions { justify-content: flex-start; }
+}
+@media (max-width: 560px) {
+  .fg-learning { min-height: 135px; padding: 17px 18px; }
+  .fg-learning-heading { padding-right: 78px; min-height: 28px; margin-bottom: 23px; }
+  .fg-learning-actions { padding-top: 4px; }
+  .fg-learning button { min-height: 39px; padding: 8px 11px; }
+  .fg-learning .fg-speech-status { font-size: 12px; }
+  .fg-ask-form label { font-size: 16px; }
+  .fg-learning textarea { font-size: 16px; }
+}
+@media print { .fg-learning { display: none; } #lesson .fg-narrating { outline: none; } }
+
+.fg-tool-links { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+@media(max-width:600px) { .fg-learning-heading { align-items: flex-start; }.fg-tool-links { justify-content: flex-end; } }

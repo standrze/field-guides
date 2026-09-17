@@ -9,6 +9,8 @@ Live library: <https://standrze.github.io/field-guides/>
 
 | Guide | Folder | Live path | Lessons |
 |---|---|---|---:|
+| Swift Programming Field Guide | swift-basics/ | <https://standrze.github.io/field-guides/swift-basics/> | 18 |
+| SwiftTUI Field Guide | swift/ | <https://standrze.github.io/field-guides/swift/> | 10 |
 | Midnight API Field Guide | midnight-api/ | <https://standrze.github.io/field-guides/midnight-api/> | Single-page reference |
 | Model Training Field Guide | model-training/ | <https://standrze.github.io/field-guides/model-training/> | 15 |
 | Abliteration Methods Guide | abliteration/ | <https://standrze.github.io/field-guides/abliteration/> | 23 |
@@ -42,6 +44,6 @@ Keep these library styles when refreshing generated publishing files, and increm
 Load root `layout.css` after each page’s theme. It keeps the library and all guides
 on the same 1280px reading panel, 280px desktop sidebar, and matching text insets
 and dotted-square placement. Preserve that link when refreshing generated pages.
-Increment its version in all five index files whenever the shared layout changes.
+Increment its version in all seven index files whenever the shared layout changes.
 
 The Midnight API guide is a reference page with no lesson-completion tracking. Its source is maintained in the Midnight project under `Docs/api-field-guide/`; refresh this publishing copy when its API documentation changes.

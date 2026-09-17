@@ -1,4 +1,26 @@
 const projects = {
+  "swift-basics": {
+    name: "Swift Programming Field Guide",
+    total: 18,
+    keys: ["swift-basics-field-guide-progress-v1"]
+  },
+  swift: {
+    name: "SwiftTUI Field Guide",
+    total: 10,
+    keys: ["swifttui-field-guide-progress-v1"]
+  },
+  "midnight-abliteration": {
+    name: "Midnight Abliteration Field Guide",
+    total: 16,
+    keys: ["midnight-abliteration-field-guide-progress-v1"],
+    validIDs: ["orientation", "architecture", "math", "discovery", "recording-hooks", "capture", "recorder", "bridge", "direction", "intervention-hooks", "schedules", "permanent", "workflow", "evaluation", "operations", "diagnostics"]
+  },
+  "bug-bounty-harness": {
+    name: "Bug Bounty Harness Field Guide",
+    total: 16,
+    keys: ["bug-bounty-harness-field-guide-progress-v1"],
+    validIDs: ["orientation", "architecture", "harness-modes", "active-round", "evidence", "proof", "scheduler", "safety", "lowlight", "browser-relay", "providers", "midnight", "local-stack", "artifacts", "extension", "code-map"]
+  },
   "model-training": {
     name: "Model Training Field Guide",
     total: 15,

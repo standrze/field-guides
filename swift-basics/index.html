@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical Swift programming guide for command-line programs, networking, concurrency, testing, and packages.">
+  <meta name="theme-color" content="#e59b5a">
+  <title>Swift Programming Field Guide</title>
+  <link rel="stylesheet" href="./base.css?v=2">
+  <link rel="stylesheet" href="./styles.css?v=4">
+  <link rel="stylesheet" href="./learning.css?v=1">
+  <script src="./pronunciation.js?v=1" defer></script>
+  <script src="./learning.js?v=3" defer></script>
+  <script src="./audiobook-source.js?v=2" defer></script>
+</head>
+<body data-guide-id="swift-basics">
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#orientation" aria-label="Swift CLI &amp; Networking Basics home">
+        <span class="brand-mark">C/</span>
+        <span><strong>Swift Programming</strong><small>CLI · NETWORKING · PACKAGES</small></span>
+      </a>
+      <div class="progress-card">
+        <div class="progress-copy"><span>Your progress</span><strong id="progress-label">0%</strong></div>
+        <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
+      </div>
+      <nav id="course-nav" aria-label="Field guide chapters"></nav>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span> SWIFT · COMMANDS · CLIENTS
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button class="menu-button" id="menu-button" type="button" aria-label="Open guide navigation" aria-expanded="false">☰</button>
+        <div class="crumb" id="crumb">00 / Start here</div>
+        <button class="key-hint" id="search-button" type="button"><kbd>/</kbd> Jump to Lesson</button>
+      </header>
+      <div class="lesson-stage">
+        <a class="lesson-home-grid" href="../" aria-label="Go to the learning library homepage" title="Learning library home"></a>
+        <article id="lesson" tabindex="-1"></article>
+      </div>
+      <footer class="lesson-footer">
+        <button id="previous" class="nav-button" type="button">← Previous</button>
+        <button id="complete" class="complete-button" type="button">Mark complete</button>
+        <button id="next" class="nav-button" type="button">Next →</button>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="search-dialog">
+    <div class="search-box">
+      <label for="search-input">Jump to Lesson</label>
+      <input id="search-input" type="search" placeholder="Try “SwiftPM”, “URLSession”, or “ArgumentParser”…" autocomplete="off">
+      <div id="search-results"></div>
+      <small><kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>enter</kbd> open · <kbd>esc</kbd> close</small>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="guide-data">{"slug":"swift-basics","storageKey":"swift-basics-field-guide-progress-v1","title":"Swift Programming Field Guide"}</script>
+  <script type="application/json" id="course-data">[{"group":"Start here","id":"orientation","level":"Orientation","summary":"Map the Swift skills and package boundaries needed to build dependable command-line and networked applications.","terms":"Swift command line networking architecture packages ownership learning path","time":"8 min","title":"Build the shell before the server"},{"group":"Swift core","id":"language-foundations","level":"Foundations","summary":"Use Swift's value model, functions, and closures to turn configuration and command input into explicit application state.","terms":"let var struct enum optional function closure argument label array dictionary map filter reduce pattern matching guard","time":"22 min","title":"Values, functions, collections, and control flow"},{"group":"Swift core","id":"interfaces-errors-dependencies","level":"Foundations","summary":"Design small interfaces and typed failures so business logic remains testable and integrations remain replaceable.","terms":"protocol generic some any throws Result dependency injection error taxonomy","time":"16 min","title":"Protocols, generics, errors, and dependency seams"},{"group":"Program shape","id":"swiftpm-executables","level":"Practical","summary":"Separate a thin executable target from reusable application logic and pin dependencies deliberately.","terms":"SwiftPM Package.swift executable target library target resources dependencies modules","time":"16 min","title":"Structure an executable with SwiftPM"},{"group":"Program shape","id":"structured-concurrency","level":"Core practice","summary":"Coordinate concurrent network and process work without losing lifetimes, cancellation, or data-race guarantees.","terms":"async await task group cancellation actor Sendable isolation continuation","time":"20 min","title":"Structured concurrency, actors, and Sendable"},{"group":"Command surface","id":"argument-parser","level":"Practical","summary":"Turn a Swift executable into a discoverable, validated, script-friendly command surface.","terms":"ArgumentParser AsyncParsableCommand option flag argument subcommand validation help completion","time":"16 min","title":"Design a command with ArgumentParser"},{"group":"OS boundaries","id":"system-files","level":"Practical","summary":"Choose the right file API and handle paths, descriptors, permissions, and replacement safely.","terms":"Swift System FilePath FileDescriptor Errno filesystem atomic write permissions","time":"15 min","title":"Files and descriptors with Swift System"},{"group":"OS boundaries","id":"subprocesses-signals","level":"Core practice","summary":"Launch child processes without shell ambiguity and own their output, cancellation, and termination lifecycle.","terms":"swift-subprocess executable arguments environment pipe signal cancellation zombie timeout","time":"18 min","title":"Child processes, pipes, and shutdown"},{"group":"HTTP clients","id":"http-modeling","level":"Foundations","summary":"Construct URLs and HTTP messages with typed APIs instead of string concatenation and implicit assumptions.","terms":"URL URLComponents HTTPTypes method header status URI percent encoding request response","time":"16 min","title":"Model URLs and HTTP messages"},{"group":"HTTP clients","id":"urlsession-clients","level":"Practical","summary":"Wrap URLSession with explicit request construction, status validation, decoding, timeouts, and error classification.","terms":"URLSession URLRequest JSONDecoder timeout redirect retry TLS transport status decoding","time":"20 min","title":"Build a disciplined URLSession client"},{"group":"Typed APIs","id":"openapi-generator","level":"Practical","summary":"Turn an OpenAPI document into checked Swift types while keeping transport, generated code, and domain policy separate.","terms":"OpenAPI Generator schema client server types URLSession transport plugin contract","time":"18 min","title":"Generate clients from OpenAPI"},{"group":"Operations","id":"logging-lifecycle","level":"Core practice","summary":"Emit structured diagnostics and coordinate startup, cancellation, and graceful shutdown as one application lifecycle.","terms":"swift-log Logger metadata bootstrap service lifecycle signal graceful shutdown readiness","time":"16 min","title":"Logging and graceful lifecycle"},{"group":"Operations","id":"observability","level":"Core practice","summary":"Instrument useful work with bounded metrics, causal traces, and correctly propagated request context.","terms":"swift-metrics distributed tracing service context counter gauge timer span propagation cardinality","time":"17 min","title":"Metrics, traces, and service context"},{"group":"Trust boundaries","id":"crypto-certificates","level":"Foundations","summary":"Select cryptographic primitives and certificate tooling without confusing encoding, integrity, identity, and transport security.","terms":"Swift Crypto CryptoKit hash MAC signature encryption X509 certificate ASN1 TLS trust","time":"18 min","title":"Cryptography, certificates, and ASN.1"},{"group":"Package choices","id":"package-map","level":"Reference","summary":"Distinguish Apple-maintained, Swift project, SSWG, and independent packages before selecting a command-line or network dependency.","terms":"Apple swiftlang SSWG third party package ownership support matrix selection","time":"20 min","title":"Know who owns each layer"},{"group":"Proof","id":"testing","level":"Core practice","summary":"Build a layered test suite that proves domain policy, adapter contracts, cancellation, and command behavior.","terms":"Swift Testing XCTest fake stub integration URLProtocol clock cancellation subprocess snapshot","time":"20 min","title":"Test policy, adapters, and failure paths"},{"group":"Ship it","id":"shipping-capstone","level":"Capstone","summary":"Turn the course's pulse command into a releasable artifact with documented configuration, evidence, and shutdown behavior.","terms":"release build distribution codesign notarization container configuration exit code pulse capstone","time":"24 min","title":"Package, distribute, and finish the capstone"},{"group":"Sources","id":"sources","level":"Sources","summary":"Read five local standards that anchor HTTP behavior, URI construction, data formats, and transport security.","terms":"RFC HTTP URI JSON TLS CBOR local papers standards sources","time":"12 min","title":"The five standards to keep nearby"}]</script>
+<template id="lesson-orientation"><p class="eyebrow">00 · Start here</p>
+<h1>Build the shell before the server</h1>
+<p class="lede">A dependable Swift service begins as a dependable Swift program: explicit inputs, typed failures, structured concurrency, observable work, and clean shutdown.</p>
+<div class="lesson-meta"><span>◷ 8 MIN</span><span>◇ ORIENTATION</span><span>⌘ SWIFT ON THE COMMAND LINE</span></div>
+<p><strong>Research snapshot:</strong> August 26, 2026. Resolve exact package versions and platform minima from the application’s checked-in package graph.</p>
+<p>This course supplies the layer <strong>under</strong> a web framework and <strong>above</strong> an event-driven networking engine. You will learn enough Swift to structure an executable, call an HTTP API, manage files and child processes, generate a typed API client, add telemetry, and ship the result. SwiftNIO’s event loops, channel pipelines, and byte buffers live in their own field guide.</p>
+<blockquote>
+<p><strong>The central design rule:</strong> keep policy in testable Swift types and push operating-system, network, clock, randomness, and process effects to narrow boundaries.</p>
+</blockquote>
+<h2>The four layers</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Job</th>
+<th>Typical tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>Model values, errors, ownership, and concurrency</td>
+<td>structs, enums, protocols, <code>throws</code>, actors, <code>Sendable</code></td>
+</tr>
+<tr>
+<td>Package</td>
+<td>Build modules and executable products</td>
+<td>Swift Package Manager, Swift Testing or XCTest</td>
+</tr>
+<tr>
+<td>Application</td>
+<td>Parse commands, coordinate work, stop cleanly</td>
+<td>ArgumentParser, Subprocess, Service Lifecycle</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td>Speak protocols and expose evidence</td>
+<td>Foundation, HTTPTypes, OpenAPI, Logging, Metrics, Tracing, Crypto</td>
+</tr>
+</tbody>
+</table>
+<h2>A course-sized project</h2>
+<p>The running capstone is <code>pulse</code>: a CLI that reads configuration, calls a typed health endpoint, emits structured telemetry, optionally launches a local helper, and exits with a meaningful status. It is deliberately small enough that every side effect can be named.</p>
+<p>By the end, its shape should be unsurprising:</p>
+<pre><code class="language-text">pulse (thin command)
+  └─ PulseApplication (orchestration)
+       ├─ HealthClient protocol
+       ├─ ConfigurationStore protocol
+       ├─ ProcessRunner protocol
+       └─ Telemetry adapters
+</code></pre>
+<p>The goal is not to memorize every package. It is to make package selection, boundaries, cancellation, and failure behavior deliberate.</p>
+</template>
+<template id="lesson-language-foundations"><p class="eyebrow">01 · Swift core</p>
+<h1>Make invalid state difficult to express</h1>
+<p class="lede">Command-line software receives strings. Good Swift code converts those strings into validated values once, then works with stronger types.</p>
+<div class="lesson-meta"><span>◷ 22 MIN</span><span>◇ FOUNDATIONS</span><span>LET BEFORE VAR</span></div>
+<p>Prefer <code>let</code> and value types. A <code>struct</code> owns a complete value; copying it creates independent value semantics unless its stored members provide shared reference behavior. Use a class when identity or shared mutable lifetime is the point, not merely because the object has methods.</p>
+<pre><code class="language-swift">struct Endpoint: Hashable, Sendable {
+    let baseURL: URL
+    let timeout: Duration
+}
+
+enum OutputFormat: String, CaseIterable, Sendable {
+    case text, json
+}
+</code></pre>
+<p>An optional means exactly one thing: a value may be absent. Do not use <code>!</code> to turn uncertainty into a crash. Resolve absence at the boundary with <code>guard</code>, <code>if let</code>, a default, or a thrown validation error.</p>
+<pre><code class="language-swift">guard let token = environment["PULSE_TOKEN"], !token.isEmpty else {
+    throw ConfigurationError.missingToken
+}
+</code></pre>
+<h2>Functions name one transformation</h2>
+<p>Functions have explicit parameter and return types. Use argument labels to make a call read clearly,
+and default arguments when there is one unsurprising common case:</p>
+<pre><code class="language-swift">func displayName(for endpoint: Endpoint, format: OutputFormat = .text) -&gt; String {
+    switch format {
+    case .text:
+        endpoint.baseURL.host ?? endpoint.baseURL.absoluteString
+    case .json:
+        #"{"host":"\#(endpoint.baseURL.host ?? "unknown")"}"#
+    }
+}
+
+let name = displayName(for: endpoint)
+let payload = displayName(for: endpoint, format: .json)
+</code></pre>
+<p>The external label is <code>for</code>; <code>endpoint</code> is the local parameter name. The default keeps the common
+call short without hiding which behavior the caller selected. Prefer small, pure functions for
+parsing and policy because they are easy to compose and test. Throw from a function when failure
+needs to reach a caller; errors and protocol-shaped boundaries are covered in the next lesson.</p>
+<h2>Closures are function values</h2>
+<p>A closure can be stored, passed to another function, or returned. Collection operations are the
+most common first use:</p>
+<pre><code class="language-swift">let secureHosts = endpoints
+    .filter { endpoint in endpoint.baseURL.scheme == "https" }
+    .compactMap { $0.baseURL.host }
+    .map { $0.lowercased() }
+    .sorted()
+</code></pre>
+<p>Swift infers each closure’s parameter and result from context; <code>$0</code> is shorthand for the first
+parameter. Use a named parameter when it makes nontrivial logic easier to read. Closures capture
+values from their surrounding scope. Keep mutable captures narrow, and cross concurrency
+boundaries only with the <code>Sendable</code> rules introduced later in this guide.</p>
+<h2>Collections communicate intent</h2>
+<ul>
+<li><p><code>[T]</code> preserves ordered elements and may contain duplicates.</p>
+</li>
+<li><p><code>Set&lt;T&gt;</code> represents uniqueness and membership.</p>
+</li>
+<li><p><code>[Key: Value]</code> represents a lookup table; a subscript returns an optional.</p>
+</li>
+<li><p><code>Sequence</code> is a one-pass iteration interface; <code>Collection</code> adds repeatable traversal and indices.</p>
+</li>
+</ul>
+<p>Transform collections with <code>map</code>, <code>compactMap</code>, <code>filter</code>, and <code>reduce(into:)</code> when those operations make the result clearer. A loop is better when control flow, logging, cancellation, or several effects are involved.</p>
+<h2>Pattern matching is a systems tool</h2>
+<p>Enums model closed state machines without magic strings:</p>
+<pre><code class="language-swift">enum ProbeResult: Sendable {
+    case healthy(latency: Duration)
+    case unhealthy(status: Int, message: String?)
+    case unreachable(URLError.Code)
+}
+
+switch result {
+case .healthy(let latency): print("ok \(latency)")
+case .unhealthy(let status, _): print("http \(status)")
+case .unreachable(let code): print("network \(code)")
+}
+</code></pre>
+<p>This exhaustive switch will fail to compile if a future state is added but not handled. That is cheaper than discovering an unhandled state in production.</p>
+<p>After the language, package, concurrency, and testing foundations in this guide, the local
+<a href="../swift/">SwiftTUI Field Guide</a> starts at the interface boundary. It does not repeat
+these syntax, function, collection, or domain-model lessons.</p>
+</template>
+<template id="lesson-interfaces-errors-dependencies"><p class="eyebrow">02 · Swift core</p>
+<h1>Put effects behind small interfaces</h1>
+<p class="lede">Protocols are most useful when they describe one capability that application policy needs—not every method a concrete library exposes.</p>
+<div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ FOUNDATIONS</span><span>TESTABLE SEAMS</span></div>
+<p>Start from the caller:</p>
+<pre><code class="language-swift">protocol HealthChecking: Sendable {
+    func check() async throws -&gt; ProbeResult
+}
+
+struct PulseApplication: Sendable {
+    let health: any HealthChecking
+
+    func run() async throws -&gt; ExitCode {
+        try await health.check().isHealthy ? .success : .failure
+    }
+}
+</code></pre>
+<p>Use <code>some Protocol</code> when a function hides one concrete return type. Use <code>any Protocol</code> when a runtime box may hold different conforming types. Use a generic type parameter when static specialization or relationships among types matter. None is universally superior; choose the representation that expresses the boundary.</p>
+<h2>Errors are part of the command contract</h2>
+<p>Swift distinguishes four common outcomes:</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optional</td>
+<td>ordinary absence with no diagnostic payload</td>
+</tr>
+<tr>
+<td><code>throws</code></td>
+<td>a failed operation where the caller chooses recovery</td>
+</tr>
+<tr>
+<td><code>Result</code></td>
+<td>storing or transporting success/failure as a value</td>
+</tr>
+<tr>
+<td>process exit code</td>
+<td>the final machine-readable CLI outcome</td>
+</tr>
+</tbody>
+</table>
+<p>Define errors by what callers can do next:</p>
+<pre><code class="language-swift">enum HealthClientError: Error {
+    case invalidConfiguration(String)
+    case transport(underlying: any Error)
+    case rejected(status: Int)
+    case malformedResponse(underlying: any Error)
+}
+</code></pre>
+<p>Preserve the underlying error at integration boundaries. At the top of the executable, map the error once to a concise user message, a richer log event, and a stable nonzero exit code. Do not print and rethrow at every layer; that produces duplicate, context-poor output.</p>
+<h2>Own the abstraction</h2>
+<p>Create application protocols such as <code>Clock</code>, <code>HealthChecking</code>, or <code>ProcessRunning</code> in your own module. Adapt Foundation or a package behind them. Tests can then supply deterministic fakes without teaching the domain layer about URL sessions, environment variables, or process handles.</p>
+</template>
+<template id="lesson-swiftpm-executables"><p class="eyebrow">03 · Program shape</p>
+<h1>Keep `main` thin</h1>
+<p class="lede">Swift Package Manager should describe a small dependency graph: an executable owns startup while library targets own behavior.</p>
+<div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ PRACTICAL</span><span>SWIFTPM</span></div>
+<p>A maintainable package commonly has this shape:</p>
+<pre><code class="language-text">Package.swift
+Sources/
+  PulseCLI/PulseCommand.swift
+  PulseCore/PulseApplication.swift
+  PulseHTTP/FoundationHealthClient.swift
+Tests/
+  PulseCoreTests/
+  PulseHTTPTests/
+</code></pre>
+<pre><code class="language-swift">// Package.swift
+import PackageDescription
+
+let package = Package(
+    name: "Pulse",
+    platforms: [.macOS(.v15)],
+    products: [
+        .executable(name: "pulse", targets: ["PulseCLI"]),
+        .library(name: "PulseCore", targets: ["PulseCore"])
+    ],
+    dependencies: [
+        .package(url: "&lt;swift-argument-parser-repository&gt;", from: "1.7.0")
+    ],
+    targets: [
+        .target(name: "PulseCore"),
+        .target(name: "PulseHTTP", dependencies: ["PulseCore"]),
+        .executableTarget(
+            name: "PulseCLI",
+            dependencies: [
+                "PulseCore",
+                "PulseHTTP",
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ]
+        ),
+        .testTarget(name: "PulseCoreTests", dependencies: ["PulseCore"])
+    ]
+)
+</code></pre>
+<p>The split is more important than the exact number of modules. Avoid both extremes: a single target where every test imports process startup, and dozens of targets with no meaningful dependency boundary.</p>
+<h2>Dependency discipline</h2>
+<ul>
+<li><p>Commit <code>Package.resolved</code> for an application so builds agree on exact transitive versions.</p>
+</li>
+<li><p>Choose a minimum Swift tools version and CI matrix intentionally.</p>
+</li>
+<li><p>Prefer product dependencies over importing internal targets from another package.</p>
+</li>
+<li><p>Treat a major-version update as source review, not an automatic refresh.</p>
+</li>
+<li><p>Use resources through SwiftPM’s resource APIs rather than assuming the working directory.</p>
+</li>
+</ul>
+<p>Run <code>swift package show-dependencies</code> when the graph becomes surprising and <code>swift build -c release</code> before calling an executable shippable. Debug success does not prove release-mode behavior, platform availability, or linkage.</p>
+</template>
+<template id="lesson-structured-concurrency"><p class="eyebrow">04 · Program shape</p>
+<h1>Every task needs an owner</h1>
+<p class="lede">Structured concurrency ties child work to a lexical scope, propagates cancellation, and forces the parent to account for completion.</p>
+<div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ CORE PRACTICE</span><span>ASYNC/AWAIT</span></div>
+<p>An <code>async</code> function may suspend; it does not promise a new thread. Use <code>async let</code> for a fixed, small number of independent operations and a task group for a dynamic collection:</p>
+<pre><code class="language-swift">func checkAll(_ clients: [any HealthChecking]) async -&gt; [ProbeResult] {
+    await withTaskGroup(of: ProbeResult.self, returning: [ProbeResult].self) { group in
+        for client in clients {
+            group.addTask {
+                do { return try await client.check() }
+                catch { return .unreachable(.unknown) }
+            }
+        }
+
+        var results: [ProbeResult] = []
+        for await result in group { results.append(result) }
+        return results
+    }
+}
+</code></pre>
+<p>A plain <code>Task {}</code> inherits actor context and task-local values. <code>Task.detached</code> does not; reserve it for deliberately independent work with explicitly safe inputs. Never use an untracked task merely to silence an <code>await</code> requirement.</p>
+<h2>Cancellation is cooperation</h2>
+<p>Cancellation sets state and many suspending APIs respond by throwing, but CPU loops and custom adapters must check:</p>
+<pre><code class="language-swift">for endpoint in endpoints {
+    try Task.checkCancellation()
+    try await probe(endpoint)
+}
+</code></pre>
+<p>Decide what cancellation means for cleanup, partial output, child processes, temporary files, and exit status. A timeout is normally a race between the operation and a clock, followed by cancellation—not a magical ability to interrupt arbitrary synchronous code.</p>
+<h2>Isolation and transfer</h2>
+<ul>
+<li><p>An actor serializes access to its isolated mutable state; it does not make every operation globally serial.</p>
+</li>
+<li><p>Actor methods can re-enter across <code>await</code>, so validate assumptions again after suspension.</p>
+</li>
+<li><p><code>Sendable</code> marks values safe to cross concurrency domains. Immutable value types often gain it naturally.</p>
+</li>
+<li><p><code>@Sendable</code> closures may execute concurrently and constrain captured state.</p>
+</li>
+<li><p><code>@unchecked Sendable</code> is a promise you must uphold with an auditable synchronization invariant.</p>
+</li>
+</ul>
+<p>Prefer compiler-checked isolation. Locking remains appropriate for small synchronous critical sections, but never hold a blocking lock across <code>await</code>.</p>
+</template>
+<template id="lesson-argument-parser"><p class="eyebrow">05 · Command surface</p>
+<h1>Treat the CLI as a public API</h1>
+<p class="lede">Flags, output, exit codes, and help text are contracts consumed by people, shell scripts, CI jobs, and other programs.</p>
+<div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ PRACTICAL</span><span>ARGUMENTPARSER</span></div>
+<p>Apple’s <code>swift-argument-parser</code> maps declarations to parsing, validation, help, subcommands, and shell completions. For asynchronous work, use <code>AsyncParsableCommand</code>:</p>
+<pre><code class="language-swift">import ArgumentParser
+import Foundation
+
+@main
+struct Pulse: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Check a service health endpoint.",
+        version: "1.0.0"
+    )
+
+    @Argument(help: "Base URL to probe.")
+    var endpoint: URL
+
+    @Option(name: .shortAndLong, help: "Request timeout in seconds.")
+    var timeout: Double = 5
+
+    @Flag(help: "Emit a JSON result on standard output.")
+    var json = false
+
+    mutating func validate() throws {
+        guard timeout &gt; 0 else {
+            throw ValidationError("--timeout must be greater than zero")
+        }
+    }
+
+    mutating func run() async throws {
+        // Construct dependencies, invoke the application, render once.
+    }
+}
+</code></pre>
+<h2>Output channels matter</h2>
+<ul>
+<li><p>Standard output carries the requested result. Keep JSON mode machine-readable.</p>
+</li>
+<li><p>Standard error carries diagnostics and progress.</p>
+</li>
+<li><p>Exit zero means the command completed its documented job; nonzero values categorize failure.</p>
+</li>
+<li><p><code>--help</code> must explain defaults, units, required environment, and destructive behavior.</p>
+</li>
+</ul>
+<p>Use arguments for primary operands, options for named values, and flags for booleans. Prefer a subcommand when a verb has its own options or lifecycle. Validate relationships such as “exactly one of” after parsing, then convert parser values into domain configuration so ArgumentParser does not leak through the application.</p>
+<p>Never accept a secret as a normal command-line argument when an environment variable, protected file descriptor, or platform credential store is available: process argument lists can be observable.</p>
+</template>
+<template id="lesson-system-files"><p class="eyebrow">06 · OS boundaries</p>
+<h1>A path is not a string with a slash</h1>
+<p class="lede">Use Foundation for rich file operations and Swift System when you need explicit, low-level control over paths, descriptors, and operating-system errors.</p>
+<div class="lesson-meta"><span>◷ 15 MIN</span><span>◇ PRACTICAL</span><span>SWIFT SYSTEM</span></div>
+<p>Swift System is a <code>swiftlang</code> project package. Its <code>SystemPackage</code> module provides strongly typed wrappers such as <code>FilePath</code>, <code>FileDescriptor</code>, and <code>Errno</code> across supported platforms. It deliberately stays close to system calls; it is not a replacement for all of Foundation.</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Start with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read or write a complete small file</td>
+<td>Foundation <code>Data</code> / <code>String</code> APIs</td>
+</tr>
+<tr>
+<td>Enumerate directories, resolve app locations, inspect metadata</td>
+<td><code>FileManager</code> and <code>URL</code></td>
+</tr>
+<tr>
+<td>Stream bytes through a descriptor or work with standard streams</td>
+<td>Swift System</td>
+</tr>
+<tr>
+<td>Express a native filesystem path without URL semantics</td>
+<td>Swift System <code>FilePath</code></td>
+</tr>
+<tr>
+<td>Coordinate complex asynchronous file I/O</td>
+<td>a package designed for that workload</td>
+</tr>
+</tbody>
+</table>
+<h2>Descriptor ownership must be visible</h2>
+<p>Opening a descriptor allocates a finite process resource. Name the owner, close exactly once, handle partial reads and writes, and expect interruption or short progress. A single write is not guaranteed to consume an entire buffer.</p>
+<pre><code class="language-swift">import SystemPackage
+
+let path = FilePath("/tmp/pulse-status")
+let descriptor = try FileDescriptor.open(path, .readOnly)
+defer { try? descriptor.close() }
+// Read in a bounded loop; decode only after defining an encoding.
+</code></pre>
+<p>Use descriptor-relative or platform-safe APIs when defending against path races. Validate a user-selected path against the operation you intend; lexical prefix tests alone do not prove that symlinks or mount points remain inside a directory.</p>
+<h2>Replace, do not half-write</h2>
+<p>For durable configuration or state:</p>
+<ol>
+<li><p>create a temporary file in the destination filesystem;</p>
+</li>
+<li><p>write all bytes, checking every result;</p>
+</li>
+<li><p>set the intended permissions;</p>
+</li>
+<li><p>synchronize if your durability requirement needs it;</p>
+</li>
+<li><p>atomically rename or replace the destination;</p>
+</li>
+<li><p>clean up the temporary file on failure.</p>
+</li>
+</ol>
+<p>Atomic replacement prevents readers from observing a partially written file. It does not by itself guarantee power-loss durability, preserve every metadata field, or coordinate two writers. State those requirements separately.</p>
+</template>
+<template id="lesson-subprocesses-signals"><p class="eyebrow">07 · OS boundaries</p>
+<h1>A child process is a resource graph</h1>
+<p class="lede">Launching is the easy part. Correct code also owns arguments, environment, standard streams, exit status, cancellation, and reaping.</p>
+<div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ CORE PRACTICE</span><span>SWIFT SUBPROCESS</span></div>
+<p>Swift Subprocess is a <code>swiftlang</code> project package that provides structured, cross-platform process execution for Swift concurrency. Prefer it for new SwiftPM programs when its supported-platform contract fits. Foundation’s <code>Process</code> remains available, especially in Apple-platform code and existing applications.</p>
+<h2>Never build a command by concatenating untrusted text</h2>
+<p>Pass an executable and an argument array. Do not insert user input into <code>sh -c</code>, <code>bash -c</code>, or an equivalent shell command unless shell interpretation is the explicit, tightly controlled feature. Quoting a string is not the same security boundary as avoiding the shell.</p>
+<pre><code class="language-text">executable: /usr/bin/git
+arguments:  ["status", "--short", "--", userSelectedPath]
+environment: an explicit inherited-or-replaced policy
+</code></pre>
+<p>The <code>--</code> marker is tool-specific, not a universal process API. Use it when the invoked program defines it to end option parsing.</p>
+<h2>Bound every stream</h2>
+<p>A child can block if its stdout or stderr pipe fills while the parent waits for exit. Consume both streams concurrently, redirect them deliberately, or use a package operation that does so. Never collect unbounded output from an untrusted or long-running process into memory.</p>
+<p>Define these policies before launch:</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Explicit decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>executable</td>
+<td>fixed path, searched name, or approved lookup policy</td>
+</tr>
+<tr>
+<td>environment</td>
+<td>inherit all, allowlist keys, or replace entirely</td>
+</tr>
+<tr>
+<td>working directory</td>
+<td>explicit path; never rely accidentally on the caller</td>
+</tr>
+<tr>
+<td>input</td>
+<td>closed, inherited, byte buffer, or streaming producer</td>
+</tr>
+<tr>
+<td>output</td>
+<td>inherited, bounded capture, file, or streaming consumer</td>
+</tr>
+<tr>
+<td>completion</td>
+<td>accepted exit codes and signal interpretation</td>
+</tr>
+</tbody>
+</table>
+<h2>Cancellation is a sequence</h2>
+<p>Canceling the Swift task does not automatically prove the operating-system process stopped. A robust adapter requests graceful termination, allows a bounded grace period, escalates when policy permits, continues draining pipes, and awaits the process result. On parent shutdown, ensure no child is orphaned unintentionally.</p>
+<p>Signals are asynchronous notifications, not places to run arbitrary Swift cleanup. Convert termination signals into a controlled cancellation/shutdown path, then perform cleanup in normal async code.</p>
+</template>
+<template id="lesson-http-modeling"><p class="eyebrow">08 · HTTP clients</p>
+<h1>HTTP starts with message semantics</h1>
+<p class="lede">Before choosing a transport, model the target URI, request method, fields, body, and acceptable response as separate decisions.</p>
+<div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ FOUNDATIONS</span><span>RFC-AWARE</span></div>
+<p>Foundation’s <code>URL</code> is the normal address type on Apple platforms and in cross-platform Foundation. Use <code>URLComponents</code> and <code>URLQueryItem</code> when constructing a URL from parts:</p>
+<pre><code class="language-swift">var components = URLComponents()
+components.scheme = "https"
+components.host = "api.example.test"
+components.path = "/v1/search"
+components.queryItems = [URLQueryItem(name: "q", value: userQuery)]
+
+guard let url = components.url else { throw ClientError.invalidURL }
+</code></pre>
+<p>Percent encoding depends on <em>which URI component</em> contains the data. Encoding an entire URL-sized string or interpolating a query directly into it can change structure rather than represent data.</p>
+<h2>HTTP is not “send bytes, get JSON”</h2>
+<p>An HTTP request has a method, target, field section, and optional content. A response has a status, fields, and optional content. Status codes carry semantics: a transport-successful <code>404</code> or <code>503</code> is still an application-level outcome.</p>
+<p>Apple’s Swift HTTP Types package supplies shared value types for HTTP requests, responses, methods, status codes, and fields. Its companion Foundation integration bridges those values to Foundation transports. Use it when multiple transports or generated clients should agree on one HTTP message model; a direct <code>URLRequest</code> is still fine for a small Foundation-only client.</p>
+<h2>Decide semantics up front</h2>
+<ul>
+<li><p><code>GET</code> is safe and idempotent by definition; do not attach state changes to it.</p>
+</li>
+<li><p>A retry is appropriate only when the operation and failure phase make repetition safe.</p>
+</li>
+<li><p>Authorization, cookies, and tracing fields may contain sensitive data; redact them from logs.</p>
+</li>
+<li><p>Content type describes the representation sent; accept fields describe desired response representations.</p>
+</li>
+<li><p>Caches, redirects, proxies, and authentication challenges are participants, not invisible plumbing.</p>
+</li>
+</ul>
+<p>Read RFC 9110 locally in the Sources lesson before designing retry, cache, or status behavior from memory.</p>
+</template>
+<template id="lesson-urlsession-clients"><p class="eyebrow">09 · HTTP clients</p>
+<h1>Transport success is not application success</h1>
+<p class="lede">A useful client separates request construction, transport, HTTP status handling, representation decoding, and domain mapping.</p>
+<div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ PRACTICAL</span><span>FOUNDATION NETWORKING</span></div>
+<p>Wrap <code>URLSession</code> at a narrow boundary:</p>
+<pre><code class="language-swift">struct FoundationHealthClient: HealthChecking {
+    let session: URLSession
+    let endpoint: URL
+
+    func check() async throws -&gt; ProbeResult {
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 5
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw HealthClientError.malformedResponse(underlying: ClientInvariant.notHTTP)
+        }
+        guard 200..&lt;300 ~= http.statusCode else {
+            throw HealthClientError.rejected(status: http.statusCode)
+        }
+        return try JSONDecoder().decode(HealthPayload.self, from: data).result
+    }
+}
+</code></pre>
+<p>In production, preserve the response metadata needed to diagnose a failure, but cap and redact any error body before logging it. A decoding failure, HTTP rejection, DNS failure, TLS failure, timeout, and cancellation deserve different internal categories even if the human-facing message remains brief.</p>
+<h2>Configure once, inject the session</h2>
+<p>Select cache, cookie, proxy, connection, resource-timeout, and ephemeral-versus-persistent behavior in <code>URLSessionConfiguration</code>. Inject the resulting session so tests can use a controlled transport boundary. Do not silently mutate global shared configuration from a library.</p>
+<h2>Retry only with a budget</h2>
+<p>Retry policy needs all of these: an eligible operation, eligible failure, maximum attempts or deadline, backoff, jitter, cancellation, and observability. Respect server guidance such as <code>Retry-After</code> where applicable. Repeating a non-idempotent request can duplicate a charge or mutation; a request identifier is useful only if the server implements corresponding deduplication.</p>
+<p>Use the platform’s default TLS validation. Disabling trust checks to make a test pass removes authentication. If an application has a justified pinning or private-CA requirement, isolate it, define rotation and recovery, and test failure paths.</p>
+</template>
+<template id="lesson-openapi-generator"><p class="eyebrow">10 · Typed APIs</p>
+<h1>Generate the contract, not the application</h1>
+<p class="lede">OpenAPI generation removes hand-written wire-model drift; it does not decide product policy, retries, authentication, or domain meaning.</p>
+<div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ PRACTICAL</span><span>APPLE OPENAPI TOOLCHAIN</span></div>
+<p>Apple’s Swift OpenAPI toolchain is modular:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Swift OpenAPI Generator</td>
+<td>build plugin and code generation</td>
+</tr>
+<tr>
+<td>Swift OpenAPI Runtime</td>
+<td>shared generated-code runtime types</td>
+</tr>
+<tr>
+<td>Swift OpenAPI URLSession</td>
+<td>client transport backed by URLSession</td>
+</tr>
+<tr>
+<td>another transport</td>
+<td>server or client integration selected by the application</td>
+</tr>
+</tbody>
+</table>
+<p>A target usually depends on the runtime and a transport, and invokes the generator plugin. The target also contains the OpenAPI document and generator configuration. Generate types plus a client for outbound calls; generate types plus server stubs for inbound implementations.</p>
+<pre><code class="language-yaml"># openapi-generator-config.yaml
+generate:
+  - types
+  - client
+accessModifier: internal
+</code></pre>
+<pre><code class="language-swift">let transport = URLSessionTransport()
+let generated = Client(
+    serverURL: configuration.serverURL,
+    transport: transport
+)
+// Call a generated operation, then map its typed output into domain values.
+</code></pre>
+<p>Exact generated operation and type names come from the document. Keep that generated vocabulary at the adapter boundary instead of letting it become the entire application’s domain model.</p>
+<h2>Contract workflow</h2>
+<ol>
+<li><p>lint and review the OpenAPI document as source;</p>
+</li>
+<li><p>generate in a reproducible build;</p>
+</li>
+<li><p>compile consumers to reveal contract changes;</p>
+</li>
+<li><p>run fixture and integration tests for encoding, decoding, and statuses;</p>
+</li>
+<li><p>classify breaking changes before deployment.</p>
+</li>
+</ol>
+<p>The document cannot guarantee the deployed server behaves as described. Test examples and edge cases against a controlled implementation. Authentication still belongs in middleware or a transport wrapper, and secrets still need explicit storage and redaction policy.</p>
+<p>Choose an integration package by ownership and compatibility rather than assuming Apple maintains every transport. For example, a framework’s OpenAPI transport may be a separate community-maintained package even though the generator and runtime are Apple packages.</p>
+</template>
+<template id="lesson-logging-lifecycle"><p class="eyebrow">11 · Operations</p>
+<h1>Startup and shutdown are features</h1>
+<p class="lede">A service is correct only if it can become ready, explain its work, stop accepting new work, and finish or cancel what remains.</p>
+<div class="lesson-meta"><span>◷ 16 MIN</span><span>◇ CORE PRACTICE</span><span>SSWG PACKAGES</span></div>
+<p>SwiftLog supplies a stable logging API while applications choose a backend. Configure <code>LoggingSystem</code> once in the executable before concurrent work starts. Libraries should accept or create a <code>Logger</code> without replacing the application’s global backend.</p>
+<pre><code class="language-swift">import Logging
+
+var logger = Logger(label: "com.example.pulse.health")
+logger[metadataKey: "endpoint"] = .string(endpoint.host ?? "unknown")
+logger.info("health check completed", metadata: [
+    "status": .stringConvertible(status),
+    "attempt": .stringConvertible(attempt)
+])
+</code></pre>
+<p>Use stable event text and structured metadata for identifiers and dimensions. Do not log authorization fields, session tokens, private keys, full request bodies, or unbounded user content. Redaction is part of the schema, not a last-minute regular expression.</p>
+<h2>Lifecycle is more than a signal handler</h2>
+<p>Swift Service Lifecycle coordinates long-running <code>Service</code> values, cancellation, and graceful shutdown. It fits servers, workers, and supervisors; a one-shot CLI may need only its structured task tree.</p>
+<p>A controlled shutdown normally follows this order:</p>
+<ol>
+<li><p>receive the platform termination request through the lifecycle boundary;</p>
+</li>
+<li><p>mark the application unready and stop accepting new work;</p>
+</li>
+<li><p>cancel or drain background services according to policy;</p>
+</li>
+<li><p>allow in-flight work a bounded grace period;</p>
+</li>
+<li><p>flush or finish telemetry where supported;</p>
+</li>
+<li><p>close files, connections, and child processes;</p>
+</li>
+<li><p>return a documented exit status.</p>
+</li>
+</ol>
+<p>Keep liveness and readiness distinct. Liveness asks whether supervision should restart the process. Readiness asks whether the process should receive new work. During graceful shutdown, a healthy process can be live but deliberately not ready.</p>
+<p>SwiftLog and Swift Service Lifecycle are server-ecosystem packages developed through the Swift Server Work Group community. Their API/backend separation lets a Hummingbird application and a command-line worker share application code without hard-wiring one logging vendor or process supervisor.</p>
+</template>
+<template id="lesson-observability"><p class="eyebrow">12 · Operations</p>
+<h1>Make behavior explainable without a debugger</h1>
+<p class="lede">Logs describe events, metrics summarize populations, and traces follow causally related work. Use each signal for the question it answers.</p>
+<div class="lesson-meta"><span>◷ 17 MIN</span><span>◇ CORE PRACTICE</span><span>SSWG OBSERVABILITY</span></div>
+<p>The server ecosystem separates instrumentation APIs from backends:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Swift Metrics</td>
+<td>counters, gauges/recorders, and timers through a backend-neutral API</td>
+</tr>
+<tr>
+<td>Swift Distributed Tracing</td>
+<td>spans and tracer API</td>
+</tr>
+<tr>
+<td>Swift Service Context</td>
+<td>task-local propagation of trace and request metadata</td>
+</tr>
+</tbody>
+</table>
+<p>Applications bootstrap concrete backends once. Libraries instrument through the APIs and should remain usable when no production backend is installed.</p>
+<h2>Design the question first</h2>
+<p>A useful request instrument might record:</p>
+<ul>
+<li><p>a counter by operation and broad result class;</p>
+</li>
+<li><p>a latency distribution by operation;</p>
+</li>
+<li><p>a trace span carrying request, decode, and retry events;</p>
+</li>
+<li><p>a structured log tied to the span or request identifier.</p>
+</li>
+</ul>
+<p>Do not place user IDs, full URLs, request IDs, error messages, or other nearly unique values in metric dimensions. Unbounded label cardinality raises memory and storage cost and can make the telemetry system fail during the incident it was meant to explain.</p>
+<h2>Propagate context across boundaries</h2>
+<p>Service context follows structured task-local work, but network and process boundaries require explicit injection and extraction. An outbound client may serialize an allowed trace context into HTTP fields; the receiver validates and extracts it into a new local context. Do not treat propagated baggage as authenticated authorization data.</p>
+<p>When creating unstructured tasks, detached tasks, callbacks, or adapters around legacy APIs, test whether context still reaches the child. Missing propagation produces disconnected traces; copying all context without limits can propagate sensitive or attacker-controlled data.</p>
+<h2>Instrument failure and cancellation</h2>
+<p>Record attempts separately from logical operations so retries do not make throughput look successful. Distinguish cancellation from transport failure, and do not report expected shutdown cancellation as an application fault. Telemetry calls must not become an unbounded blocking path in the request they observe.</p>
+</template>
+<template id="lesson-crypto-certificates"><p class="eyebrow">13 · Trust boundaries</p>
+<h1>Name the security property before the primitive</h1>
+<p class="lede">Hashing, message authentication, digital signatures, encryption, certificate validation, and TLS solve different problems.</p>
+<div class="lesson-meta"><span>◷ 18 MIN</span><span>◇ FOUNDATIONS</span><span>APPLE SECURITY PACKAGES</span></div>
+<p>Apple’s Swift Crypto exposes a cross-platform API closely aligned with CryptoKit for common cryptographic operations. Swift Certificates models X.509 certificates and validation building blocks, while Swift ASN.1 parses and serializes the underlying ASN.1 structures. Use the highest-level package that actually solves the requirement.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Appropriate starting point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>detect accidental byte changes</td>
+<td>a cryptographic digest, if collision resistance is required</td>
+</tr>
+<tr>
+<td>prove a message came from a party sharing a secret</td>
+<td>a message authentication code</td>
+</tr>
+<tr>
+<td>prove possession of a private key</td>
+<td>a verified digital signature</td>
+</tr>
+<tr>
+<td>hide content and detect modification</td>
+<td>authenticated encryption</td>
+</tr>
+<tr>
+<td>bind a public key to a named identity</td>
+<td>certificate chain plus validation policy</td>
+</tr>
+<tr>
+<td>secure HTTP in transit</td>
+<td>the transport’s correctly configured TLS stack</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-swift">import Crypto
+
+let digest = SHA256.hash(data: payload)
+let key = SymmetricKey(size: .bits256)
+let authenticationCode = HMAC&lt;SHA256&gt;.authenticationCode(
+    for: payload,
+    using: key
+)
+</code></pre>
+<p>The digest alone does not authenticate an untrusted message. A MAC needs shared-key distribution. A signature needs public-key identity and verification policy. Encryption without authentication is usually the wrong construction.</p>
+<h2>Keep protocol policy out of ad hoc code</h2>
+<p>Do not implement your own TLS handshake, ASN.1 parser, certificate chain builder, padding scheme, random-number generator, or password storage format. Passwords require a password-specific, salted, work-factor-controlled construction—not a fast general-purpose hash.</p>
+<p>Certificates require more than parsing: trust anchors, hostname or service identity, validity, signature algorithms, path constraints, revocation policy where applicable, and clock behavior all matter. Let URLSession perform standard HTTPS validation unless a documented requirement calls for a reviewed custom trust policy.</p>
+<p>Store long-lived private keys and tokens in an appropriate platform or deployment secret facility. Swift values do not automatically guarantee secure erasure from every copy, optimization, or buffer; design key lifetime and access boundaries accordingly.</p>
+</template>
+<template id="lesson-package-map"><p class="eyebrow">14 · Package choices</p>
+<h1>“Official Swift” is not one ownership label</h1>
+<p class="lede">Repository organization, community governance, API stability, platform support, and commercial support are separate facts.</p>
+<div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ REFERENCE</span><span>OWNERSHIP MATRIX</span></div>
+<p>This snapshot is a selection guide, not a permanent guarantee. Governance and repository homes can move; inspect the package’s current maintainers, release history, security policy, license, and compatibility before adoption.</p>
+<table>
+<thead>
+<tr>
+<th>Stewardship lane</th>
+<th>Package or API</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple-hosted open source</td>
+<td>ArgumentParser 1.8.x; Swift Configuration 1.2.x</td>
+<td>command grammar; layered environment, file, and command configuration</td>
+</tr>
+<tr>
+<td>Apple-hosted open source</td>
+<td>Swift HTTP Types 1.6.x</td>
+<td>transport-neutral HTTP request and response values</td>
+</tr>
+<tr>
+<td>Apple-hosted open source</td>
+<td>OpenAPI Generator 1.13.x, Runtime 1.12.x, URLSession transport 1.3.x</td>
+<td>generated API contracts and Foundation client transport</td>
+</tr>
+<tr>
+<td>Apple-hosted open source</td>
+<td>SwiftLog 1.15.x; Metrics 2.11.x; Distributed Tracing 1.4.x; Service Context 1.3.x</td>
+<td>backend-neutral logs, metrics, spans, and context propagation</td>
+</tr>
+<tr>
+<td>Apple-hosted open source</td>
+<td>Swift Crypto 4.5.x; Certificates 1.19.x; ASN.1 1.7.x</td>
+<td>cryptographic primitives, X.509 modeling, ASN.1 structures</td>
+</tr>
+<tr>
+<td>Apple-hosted open source</td>
+<td>Async Algorithms 1.1.x; Collections 1.6.x; Atomics 1.3.x</td>
+<td>selected async-sequence operators, data structures, and low-level atomics</td>
+</tr>
+<tr>
+<td>Swift project (<code>swiftlang</code>)</td>
+<td>Swift System 1.8.x; Swift Subprocess 0.5.x</td>
+<td>typed system calls and structured child-process execution</td>
+</tr>
+<tr>
+<td>Swift project (<code>swiftlang</code>)</td>
+<td>Swift Testing; swift-format</td>
+<td>tests tied to the toolchain and consistent source formatting</td>
+</tr>
+<tr>
+<td>Apple SDK, not SwiftPM</td>
+<td>Foundation/URLSession, URLSessionWebSocketTask, Network.framework, CryptoKit</td>
+<td>Apple-platform HTTP, WebSockets, lower-level network connections/listeners, and platform crypto</td>
+</tr>
+<tr>
+<td>Swift Server organization</td>
+<td>ServiceLifecycle 2.12.x; AsyncHTTPClient 1.36.x</td>
+<td>graceful service coordination and server-oriented HTTP client workloads</td>
+</tr>
+<tr>
+<td>Independent / community</td>
+<td>Hummingbird, Vapor, framework OpenAPI transports, gRPC Swift packages</td>
+<td>application frameworks and integrations maintained outside Apple</td>
+</tr>
+</tbody>
+</table>
+<p>Foundation, URLSession, Network.framework, Swift Package Manager, and Swift concurrency are platform or toolchain capabilities rather than ordinary third-party package choices. The <code>swift-foundation</code> repository is the development home of Foundation; shipping applications import the Foundation supplied by their SDK or toolchain rather than adding that repository as a package dependency.</p>
+<div class="scope-banner"><strong>Snapshot date</strong><p>Versions in this table were checked on 26 August 2026. Ownership and SSWG maturity are different properties: for example, an Apple-hosted package may also be SSWG Graduated or Incubating. Recheck tags, platform floors, and the SSWG package index before an upgrade.</p></div>
+<h2>Selection sequence</h2>
+<ol>
+<li><p>Write the required platforms, deployment shape, concurrency model, protocol features, and support horizon.</p>
+</li>
+<li><p>Check whether a toolchain or Foundation API already satisfies the need.</p>
+</li>
+<li><p>Prefer a narrow package whose ownership and lifecycle fit the application.</p>
+</li>
+<li><p>Verify Swift-version and platform compatibility across the entire dependency graph.</p>
+</li>
+<li><p>Prototype cancellation, shutdown, backpressure, error mapping, and observability—not only the happy path.</p>
+</li>
+<li><p>Pin an application resolution and establish an update cadence.</p>
+</li>
+</ol>
+<p>Do not add SwiftNIO merely because an application uses a network. URLSession plus structured concurrency is often the simplest outbound HTTP client. Choose SwiftNIO when you need its event-driven server/client primitives, protocol pipelines, or ecosystem—and then learn its ownership and threading rules in the separate guide.</p>
+<p>Likewise, an OpenAPI generator can be Apple-maintained while a Hummingbird transport is maintained by the Hummingbird community. State both facts instead of flattening the stack into “Apple” or “third party.”</p>
+</template>
+<template id="lesson-testing"><p class="eyebrow">15 · Proof</p>
+<h1>Test the boundary you claim to own</h1>
+<p class="lede">A fast fake proves application policy; only a controlled real boundary proves an HTTP, filesystem, or process adapter.</p>
+<div class="lesson-meta"><span>◷ 20 MIN</span><span>◇ CORE PRACTICE</span><span>SWIFT TESTING</span></div>
+<p>Swift Testing supports concise test functions, parameterization, traits, async code, and expectation macros. XCTest remains valid for existing suites and APIs that specifically integrate with it. Choose deliberately; a package can contain both during migration, but avoid duplicating the same assertion in two frameworks.</p>
+<pre><code class="language-swift">import Testing
+@testable import PulseCore
+
+@Test("unhealthy probes return a failing exit code")
+func unhealthyExit() async throws {
+    let app = PulseApplication(health: StubHealth(result: .unhealthy(
+        status: 503,
+        message: "maintenance"
+    )))
+
+    #expect(try await app.run() == .failure)
+}
+</code></pre>
+<h2>Four useful layers</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Proves</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pure unit</td>
+<td>parsing, validation, state transitions, error mapping</td>
+<td>table-driven endpoint and config cases</td>
+</tr>
+<tr>
+<td>adapter contract</td>
+<td>request shape and response/error mapping</td>
+<td>controlled URL loading or injected transport</td>
+</tr>
+<tr>
+<td>local integration</td>
+<td>real sockets, files, signals, and child processes</td>
+<td>loopback server on an assigned port</td>
+</tr>
+<tr>
+<td>command acceptance</td>
+<td>stdout, stderr, exit status, installed resource lookup</td>
+<td>run the release executable in a temporary directory</td>
+</tr>
+</tbody>
+</table>
+<p>Use temporary directories created per test and never assume test execution order or repository working directory. Bind integration servers to loopback and an automatically assigned port. Bound every wait; a hanging test is not useful evidence.</p>
+<p>Inject a controllable clock for timeout and backoff policy. Test cancellation before work begins, during suspension, and during shutdown. For subprocess adapters, test large stdout and stderr concurrently, nonzero exit, missing executable, timeout, and cancellation without relying on internet services.</p>
+<p>Avoid snapshots of volatile text when a semantic assertion is clearer. Help and JSON schemas can justify snapshots because they are public interfaces; normalize timestamps, paths, terminal width, and ordering first.</p>
+</template>
+<template id="lesson-shipping-capstone"><p class="eyebrow">16 · Ship it</p>
+<h1>Ship an artifact, not a source-tree assumption</h1>
+<p class="lede">A release is the executable plus its runtime dependencies, resources, configuration contract, provenance, and operational proof.</p>
+<div class="lesson-meta"><span>◷ 24 MIN</span><span>◇ CAPSTONE</span><span>RELEASE CHECKLIST</span></div>
+<p>Build and test the configuration you distribute. <code>swift build -c release</code> produces an optimized artifact, but it does not automatically solve architecture selection, dynamic-library availability, resources, code signing, notarization, container base compatibility, or installation paths.</p>
+<p>For macOS distribution, decide architecture coverage and follow the applicable signing and notarization workflow. For Linux, build against the intended distribution/runtime contract or a reproducible container build and run in the target environment. Record the Swift toolchain and resolved package graph used to produce the artifact.</p>
+<h2>Configuration is a contract</h2>
+<p>Choose and document precedence, for example:</p>
+<pre><code class="language-text">command options &gt; environment &gt; configuration file &gt; defaults
+</code></pre>
+<p>Validate the merged configuration once. Print effective non-secret configuration in a diagnostic mode, but never echo credentials. Document paths relative to a known base rather than the launcher’s current directory.</p>
+<h2>Capstone: `pulse`</h2>
+<p>Complete a command that:</p>
+<ol>
+<li><p>parses <code>check</code> and <code>version</code> subcommands with ArgumentParser;</p>
+</li>
+<li><p>validates one HTTPS base URL, a positive timeout, and text or JSON output;</p>
+</li>
+<li><p>loads a token through an injected secret source;</p>
+</li>
+<li><p>calls a generated OpenAPI client over its URLSession transport;</p>
+</li>
+<li><p>maps the generated response into <code>ProbeResult</code>;</p>
+</li>
+<li><p>optionally launches a fixed local diagnostic helper without a shell;</p>
+</li>
+<li><p>emits structured logs, bounded metrics, and a trace span without secrets;</p>
+</li>
+<li><p>responds to cancellation and leaves no child process or temporary file behind;</p>
+</li>
+<li><p>writes only the requested result to stdout and diagnostics to stderr;</p>
+</li>
+<li><p>returns stable, documented exit codes.</p>
+</li>
+</ol>
+<h2>Definition of done</h2>
+<ul>
+<li><p>Unit tests cover configuration precedence, validation, mapping, and exit codes.</p>
+</li>
+<li><p>Adapter tests cover HTTP success, rejection, malformed JSON, timeout, TLS failure classification, and cancellation.</p>
+</li>
+<li><p>Process tests cover missing executable, large dual-stream output, nonzero exit, and termination.</p>
+</li>
+<li><p>A local integration test exercises the release executable from outside the repository.</p>
+</li>
+<li><p><code>--help</code>, completion generation, JSON output, and error text are reviewed as public interfaces.</p>
+</li>
+<li><p>The dependency resolution, license inventory, change log, install/uninstall steps, and supported platforms accompany the release.</p>
+</li>
+</ul>
+<p>The final review question is simple: can another person run, automate, diagnose, stop, and remove this command without knowing how the source tree is arranged?</p>
+</template>
+<template id="lesson-sources"><p class="eyebrow">17 · Sources</p>
+<h1>The five standards to keep nearby</h1>
+<p class="lede">Framework documentation explains an API. These local specifications explain the wire semantics that survive every framework change.</p>
+<div class="lesson-meta"><span>◷ 12 MIN</span><span>◇ SOURCES</span><span>LOCAL PDF LIBRARY</span></div>
+<p>Read in this order: HTTP semantics first, then URI syntax and JSON, followed by TLS and CBOR when the application needs their deeper contracts.</p>
+<div class="reading-list">
+  <a class="reading-card" href="./papers/01-rfc-9110-http-semantics.pdf">
+    <span class="reading-number">01</span>
+    <span class="reading-copy"><strong>RFC 9110: HTTP Semantics</strong><small>IETF · 2022</small><span>Methods, status codes, fields, caching vocabulary, intermediaries, and the semantics required to design correct retries and clients.</span></span>
+    <b>OPEN PDF ↗</b>
+  </a>
+  <a class="reading-card" href="./papers/02-rfc-3986-uri.pdf">
+    <span class="reading-number">02</span>
+    <span class="reading-copy"><strong>RFC 3986: Uniform Resource Identifier (URI)</strong><small>IETF · 2005</small><span>The generic URI grammar, component boundaries, resolution, normalization, and why percent encoding depends on context.</span></span>
+    <b>OPEN PDF ↗</b>
+  </a>
+  <a class="reading-card" href="./papers/03-rfc-8259-json.pdf">
+    <span class="reading-number">03</span>
+    <span class="reading-copy"><strong>RFC 8259: The JSON Data Interchange Format</strong><small>IETF · 2017</small><span>The compact grammar and interoperability constraints behind JSONEncoder, JSONDecoder, and every JSON HTTP contract.</span></span>
+    <b>OPEN PDF ↗</b>
+  </a>
+  <a class="reading-card" href="./papers/04-rfc-9846-tls13.pdf">
+    <span class="reading-number">04</span>
+    <span class="reading-copy"><strong>RFC 9846: The Transport Layer Security Protocol Version 1.3</strong><small>IETF · 2026</small><span>The current TLS 1.3 specification behind HTTPS confidentiality, integrity, endpoint authentication, handshakes, and session resumption; it replaces RFC 8446.</span></span>
+    <b>OPEN PDF ↗</b>
+  </a>
+  <a class="reading-card" href="./papers/05-rfc-8949-cbor.pdf">
+    <span class="reading-number">05</span>
+    <span class="reading-copy"><strong>RFC 8949: Concise Binary Object Representation</strong><small>IETF · 2020</small><span>A binary data model relevant when JSON is not compact or deterministic enough, including canonical encoding considerations.</span></span>
+    <b>OPEN PDF ↗</b>
+  </a>
+</div>
+<p>These are normative technical references, not package manuals. Return to the package’s locally installed documentation for exact API signatures and version-specific availability.</p>
+</template>
+  <script src="./appearance.js?v=7"></script>
+  <script src="./app.js?v=2"></script>
+</body>
+</html>
