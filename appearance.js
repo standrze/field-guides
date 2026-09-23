@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = "field-guide-library-appearance-v1";
   const PALETTE = Object.freeze([
+    { name: "Tropical Turquoise", color: "#34d5c0", soft: "#d8f7ef" },
     { name: "Light Green", color: "#a8e6b5", soft: "#ddf4e2" },
     { name: "Swift Lime", color: "#baff63", soft: "#dfffba" },
     { name: "Aqua", color: "#6fe7ff", soft: "#c9f6ff" },
@@ -16,6 +17,7 @@
   ]);
 
   const DEFAULTS = Object.freeze({
+    "gemma-cyber-training": { mark: "G", color: "#34d5c0" },
     "cyber-distillation": { mark: "C", color: "#a8e6b5" },
     "model-training": { mark: "AI", color: "#79e0bd" },
     swift: { mark: "S", color: "#79e0bd" },

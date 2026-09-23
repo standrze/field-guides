@@ -1,4 +1,10 @@
 const projects = {
+  "gemma-cyber-training": {
+    name: "Gemma Training Field Guide",
+    total: 19,
+    keys: ["gemma-cyber-training-progress-v1"],
+    validIDs: ["orientation", "training-map", "gemma", "cyber-corpus", "sft-data", "personality", "data-scale", "rounds", "hyperparameters", "adapters", "evaluation", "recipe", "runpod", "hugging-face", "export", "field-reports", "sources", "prices", "budget"]
+  },
   "swift-basics": {
     name: "Swift Programming Field Guide",
     total: 18,
@@ -72,6 +78,8 @@ function renderProgress() {
   let libraryCompleted = 0;
   let libraryTotal = 0;
   Object.entries(projects).forEach(([id, project]) => {
+    const progressElement = document.querySelector(`[data-project="${id}"] [data-progress]`);
+    if (!progressElement) return;
     const stored = storedIDs(project.keys[0]);
     const completed = project.validIDs
       ? new Set(stored.filter(item => project.validIDs.includes(item))).size
@@ -79,7 +87,7 @@ function renderProgress() {
     libraryCompleted += completed;
     libraryTotal += project.total;
     const label = `${completed} of ${project.total} lessons complete · ${Math.round(completed / project.total * 100)}%`;
-    document.querySelector(`[data-project="${id}"] [data-progress]`).textContent = label;
+    progressElement.textContent = label;
   });
   document.querySelector("#library-progress").textContent = `${libraryCompleted} / ${libraryTotal} lessons`;
   document.querySelector("#library-progress-bar").style.width = `${Math.round(libraryCompleted / libraryTotal * 100)}%`;
