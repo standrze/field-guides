@@ -209,13 +209,13 @@ export function renderInlineMarkdown(value) {
   output = escapeHTML(output);
 
   output = output.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g, (_, alt, source) => {
-    return `<img src="${escapeHTML(safeDestination(source))}" alt="${escapeHTML(alt)}">`;
+    return store.put(`<img src="${safeDestination(source)}" alt="${alt}">`);
   });
   output = output.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g, (_, label, destination) => {
-    return `<a href="${escapeHTML(safeDestination(destination))}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    return store.put(`<a href="${safeDestination(destination)}" target="_blank" rel="noopener noreferrer">`) + label + store.put("</a>");
   });
   output = output.replace(/&lt;(https?:\/\/[^&\s]+)&gt;/g, (_, destination) => {
-    return `<a href="${escapeHTML(destination)}" target="_blank" rel="noopener noreferrer">${escapeHTML(destination)}</a>`;
+    return store.put(`<a href="${destination}" target="_blank" rel="noopener noreferrer">${destination}</a>`);
   });
   output = output.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
   output = output.replace(/__([^_\n]+)__/g, "<strong>$1</strong>");

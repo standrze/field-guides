@@ -183,6 +183,61 @@ Start with one SFT mixture that demonstrates the desired style during the actual
 
 For preference data, compare answers of similar factual quality. Reward the version that handles uncertainty or communication better. If every preferred response is longer, you may mostly teach verbosity. See Real training reports for Gemma-specific personality and writing-style experiments.
 
+### A separate route: change only the personality
+
+If you already like the model's knowledge and task performance, use **Gemma 3 27B IT → personality SFT with LoRA or QLoRA → capability checks**. CPT is unnecessary for this objective. You are supplying demonstrations of a different interaction style, rather than intentionally adding a new domain corpus. The resulting behavior can still affect correctness, so preservation must be measured.
+
+| Your desired outcome | Appropriate first experiment | Why |
+|---|---|---|
+| A different default voice on familiar tasks | Small personality SFT adapter on IT | Existing instruction behavior gives the voice something useful to attach to |
+| Several selectable voices | Independently train each adapter against the same exact base | Each variant can be evaluated and enabled separately |
+| Same voice, better cyber knowledge and approach | Domain training route in this guide | The missing ingredient is specialist supervision |
+| Good answers but a repeated unwanted style habit | Targeted SFT corrections; consider preference tuning afterward | Narrow examples can focus on the observed habit |
+| A persona that only appears when requested | Include the persona condition consistently in training and inference | The condition is part of the behavior you are teaching |
+
+Keep a prompt-only version as an inexpensive baseline. This does not replace your goal of training the personality; it reveals whether the training actually improves consistency, shortens the required prompt, or helps across longer conversations.
+
+### Step 1: write a behavior specification
+
+Choose a few observable traits. “A witty, warm expert” is too vague to label reliably. A more useful specification says: answer directly; use everyday phrasing; challenge false premises gently; give short explanations unless detail is requested; use humor sparingly; preserve uncertainty. Include the situations in which a trait should recede. Humor that helps a casual explanation may be inappropriate during an urgent incident.
+
+Avoid teaching an invented biography unless you actually need a fictional character. Voice can be distinctive without claims of personal experiences, credentials, or actions the model never took. Define the desired length separately from the desired warmth: they are different properties.
+
+### Step 2: make examples across ordinary tasks
+
+For a first pilot, **1,000–5,000 reviewed examples** is a reasonable experimental budget, not a guaranteed requirement. Sample the tasks you want the model to keep doing: technical explanations, everyday questions, summaries, editing, structured answers, disagreement, and follow-up conversations. Include easy and difficult prompts and requests for both brief and detailed answers.
+
+Make the target response factually sound before editing its voice. You can start with checked existing answers and rewrite them, or write original examples. A teacher model can draft the rewrites, but review a representative sample and all high-impact or technically subtle answers. If the teacher inserts new claims, they become part of the training signal.
+
+For example, both versions below should express the same conclusion:
+
+| Prompt | Technically correct neutral answer | Example target voice |
+|---|---|---|
+| Does a failed sign-in prove someone got into the account? | No. A failed sign-in establishes that the attempt failed. Additional evidence is needed to assess account access. | No—the log says that attempt failed. To decide whether anyone got in, we need evidence of a successful session or other account activity. |
+| I changed two settings and now it works. Which one fixed it? | The result does not identify which change caused the improvement. Test the changes independently if feasible. | We know the combination worked, but we do not yet know which setting mattered. Try each change separately in a controlled test, if you can. |
+
+The style target is the manner of explanation, not extra confidence. Avoid using thousands of near-identical catchphrases. Include responses that disagree, correct earlier mistakes, say they lack enough evidence, and obey exact formats where personality should not add extra prose.
+
+### Step 3: train a modest adapter first
+
+An illustrative **personality-only pilot** uses QLoRA on 27B IT, rank 16, learning rate `5e-5`, one epoch, microbatch 1, accumulation 16, and a sequence length chosen to fit most of the conversations—often 2,048 or 4,096 tokens for an economical experiment. Use roughly 3% warmup and save intermediate checkpoints. These are proposed starting settings, not a validated personality recipe for every dataset.
+
+Change one setting in response to the results. If the voice barely changes while task quality holds, compare `1e-4` at the same rank and token budget. If the first epoch clearly helps and held-out quality keeps improving, compare a second epoch. If both training and validation remain weak after fixing the data and rate, rank 32 is another capacity experiment. Do not increase all three at once.
+
+For a small personality project, full-weight tuning is usually a larger and more expensive intervention than you need to try first. Adapter size is also convenient for switching and rollback. QLoRA saves base-weight memory, but the computation through the model remains substantial.
+
+### Step 4: test the personality without announcing it
+
+If you want the personality to be the default, test prompts without a persona instruction. Include at least some unseen topics and multi-turn conversations. Compare three versions: untouched IT, IT with your persona prompt, and IT with the trained adapter. Keep generation settings and task inputs matched.
+
+Score voice separately from factual correctness and instruction compliance. Check whether concise answers became evasive, confidence became fabrication, friendliness became agreement with false statements, or skepticism became reflexive contradiction. Also test JSON-only and other exact-format prompts: style must yield to the requested output format.
+
+### Step 5: keep or refine the result
+
+Keep the smallest intervention that achieves the desired voice with acceptable retained performance. If a particular habit persists, add examples of that situation. If the voice is strong but useful skills decline, compare an earlier checkpoint, lower learning rate, fewer exposures, or a broader task mixture. Optional DPO can address a consistent preference that remains after SFT; it adds data and evaluation work, so it is not an automatic next step.
+
+Save the personality adapter independently with its exact base revision. If you later want the same voice on your cyber-adapted model, test it carefully: an adapter trained on untouched IT was not trained against your new CPT/SFT checkpoint. Training a new voice adapter against the selected specialist checkpoint, or including the voice directly in specialist SFT, produces a clearer lineage.
+
 ## 7. Decide how much data to use
 
 Count tokens with the **actual Gemma tokenizer** after cleaning and formatting. Pages, PDF size, and gigabytes are poor training-budget units. Code, tables, identifiers, and multilingual text can tokenize very differently from ordinary English.
@@ -242,6 +297,51 @@ Resume an interrupted run with its optimizer, scheduler, random state, and data 
 
 Schedule evaluations by a useful fraction of the planned token budget. For a short pilot, checks around 25%, 50%, 75%, and completion are a simple starting point. Excessively frequent full evaluations can cost more than the training they are monitoring.
 
+### How many runs should you choose?
+
+The **number of experiment runs is a budget and confidence decision**, not a single learning control. Each independent run normally begins from the same chosen starting checkpoint. Five independent runs produce five candidate models; they do not automatically combine into a model that has learned five times as much. Continuing one model for five stages is a different experiment.
+
+Separate four counts in your notes:
+
+| Count | What it means | Choose it to answer |
+|---|---|---|
+| Epochs within a run | Repeated exposure to the training set | Has this candidate learned enough, or started overfitting? |
+| Configuration trials | Different learning rates, ranks, mixtures, or other settings | Which recipe works better? |
+| Seed repeats | Same recipe with different randomness | Does the improvement survive a different shuffle or adapter initialization? |
+| Stages | CPT, SFT, and any later adaptation | What should the model learn next? |
+
+### A concrete five-run plan
+
+After a small smoke test, the following plan is manageable for a first adapter SFT project. The example rates are hypotheses; keep the data, base, template, and evaluation fixed.
+
+| Run | Configuration | Decision it supports |
+|---|---|---|
+| 1 | Rank 16, `5e-5`, one epoch, seed 42 | Establish a conservative training baseline |
+| 2 | Rank 16, `1e-4`, one epoch, seed 42 | Compare a stronger update rate |
+| 3 | Better rate from runs 1–2, two epochs, seed 42 | Test whether more exposure helps; inspect the first-epoch checkpoint too |
+| 4 | Selected configuration, seed 17 | Check sensitivity to randomness |
+| 5 | Selected configuration, seed 73 | Check whether the result is consistent enough to trust |
+
+The untouched model and the prompt-only personality baseline need evaluation but no training. This five-run plan does not include them in its training count. A two-epoch candidate can cost roughly twice its training time at one epoch, so **five runs need not mean five equal bills**. Account for each token budget separately.
+
+With a very tight budget, do runs 1–2 and inspect the failure cases before spending more. With a clear winner and little room for uncertainty, add a seed repeat before a broad hyperparameter search. If the recipe fails badly, stop and repair the data or implementation; repeating it with ten seeds is unlikely to solve the cause.
+
+### Compare fairly
+
+For a configuration comparison, keep the starting weights and data split fixed. For a seed comparison, keep the settings fixed. Changing the corpus, rank, epoch count, and seed together prevents you from attributing the result. Track actual processed tokens as well as the intended settings, especially when packing changes the number of sequences.
+
+Predefine the main evaluation criteria. Select on development results, then report the final candidate on the untouched test set. Trying more candidates and repeatedly selecting on the test set can make the reported score look better without improving real usefulness.
+
+### Epochs versus max steps
+
+Many trainers, including Hugging Face Trainer, allow an epoch budget or a fixed optimizer-step budget; a positive `max_steps` overrides the epoch setting. With streaming data, a fixed token/step budget is often easier to reason about. Check the behavior of your installed trainer rather than assuming both settings will be multiplied. [Trainer configuration](https://huggingface.co/docs/transformers/main_classes/trainer)
+
+Suppose effective batch is 16 and the run stops at 1,000 updates. That is approximately 16,000 sequence exposures. If packing is disabled and the dataset contains 8,000 examples, it is about two passes. If examples are packed into longer sequences, that inference no longer holds. Report steps, exposures, and measured tokens with their definitions.
+
+### Restarting a schedule changes the experiment
+
+Three one-epoch jobs that each restart warmup and learning-rate decay are not the same optimization schedule as one three-epoch job. Restarting only from an adapter file also resets optimizer history. To resume a paused run, load a supported full training checkpoint. To try a new recipe, deliberately start a new run and label it that way.
+
 ## 9. Understand the main training controls
 
 Tune a few controls deliberately. A configuration copied from a different model, task, or hardware setup is a hypothesis to test.
@@ -270,6 +370,75 @@ Published work on learning-rate rewarming shows that schedule choices affect con
 First get one correct baseline. If quality is weak, inspect the data and the supervised tokens before increasing rank, epochs, context, and learning rate together. If a run improves, you want to know which change earned the cost.
 
 Do not treat an inference example using `device_map="auto"` as a multi-GPU training recipe. Use the trainer's supported distributed strategy. Likewise, a four-bit model format intended for local serving is not automatically a supported QLoRA training checkpoint.
+
+### Learning rate: how strongly each update pushes
+
+Learning rate scales the optimizer's update. Increasing it can adapt the model faster within a fixed token budget, but can also destabilize loss or damage useful behavior. Decreasing it can make adaptation gentler, but a rate that is too low can consume the entire budget without a useful change. Rate and exposure interact: two epochs at a lower rate are not mathematically equivalent to one epoch at a higher rate.
+
+Choose it with a small comparison on the same data. For adapter SFT, `5e-5` versus `1e-4` is a reasonable first comparison. Look at held-out answers, not only training loss. A pretrained base and an already adapted checkpoint may respond differently; do not assume one rate is appropriate for CPT, SFT, and preference tuning.
+
+### Batch size: memory, noise, and number of updates
+
+The per-device microbatch controls how many sequences are in GPU memory together. Raise it when there is memory headroom and benchmark whether tokens/second improves. Lower it first when you run out of memory. Longer sequences can make the same microbatch much more expensive.
+
+Accumulation lets you keep microbatch small while increasing the effective batch. For example, microbatch 1 with accumulation 16 and microbatch 2 with accumulation 8 both target 16 sequences per update on one GPU. They need not have exactly the same speed or numerical behavior. Padding and variable answer lengths complicate equivalence.
+
+A larger effective batch averages over more examples and gives fewer optimizer updates per epoch. It can reduce gradient noise; it can also change convergence and require retuning the rate. Do not blindly multiply the learning rate by the GPU count. Start from a modest effective batch such as 16 or 32 sequences, record tokens per update, and change it for a concrete memory, throughput, or quality reason.
+
+### Context length: retain what the answer needs
+
+Inspect the token-length distribution after formatting. Choose a limit that fits the information needed to solve the task and the complete target answer. A short limit is economical but may cut away the relevant log, code, or conclusion. A long limit can waste memory if most examples are short and padding is inefficient.
+
+For a personality-only dataset, many examples fit in 2K tokens. For multi-turn technical analysis, 4K or more may be justified. These are data-dependent choices. Increase context when important examples require it and the GPU budget allows it, rather than using 128K simply because the model advertises support.
+
+### LoRA rank, alpha, and target modules
+
+Rank limits the capacity of each low-rank update. Rank 16 is a modest starting point for voice changes; 32 or 64 may help a harder adaptation. More rank increases trainable parameters and optimizer state. It is useful when limited adaptation capacity is plausibly the bottleneck, not when the answer labels are wrong.
+
+In ordinary LoRA, the update scaling involves **alpha divided by rank**. If you increase rank while keeping alpha fixed, you change both capacity and that scaling. For a first rank comparison, keep a chosen alpha/rank ratio fixed—for example, rank 16 with alpha 32 versus rank 32 with alpha 64. Rank-stabilized LoRA uses a different scaling rule, so record the variant too.
+
+Target modules decide where the update is applied. Attention-only adapters and attention-plus-MLP adapters are different interventions. A broader language-model target set gives the adapter more places to change behavior and can cost more memory. Inspect the matched names, especially in Gemma 3's multimodal architecture. The included starter deliberately targets language attention and MLP projections while leaving the vision stack frozen.
+
+### Regularization: dropout and weight decay
+
+LoRA dropout randomly suppresses some adapter input activations during training. A small comparison such as 0 versus 0.05 can be useful for a small dataset showing overfitting. Too much dropout can obstruct learning. It is disabled during evaluation.
+
+Weight decay discourages large parameter values through the optimizer's update rule. It acts on selected trainable parameters and is distinct from dropout. Neither setting can repair incorrect labels or eliminate the need for diverse data. Start with a simple documented choice and change it after you have evidence of overfitting, rather than treating regularization as an automatic quality upgrade.
+
+### Warmup, scheduler, and clipping
+
+Warmup ramps the rate up at the beginning. Cosine or linear decay reduces it later. A short run can spend too much of its budget warming up if you copy a large fixed warmup-step count. A fraction such as 3% is easier to interpret across pilot sizes; inspect the actual number of updates it produces.
+
+Gradient clipping limits unusually large gradient norms. A setting of 1.0 is a common starting experiment. If clipping occurs constantly, examine the learning rate, data, and loss normalization rather than assuming clipping has made the run healthy. Sudden loss spikes can have several causes; the norm is a diagnostic, not a quality score.
+
+### Optimizer and precision
+
+AdamW is a straightforward baseline optimizer. Eight-bit optimizer states can save memory; CPU offload can trade GPU memory for transfer and CPU overhead. With QLoRA, optimizer state belongs mainly to the adapters, so changing the optimizer may save less than reducing activation memory.
+
+BF16 computation generally suits modern NVIDIA training hardware. Four-bit QLoRA describes the frozen base representation; it does not mean every operation and trainable parameter uses four bits. Precision is primarily a fit, stability, and performance choice. Check that the GPU supports the selected dtype and that the trainer implements it correctly.
+
+### Evaluation, saving, and seeds
+
+`eval_steps` controls feedback frequency, not how much the model learns. `save_steps` controls how much progress you could lose after interruption and which intermediate candidates you retain. `save_total_limit` controls disk retention. Saving every update is expensive; saving only at the end can make an interrupted rental painful. Choose intervals that balance run duration, checkpoint size, and recovery needs.
+
+The seed affects data ordering, adapter initialization, and other stochastic operations. Fix it when comparing settings, then vary it to assess robustness. A fixed seed does not guarantee bit-for-bit identity across hardware and library versions.
+
+### Match the symptom to the next experiment
+
+| Observation | First thing to inspect | A useful next change |
+|---|---|---|
+| Training and held-out answers both remain weak | Correct labels, template, supervised tokens, and relevant data | Better examples; then compare a higher rate or more adapter capacity |
+| Training improves while held-out quality declines | Duplicates, narrow coverage, excessive exposure | Earlier checkpoint, fewer epochs, lower rate, or more diverse data |
+| Voice barely changes but answers stay correct | Whether the target voice is consistent and appears without conditioning | Stronger, cleaner style demonstrations; then one rate or epoch change |
+| Voice changes but factual quality falls | Altered facts in rewrites and overly narrow task mix | Correct the data; compare lower rate, fewer exposures, and broader replay |
+| GPU runs out of memory | Actual peak memory and longest examples | Smaller microbatch or context, checkpointing, then a larger GPU if needed |
+| GPU fits but training is slow | Padding, data loading, kernels, and utilization | Better batching/packing or a larger microbatch; benchmark each change |
+| Answers stop mid-sentence | Truncation, end tokens, and generation limits | Repair preprocessing or inference settings before more training |
+| Training seems fine but exported behavior changes | Base revision, template, adapter loading, quantization | Fix the export/load path and re-evaluate |
+
+### Generation settings are a different set of controls
+
+Temperature, top-p, and maximum generated tokens normally control inference sampling. They can make the same trained model seem more varied, repetitive, terse, or erratic. Keep them fixed during comparisons so sampling does not masquerade as a training improvement. A setting called temperature in a distillation or preference objective may have a different meaning; read that trainer's definition.
 
 ## 10. Choose full tuning, LoRA, or QLoRA
 
@@ -379,7 +548,172 @@ This is a documentation example, not a trainer's configuration schema. Add the a
 
 The first technical success is a reproducible training and reload cycle. The first model success is a measured improvement on unseen tasks. Treat them as separate milestones.
 
-## 13. Use Runpod for rented GPU training
+## 13. Build the training script
+
+A training project is a small software pipeline: **data → tokenization → batches and loss labels → model and adapters → optimizer updates → evaluation → checkpoints → reload**. You do not implement Gemma's transformer mathematics yourself. Transformers supplies the model and training loop; PEFT supplies adapters. Your script defines exactly what data the model sees, what errors it learns from, which weights may change, and how a run can be reproduced.
+
+### The downloadable starter
+
+This guide now includes an inspectable implementation, three configurations, small format examples, preprocessing tests, and a reload script. [Open the complete training folder on GitHub](https://github.com/standrze/field-guides/tree/main/gemma-cyber-training/training). Read the [setup and limitations](https://github.com/standrze/field-guides/blob/main/gemma-cyber-training/training/README.md) before renting compute.
+
+**Validation status:** Python syntax, command-line help, and eight dependency-free preprocessing tests were checked locally. No Gemma weights were trained. Real tokenizer integration, CUDA memory, training, checkpoint recovery, and exported generation still need a GPU smoke test. The package pins are a starting environment, not a GPU-qualified lock.
+
+| File | What it controls |
+|---|---|
+| [train_gemma.py](./training/train_gemma.py) | Loads the model, attaches adapters, configures Trainer, records lineage, and saves outputs |
+| [data_utils.py](./training/data_utils.py) | Validates records, creates token IDs and loss labels, and pads batches |
+| [cpt.json](./training/configs/cpt.json) | PT checkpoint plus the text objective |
+| [sft-after-cpt.json](./training/configs/sft-after-cpt.json) | Continues the CPT adapter on the same PT base with assistant-response training |
+| [personality.json](./training/configs/personality.json) | Creates a fresh personality adapter on the IT checkpoint |
+| [requirements.txt](./training/requirements.txt) | Explicit starting package versions |
+| [test_data.py](./training/test_data.py) | Checks masking, padding, document boundaries, and input validation |
+| [reload_adapter.py](./training/reload_adapter.py) | Loads the export in a new process and generates a deterministic answer |
+
+The scope is deliberately specific: one NVIDIA GPU with BF16 support, Linux, Python 3.11, text-only QLoRA, and official Gemma 3 4B/12B/27B checkpoints. The full conditional-generation model is loaded, including the frozen vision components. Only language-model adapter parameters train. This implementation does not cover image data, full-weight CPT, distributed training, or preference optimization.
+
+### 1. Prepare the rental environment
+
+You need a GPU driver compatible with the PyTorch CUDA runtime, sufficient VRAM, system RAM for loading/tokenization, persistent disk for model cache and checkpoints, and accepted access conditions for the chosen Gemma repository. An A100 80 GB is a candidate to benchmark at short context; it is not a fit guarantee for every configuration. Quantized model size alone does not include activations, logits, workspace, adapters, or optimizer state.
+
+From verified persistent storage on the rental:
+
+```bash
+git clone https://github.com/standrze/field-guides.git
+cd field-guides/gemma-cyber-training/training
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+hf auth login
+nvidia-smi
+python -m pip check
+python -m unittest -v test_data
+```
+
+Use a new virtual environment. This avoids inheriting an incompatible vision package or unrelated training dependency from the Pod image. After the GPU smoke test succeeds, record the container image, driver, Python version, and `pip freeze` output. A requirements file with several pinned libraries still leaves transitive dependencies unpinned.
+
+### 2. Give each objective the right data
+
+CPT reads JSONL: one JSON object per line, containing one document.
+
+```json
+{"text":"A restoration exercise checks whether a backup can restore the service and whether the recovered data is usable."}
+```
+
+SFT reads conversations. A personality example has the same schema; the desired style appears in the assistant answer.
+
+```json
+{"messages":[{"role":"user","content":"Be concise and calm. Does a failed login prove compromise?"},{"role":"assistant","content":"No. A failed login alone does not prove compromise. Check for successful logins and corroborating account activity before drawing a conclusion."}]}
+```
+
+The supplied example files are invented format fixtures. Two short examples are enough to exercise a loader, not enough to train a useful specialist or assess personality. Substitute your reviewed corpus and separate held-out data. Split related documents and conversation families together before tokenization; exact duplicate detection does not catch paraphrases or shared answers.
+
+### 3. Understand the three arrays
+
+| Array | Meaning | Common mistake |
+|---|---|---|
+| `input_ids` | Token numbers for everything the model reads | Adding BOS twice or using the wrong chat format |
+| `attention_mask` | Which positions contain actual input versus padding | Treating padding as real context |
+| `labels` | Token targets used to calculate prediction error; `-100` means ignore | Training on user text unintentionally or masking away the entire answer |
+
+For CPT, ordinary document tokens contribute to next-token loss. For SFT in this starter, the prompt is visible context, but only the final assistant response and its turn ending contribute to loss. The model internally shifts logits and labels for next-token prediction; you should not shift them a second time in your dataset.
+
+Conceptually, the SFT example becomes:
+
+```text
+Input:  [BOS] [user header] question [turn end] [model header] answer [turn end]
+Loss:   ignore............................................. learn...........
+```
+
+The helper renders the prompt prefix and full conversation separately and asserts that their token prefixes match before constructing the mask. It rejects overlong SFT examples instead of silently truncating the desired answer. Its padding logic masks padding positions, preserving genuine end tokens even if a tokenizer uses the same ID for padding and EOS.
+
+### 4. Preserve Gemma's format
+
+Gemma has native user/model turn markers. The starter uses a saved, minimal text chat template, converting the dataset's `assistant` role into the native `model` header. It accepts alternating user/assistant string messages. Put high-level instructions in the first user message; this minimal implementation does not accept a separate system role, tools, or images. More capable processor templates may transform those inputs, but that is a separate integration. [Google's formatting guide](https://ai.google.dev/gemma/docs/core/prompt-structure)
+
+Earlier assistant replies in a multi-turn record are context only. To train every reply, create separate prefixes ending at each assistant answer and keep all prefixes from a conversation in one dataset split. At inference, use the tokenizer/template saved with the adapter and stop on the end-of-turn token as well as EOS. A different serving template can make a correctly trained adapter appear broken.
+
+### 5. Load and adapt the exact model
+
+The loader resolves the chosen repository revision to an immutable commit. It loads `Gemma3ForConditionalGeneration`, quantizes the frozen base to NF4 with double quantization and BF16 compute, and prepares it for adapter training. It selects attention and MLP projections **within the language model**, attaches LoRA, and asserts that only those adapter parameters are trainable. These choices follow the relevant model and quantization APIs. [Gemma 3 API](https://huggingface.co/docs/transformers/v4.57.1/en/model_doc/gemma3), [PEFT quantized training](https://huggingface.co/docs/peft/v0.17.0/en/developer_guides/quantization)
+
+The starter disables the training KV cache and enables gradient checkpointing to reduce activation memory. It uses one explicit GPU; `device_map="auto"` is not a substitute for a designed multi-GPU training setup. If you need distributed full tuning, the memory, sharding, checkpointing, and launch architecture all change.
+
+### 6. Translate settings into actual updates
+
+The JSON config exposes the controls explained in the earlier chapters: learning rate, epochs, microbatch, accumulation, context, rank, alpha, dropout, weight decay, warmup, evaluation/save intervals, and seed. Paths in the config are relative to the config file. CLI output/checkpoint paths are relative to your shell's current directory.
+
+With microbatch 1, accumulation 16, and one GPU, a full optimizer update incorporates 16 sequences. `--max-steps 5` means five optimizer updates, not five examples or five epochs; it overrides the epoch budget. The final incomplete accumulation group can be smaller. The pinned Gemma implementation computes mean loss per microbatch; the script tells Trainer to scale accumulation accordingly. With variable answer lengths, equal microbatch weighting is not identical to global token weighting. Keep that convention fixed when comparing runs.
+
+Evaluation and checkpoint intervals count optimizer updates. Saving every 50 updates creates no periodic checkpoint during a five-update test, so the smoke-test config must use a smaller interval. Save frequency changes recoverable work and I/O overhead; it does not directly make the model learn more. [Trainer arguments and behavior](https://huggingface.co/docs/transformers/v4.57.1/en/main_classes/trainer)
+
+### 7. Validate cheaply, then run
+
+First validate formatting without downloading the weights:
+
+```bash
+python train_gemma.py --config configs/personality.json --prepare-only
+```
+
+This still requires authorized tokenizer/config access. It reports input tokens, supervised tokens, sequence counts, maximum lengths, and the resolved base commit. Replace `revision: "main"` in your real configs with that SHA so later stages cannot silently use a changed base.
+
+For a GPU smoke test, copy the desired config to `configs/smoke.json`, use a small disjoint dataset, set context to 512 and both evaluation/save intervals to 2:
+
+```bash
+python train_gemma.py --config configs/smoke.json \
+  --max-steps 5 --output-dir runs/smoke
+
+python reload_adapter.py runs/smoke/adapter-final \
+  --prompt "What should a backup restoration test verify?"
+
+python train_gemma.py --config configs/smoke.json \
+  --max-steps 5 --output-dir runs/smoke \
+  --resume runs/smoke/checkpoint-4
+```
+
+Check finite loss/gradients, adapter parameter names, peak memory, export files, generation, and successful recovery from step four. Resuming here recovers the original five-step schedule; it does not add five new steps. Five updates can expose plumbing problems but cannot establish model quality. A preliminary 4B test reduces debugging cost, but you must still measure 27B memory and speed.
+
+After passing the technical checks, run your actual data budget in a fresh output directory:
+
+```bash
+# Knowledge route: the SAME PT base plus a continuously updated adapter.
+python train_gemma.py --config configs/cpt.json
+python train_gemma.py --config configs/sft-after-cpt.json
+
+# Separate personality-only route: fresh adapter on IT.
+python train_gemma.py --config configs/personality.json
+```
+
+The second CPT-route command is appropriate only after evaluating/selecting the CPT result. Its example config points to the final adapter for convenience. A selected earlier checkpoint must be exported with its tokenizer and matching manifest before setting `initial_adapter`.
+
+### 8. Keep three operations distinct
+
+| Operation | What gets loaded | Optimizer behavior |
+|---|---|---|
+| Resume an interrupted run | Same model, adapter, data, configuration, and full Trainer checkpoint | Restores saved optimizer/scheduler/step state |
+| Start SFT after CPT | Exact original PT base plus the selected CPT adapter | Starts a new optimizer/scheduler for the new objective |
+| Start an independent personality experiment | Original IT base plus a fresh adapter | Starts from scratch for that experiment |
+
+Do not attach a CPT adapter trained on PT to the IT model merely because both say 27B. Do not reset the CPT adapter before SFT and accidentally discard its learned changes. For the simple sequential route, the same adapter continues training and keeps its rank, alpha, and dropout.
+
+Periodic `checkpoint-N` folders are resumable training artifacts. `adapter-final` is an inference adapter with a tokenizer and manifest, not a standalone 27B model and not the entire optimizer state. The starter exports the final adapter; selection of the best model remains an evaluation decision.
+
+### What to fix when it fails
+
+| Symptom | First useful check |
+|---|---|
+| Access denied while downloading | Gemma license acceptance, exact repository, token permission |
+| Out of memory before updates | Loading precision, free VRAM, base/vision/head memory, other processes |
+| Out of memory during updates | Context and microbatch first; then rank/targets and implementation memory overhead |
+| Loss is zero, NaN, or never meaningful | Supervised token count, masks, data, precision, gradients and learning rate |
+| It repeats prompts or writes both roles | Chat template, assistant-only labels, and generation stop tokens |
+| Adapter loads but behavior is wrong | Exact base revision, exported tokenizer/template, adapter activation |
+| Resume rejects the run | Dataset hashes, original config, full checkpoint path and unchanged total budget |
+| Good training loss, weak held-out answers | Data coverage, contamination, overfitting, and quality of answer supervision |
+
+For a larger CPT corpus, replace the eager Python-list dataset with a tested streaming or Arrow pipeline and explicit packing. For DPO, add preference pairs and a suitable trainer. For personality alone, use the IT/SFT config and judge both style and unchanged task competence. The training script supplies mechanics; your examples and evaluations define the behavior worth learning.
+
+## 14. Use Runpod for rented GPU training
 
 For these experiments, choose a **Pod**: a rented GPU machine that can run a long training process. Compare GPUs using the completed job cost once you have measured throughput. The lowest hourly rate need not be the cheapest way to process your corpus.
 
@@ -414,13 +748,13 @@ nvidia-smi
 
 ### Launch, monitor, and recover
 
-The actual training command belongs to the trainer you chose. A command such as `python train.py --config cpt.yaml` is only a shell pattern until those files exist and have passed a smoke test. Google links supported Gemma tuning frameworks from its tuning guide; choose a Gemma-compatible implementation, then apply the data and experiment design in this field guide. [Google tuning entry point](https://ai.google.dev/gemma/docs/tune)
+Use the files and launch commands in the training-script chapter for this guide’s starter. Complete its GPU smoke test before scheduling a long Pod run. Google also links supported Gemma tuning frameworks from its tuning guide if you prefer another implementation. [Google tuning entry point](https://ai.google.dev/gemma/docs/tune)
 
 Use a persistent terminal session or job launcher so disconnecting the browser does not end your work. Record loss, gradients, GPU memory, token throughput, and evaluation results. Save a resumable checkpoint to persistent storage and verify that a new process can reload it before starting a long rental.
 
 After the run, upload the selected export and copy the training records. Verify the remote files before terminating the Pod. Disconnecting your SSH session does not stop the GPU bill. Stopping compute can leave storage charges; deletion has different consequences for the volume types.
 
-## 14. Use Hugging Face tools and Jobs
+## 15. Use Hugging Face tools and Jobs
 
 Hugging Face supplies both software and hosting. Its libraries can run on a Runpod machine; **Hugging Face Jobs** is an alternative compute service. The Hub stores models and datasets. These are complementary roles, so using Runpod does not require abandoning the Hugging Face workflow.
 
@@ -438,7 +772,7 @@ Hugging Face supplies both software and hosting. Its libraries can run on a Runp
 
 Jobs currently requires a positive credit balance and bills starting/running time by the minute. Check available hardware and set an explicit timeout; the documented default is 30 minutes. [Jobs pricing and billing](https://huggingface.co/docs/hub/jobs-pricing)
 
-The following is a **launch template** for your own implemented, dependency-declared `train.py` UV script. It is not a complete trainer. Replace `USERNAME` and the job identifier, and make sure the script accepts the shown `--output_dir` argument.
+The following is a **separate Jobs launch template** for a dependency-declared `train.py` UV script. It does not directly launch this guide’s multi-file starter: package that folder and its data/configs into a compatible container or adapt it into a self-contained UV script first. Replace `USERNAME` and the job identifier, and make sure the script accepts the shown `--output_dir` argument.
 
 ```bash
 hf auth login
@@ -467,7 +801,7 @@ For CPT, use cleaned text with a causal language-model objective and the intende
 
 Pin the working software environment and keep one known-good example batch. When upgrading a library, rerun formatting, masking, load, and export checks before paying for another long run.
 
-## 15. Export and keep the training lineage
+## 16. Export and keep the training lineage
 
 Save both the selected inference artifact and enough information to reproduce it. An adapter requires its exact base. A merged checkpoint still requires the matching tokenizer, configuration, and chat template.
 
@@ -501,7 +835,7 @@ Describe the base revision, task scope, data composition and exclusions, trainin
 
 Run a small fixed prompt set through the training environment and the deployed runtime. Look for answer truncation, missing turn endings, role leakage, unexpected template text, and changes in factual or structured output. A successful file conversion is not sufficient evidence of serving parity.
 
-## 16. What other Gemma trainers reported
+## 17. What other Gemma trainers reported
 
 There are useful firsthand accounts, but they cover different objectives and scales. I did not find a fully comparable public account with an itemized bill for **Gemma 3 27B cyber CPT → process/personality SFT**. The cases below give narrower evidence. Reported times are the authors' results, not independently reproduced measurements for this guide.
 
@@ -527,7 +861,7 @@ The University of Ljubljana's GaMS3 project adapted **Gemma 3 12B**, using three
 
 Short adapter runs can be affordable. Large-scale CPT can consume orders of magnitude more compute. The words “fine-tuned Gemma” do not tell you which situation applies. Always ask for model size, starting checkpoint, objective, total processed tokens, sequence length, update method, hardware, and whether the reported time includes generation and evaluation. The final cost chapter reprices a few reported runtimes at today's rates, explicitly as calculations.
 
-## 17. Sources and evidence notes
+## 18. Sources and evidence notes
 
 Research checked **23 September 2026**. The links below are model publishers, library maintainers, research authors, standards bodies, or the GPU providers. Recommendations about your pilot are this guide's synthesis and should be tested on your data.
 
@@ -565,7 +899,7 @@ Research checked **23 September 2026**. The links below are model publishers, li
 
 No training run or GPU benchmark was performed for this guide. There is no claim that the suggested corpus sizes, learning rates, or mixtures are optimal. Current rental prices are provider listings, not reserved capacity. Field reports use different software and objectives. A training budget should use a measured pilot on your chosen setup.
 
-## 18. Current rental prices
+## 19. Current rental prices
 
 **USD, checked 23 September 2026.** The Runpod pricing page says it was updated on 13 September. These are the publicly displayed **Pod** rates; confirm the selected cloud, region, instance configuration, and availability at launch. Hugging Face figures are **Jobs** rates. They are not inference API token prices. [Runpod pricing](https://www.runpod.io/pricing), [HF Jobs pricing](https://huggingface.co/docs/hub/jobs-pricing)
 
@@ -599,7 +933,7 @@ These are **our calculations using current listed rates**, not the authors' actu
 
 Teacher API calls, data preparation, failed experiments, serving, and storage are not established by those multiplications. Antislop's own $13.30 is a historical estimate; it should not be substituted for today's quote. Read the linked field reports for the scope of each measured runtime.
 
-## 19. Build your experiment budget
+## 20. Build your experiment budget
 
 Use measured **training input tokens per second across the whole job**, not inference generation speed. Count all processed prompt and answer tokens and every planned epoch. Keep the numerator consistent with how throughput is measured: if the rate includes padded tokens, account for padding in the workload too.
 

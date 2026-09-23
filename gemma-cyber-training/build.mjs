@@ -18,6 +18,7 @@ const metadata = [
   ['adapters', 'Compare full tuning, LoRA, and QLoRA for a 27B model.'],
   ['evaluation', 'Measure domain skill, general ability, behavior, and practical reliability.'],
   ['recipe', 'Run a staged experiment and use the results to decide what to scale.'],
+  ['training-script', 'Build, configure, validate, resume, and export a text-only Gemma QLoRA training project.'],
   ['runpod', 'Plan storage, GPU rental, training, and checkpoints on Runpod.'],
   ['hugging-face', 'Use the Hugging Face tools and Jobs workflow for training.'],
   ['export', 'Preserve the model lineage and publish a usable training artifact.'],
@@ -37,7 +38,7 @@ const chapters = headings.map((heading, index) => {
   const body = source.slice(bodyStart, headings[index + 1]?.index ?? source.length).trim();
   if (!body) throw new Error(`Chapter ${id} has no content.`);
   if (/<\/template\b/i.test(body)) throw new Error(`Chapter ${id} contains an unsupported closing template tag.`);
-  const group = index < 6 ? 'Knowledge and behavior' : index < 11 ? 'Training decisions' : index < 15 ? 'Rented GPU practice' : 'Reference and cost';
+  const group = index < 6 ? 'Knowledge and behavior' : index < 11 ? 'Training decisions' : index < 16 ? 'Rented GPU practice' : 'Reference and cost';
   const html = renderMarkdown(body).replaceAll('<table>', '<div class="table-wrap"><table>').replaceAll('</table>', '</table></div>');
   return `<!-- CHAPTER ${id}|${group}|${title.replaceAll('|', '—')}|${summary} -->\n${html}\n`;
 }).join('\n');

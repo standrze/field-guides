@@ -10,7 +10,7 @@ Edit `guide.md`, then run:
 node build.mjs
 ```
 
-Numbered `## N. Title` headings become the guide's 19 chapters. The builder maps their order to stable chapter IDs and groups in `build.mjs`. It writes `chapters.html`, `index.html`, and `read-all.html`.
+Numbered `## N. Title` headings become the guide's 20 chapters. The builder maps their order to stable chapter IDs and groups in `build.mjs`. It writes `chapters.html`, `index.html`, and `read-all.html`.
 
 The page reuses the library's navigation, progress, search, base styles, and Markdown renderer. `../layout.css` controls shared geometry; `tropical.css` supplies the turquoise, coral, mango, and deep teal theme.
 
@@ -23,3 +23,7 @@ python3 -m http.server 8000 --directory ..
 ```
 
 Open `http://localhost:8000/gemma-cyber-training/`.
+
+## Training implementation
+
+The `training/` folder contains the Python starter, three JSON configs, format fixtures, preprocessing tests and a reload script. Read its README for validation status; GPU training has not been executed.

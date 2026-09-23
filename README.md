@@ -9,7 +9,7 @@ Live library: <https://standrze.github.io/field-guides/>
 
 | Guide | Folder | Live path | Lessons |
 |---|---|---|---:|
-| Gemma Training Field Guide — Tropical edition | gemma-cyber-training/ | <https://standrze.github.io/field-guides/gemma-cyber-training/> | 19 |
+| Gemma Training Field Guide — Tropical edition | gemma-cyber-training/ | <https://standrze.github.io/field-guides/gemma-cyber-training/> | 20 |
 | Swift Programming Field Guide | swift-basics/ | <https://standrze.github.io/field-guides/swift-basics/> | 18 |
 | SwiftTUI Field Guide | swift/ | <https://standrze.github.io/field-guides/swift/> | 10 |
 | Midnight API Field Guide | midnight-api/ | <https://standrze.github.io/field-guides/midnight-api/> | Single-page reference |
