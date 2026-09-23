@@ -1,6 +1,6 @@
-# Gemma Training Field Guide
+# LLM Training Field Guide
 
-A tropical edition of the shared Field Guide template, covering Gemma 3 27B continued pretraining, instruction tuning, personality, defensive security data, evaluation, GPU rental, and experiment costs.
+A tropical edition of the shared Field Guide template, covering model-independent fine-tuning theory, batches, optimizer dynamics, personality, evaluation, and Gemma 3 implementation examples, GPU rental, and experiment costs.
 
 ## Edit and build
 
@@ -10,7 +10,7 @@ Edit `guide.md`, then run:
 node build.mjs
 ```
 
-Numbered `## N. Title` headings become the guide's 20 chapters. The builder maps their order to stable chapter IDs and groups in `build.mjs`. It writes `chapters.html`, `index.html`, and `read-all.html`.
+Numbered `## N. Title` headings become the guide's 23 chapters. The builder maps their order to stable chapter IDs and groups in `build.mjs`. It writes `chapters.html`, `index.html`, and `read-all.html`.
 
 The page reuses the library's navigation, progress, search, base styles, and Markdown renderer. `../layout.css` controls shared geometry; `tropical.css` supplies the turquoise, coral, mango, and deep teal theme.
 

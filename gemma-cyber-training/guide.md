@@ -1,20 +1,22 @@
 ---
-title: Gemma Training Field Guide
+title: LLM Training Field Guide
 slug: gemma-cyber-training
 edition: Tropical
 updated: 2026-09-23
 description: Cyber domain knowledge, problem-solving habits, and personality through CPT and SFT on rented GPUs.
 ---
 
-# Gemma Training Field Guide
+# LLM Training Field Guide
 
 ## 1. Build knowledge, judgment, and voice
 
-You want a model that understands cybersecurity, approaches a problem methodically, and sounds like the assistant you want to work with. Those are three related training goals. Give each one its own data and evaluation criteria.
+This guide explains LLM training mechanics and adaptation across model families, with Gemma 3 as a possible implementation example. Start with The mathematics of fine-tuning, Batches, and Optimization for the technical foundations. The Gemma-specific code and rental estimates are worked examples, not a requirement to choose that model.
+
+For the motivating use case, you want a model that understands cybersecurity, approaches a problem methodically, and sounds like the assistant you want to work with. Those are three related training goals. Give each one its own data and evaluation criteria.
 
 <ul class="flow"><li><strong>Knowledge</strong><small>Expose the model to accurate domain material. Continued pretraining is one way to adapt its representations.</small></li><li><strong>Approach</strong><small>Demonstrate how to interpret evidence, handle uncertainty, recommend a remedy, and check the result.</small></li><li><strong>Personality</strong><small>Make the desired voice visible in correct answers, disagreements, follow-up questions, and explanations.</small></li></ul>
 
-The main route in this guide is **Gemma 3 27B PT → continued pretraining → supervised fine-tuning → evaluation**. The SFT stage combines domain tasks, problem-solving habits, and personality. Add preference tuning only if it solves a measured remaining problem.
+The general route is **a pretrained base → continued pretraining → supervised fine-tuning → evaluation**. Gemma 3 27B PT is the concrete checkpoint used to illustrate it. The SFT stage combines domain tasks, problem-solving habits, and personality. Add preference tuning only if it solves a measured remaining problem.
 
 Keep two useful comparisons. First, apply the same SFT data directly to the pretrained model, without CPT, to measure the value of your corpus. Second, adapt Google's instruction model with that SFT data to see whether its existing instruction behavior is a better starting point for your budget. The second comparison evaluates a practical alternative; it does not isolate CPT because the starting models have different training histories.
 
@@ -185,7 +187,7 @@ For preference data, compare answers of similar factual quality. Reward the vers
 
 ### A separate route: change only the personality
 
-If you already like the model's knowledge and task performance, use **Gemma 3 27B IT → personality SFT with LoRA or QLoRA → capability checks**. CPT is unnecessary for this objective. You are supplying demonstrations of a different interaction style, rather than intentionally adding a new domain corpus. The resulting behavior can still affect correctness, so preservation must be measured.
+If you already like the model's knowledge and task performance, use **an instruction-tuned model → personality SFT with LoRA or QLoRA → capability checks** (Gemma 3 27B IT is one example). CPT is unnecessary for this objective. You are supplying demonstrations of a different interaction style, rather than intentionally adding a new domain corpus. The resulting behavior can still affect correctness, so preservation must be measured.
 
 | Your desired outcome | Appropriate first experiment | Why |
 |---|---|---|
@@ -342,7 +344,364 @@ Suppose effective batch is 16 and the run stops at 1,000 updates. That is approx
 
 Three one-epoch jobs that each restart warmup and learning-rate decay are not the same optimization schedule as one three-epoch job. Restarting only from an adapter file also resets optimizer history. To resume a paused run, load a supported full training checkpoint. To try a new recipe, deliberately start a new run and label it that way.
 
-## 9. Understand the main training controls
+## 9. The mathematics of fine-tuning
+
+Fine-tuning starts from learned parameters, θ₀, and optimizes them—or an added parameter subset—on a new training distribution. The central question is **which behavior the objective rewards, and how much adaptation preserves useful prior capability**. Batches, learning rate, epochs, and adapter rank influence that process in different ways.
+
+This chapter focuses on supervised fine-tuning of autoregressive LLMs. Continued pretraining uses a closely related next-token objective on ordinary text. Preference methods introduce different losses and data requirements. The equations apply across model families; Gemma-specific loading and formatting belong to the later implementation example.
+
+### What supervised fine-tuning minimizes
+
+Let x be a prompt and y a demonstrated answer. For a single answer of M tokens, a common sequence-normalized SFT loss is:
+
+```text
+ℓ(x, y; θ) = −(1/M) × Σ[t=1..M] log pθ(y_t | x, y_1, …, y_(t−1))
+```
+
+The model is rewarded for assigning probability to the demonstrated next token given the prompt and preceding reference-answer tokens. The logarithm is normally natural log. A target assigned probability 0.5 contributes about 0.693 loss; probability 0.1 contributes about 2.303. Increasing the probability of the correct target lowers its loss.
+
+The dataset objective then combines these losses. Averaging each sequence's mean gives equal example weight. Summing all token losses and dividing by all target tokens gives equal token weight. With variable answer lengths these are different objectives. The Batches chapter works through the arithmetic.
+
+**Practical implication:** SFT learns statistical regularities in the supplied answers. It has no automatic separate score for truth, politeness, reasoning validity, or useful brevity. If incorrect answers consistently sound confident, ordinary SFT rewards those confident target strings. Dataset review and task evaluation therefore carry semantic responsibilities that cross-entropy does not supply.
+
+### Teacher forcing and causal attention
+
+During ordinary SFT, the model receives the correct previous answer tokens as context, a procedure called teacher forcing. A causal attention mask prevents a position from looking at future answer tokens. Although prediction is autoregressive, training can compute losses for many positions in parallel because the entire reference sequence is already available.
+
+At deployment, the model conditions on its own previous generated tokens. An early mistake can move it into a context unlike the reference trajectories it saw during training. This is one reason a falling teacher-forced validation loss does not guarantee reliable multi-step generated answers.
+
+The loss mask and attention mask serve different purposes. Prompt tokens may be ignored as targets while still providing context that changes answer predictions. Ignoring their labels does not mean the model ignores the prompt. Conversely, including user tokens in the loss trains an additional objective: predicting user text as well as responses.
+
+### Backpropagation connects the answer to the weights
+
+For logits z passed through softmax, the cross-entropy derivative at a target position is `p − one_hot(target)`. Backpropagation applies the chain rule through the network to determine how each trainable parameter contributed. The optimizer then transforms the gradient into a parameter update.
+
+The same weight can affect many facts, styles, and tasks. There is generally no isolated “personality register” that ordinary SFT edits while leaving all knowledge untouched. A style example changes next-token preferences, which can also change answer length, confidence, whether caveats appear, and sometimes correctness. Test preservation rather than assuming it from the training label “personality.”
+
+### Full fine-tuning versus a restricted update
+
+In full fine-tuning, the chosen model parameters can all change. In LoRA, a selected matrix is represented as a frozen base plus a trainable low-rank perturbation:
+
+```text
+W_effective = W₀ + (α/r) × U × V
+W₀ shape: d_out × d_in
+U shape: d_out × r
+V shape: r × d_in
+Trainable adapter parameters: r × (d_out + d_in)
+```
+
+The perturbation has rank at most r for that matrix. For a 4,096 × 4,096 matrix, full tuning exposes 16,777,216 parameters; rank 16 exposes 131,072 adapter parameters, or about 0.78% as many. This is a per-matrix calculation, not the trainable fraction of an entire model. Targets and dimensions determine that total. The factor α/r describes standard LoRA scaling; other variants use different scaling. [Hu et al., LoRA](https://arxiv.org/abs/2106.09685)
+
+Rank controls the allowed update structure, not the number of facts the model can store. More rank gives a less restrictive parameterization and greater training cost; it does not guarantee a better optimum or less overfitting. Targeting more projections changes where adaptation can occur. These are architectural decisions distinct from batch size.
+
+QLoRA keeps the pretrained base quantized while training adapters through it. The original work introduced NF4, double quantization, and paged optimizers as memory techniques. A particular implementation need not use every component. Quantization changes numerical representation; it is not a new supervision objective. [Dettmers et al., QLoRA](https://arxiv.org/abs/2305.14314)
+
+### Adaptation, overfitting, and forgetting are different
+
+| Phenomenon | What it means | Evidence to look for |
+|---|---|---|
+| Useful adaptation | Improvement on the intended new distribution | Better held-out task outcomes and required style |
+| Underfitting | Insufficient fit to the intended training pattern | Training and validation remain weak; inspect implementation and labels first |
+| Overfitting | Learning details that do not transfer to unseen cases | Training improves while validation stagnates or worsens |
+| Forgetting/interference | Existing capabilities degrade during adaptation | Lower scores on preserved general tasks, languages, formats, or calibration |
+| Distribution shift | Deployment differs from training and validation | Failures on new sources, prompt forms, lengths, or task mixtures |
+
+Forgetting can occur even while target-domain validation improves. It is not synonymous with ordinary overfitting. Biderman and colleagues found lower-rank LoRA learned less than full tuning in their math/programming settings while better preserving out-of-domain performance. That is evidence of an adaptation–retention tradeoff, not a universal ranking of methods. [LoRA Learns Less and Forgets Less, TMLR 2024](https://arxiv.org/abs/2405.09673)
+
+Practical controls include a smaller update budget, a lower learning rate, broader task coverage, rehearsal examples from capabilities you want to preserve, or a more restricted trainable parameter subset. None guarantees preservation. Evaluate several checkpoints because maximum target-domain fit and best overall usefulness may occur at different times.
+
+### Regularization is not one knob
+
+Dropout introduces stochastic masking during training. Weight decay discourages some parameter growth according to the optimizer's formulation. Early stopping limits how far optimization proceeds. Data mixing changes what distribution is rewarded. Restricting rank changes the set of possible updates. These interventions have different mechanisms and should not be treated as interchangeable fixes.
+
+In particular, AdamW decay toward zero is **not** an explicit penalty for moving away from pretrained weights θ₀. Such a penalty would involve a quantity like `||θ − θ₀||²`, not `||θ||²`. Freezing the base and training an adapter preserves the stored base weights, but the active adapter still changes the model's function.
+
+### What validation loss tells you
+
+Validation cross-entropy measures how well the model predicts held-out reference tokens under the chosen mask and weighting. For a consistent token-level mean loss L in natural-log units, perplexity is `exp(L)`. Compare it only with matching data, tokenizer, context handling, masking, and weighting. A short-answer SFT loss and full-document CPT loss are not directly comparable measures of competence.
+
+Multiple good answers can use different wording. A model may assign lower probability to the reference wording while producing a useful answer, or predict reference phrasing well while generating poorly elsewhere. Pair loss with generated task evaluations: correctness, evidence use, format compliance, style, uncertainty, and general-capability retention.
+
+Use a development split for checkpoint and hyperparameter selection, and a separate final test set. Group related conversations/documents together during splitting. Many trials on the same test set turn it into a development set even if the files retain the name “test.”
+
+### A fine-tuning study you can interpret
+
+| Decision | Academic question | Practical measurement |
+|---|---|---|
+| Training examples and mixture | Which distribution is being optimized? | Source diversity, task coverage, answer-token weights |
+| Loss mask/reduction | Which predictions receive how much weight? | Decoded targets and valid-token counts |
+| Batch size | What gradient estimate and update frequency are used? | Sequences/tokens per update and total updates |
+| Learning rate and schedule | How does optimization traverse parameter space? | LR against tokens, loss curves, gradient/update norms |
+| Optimizer settings | How are gradients transformed over time? | Betas, decay, clipping, state initialization |
+| Rank and target layers | Which parameter changes are representable? | Trainable fraction, target modules, validation tradeoffs |
+| Epochs/token budget | How much exposure and optimization occur? | Unique versus repeated tokens, checkpoint trajectories |
+| Evaluation | Did the intended change generalize? | Held-out task gains, style adherence, retained skills, seed variation |
+
+A useful progression is: inspect the objective on a tiny batch; run a short technical smoke test; establish one measured baseline; vary a small number of hypotheses; then scale the data or run budget. A smoke test validates execution. An academic claim about improvement requires a controlled comparison and evidence of generalization.
+
+### Suggested academic reading order
+
+1. [LoRA](https://arxiv.org/abs/2106.09685) and [QLoRA](https://arxiv.org/abs/2305.14314): how parameter and representation choices reduce adaptation cost.
+2. [Adam](https://arxiv.org/abs/1412.6980) and [AdamW](https://arxiv.org/abs/1711.05101): the optimizer mechanics used by many practical recipes.
+3. [An Empirical Model of Large-Batch Training](https://arxiv.org/abs/1812.06162), then [Critical Batch Size Revisited](https://arxiv.org/abs/2505.23971): foundational intuition and later qualifications.
+4. [Small Batch Size Training for Language Models](https://arxiv.org/abs/2507.07101): why optimizer timescales matter when changing batch size.
+5. [LoRA Learns Less and Forgets Less](https://arxiv.org/abs/2405.09673): why task gains and retention should be measured separately.
+
+For each paper, record its model sizes, initial checkpoints, data regime, optimizer, tuning budget, and evaluation. A pretraining scaling result is useful context for fine-tuning, but is not direct evidence that the same numeric setting is optimal for a small assistant or personality dataset.
+
+## 10. Batches, tokens, and the training loop
+
+This chapter applies to autoregressive language models generally: Gemma, Llama, Qwen, and other compatible architectures. Model-specific details include the tokenizer, chat template, attention implementation, and supported training libraries. **Batching is a general optimization concept.** Gemma is the worked deployment example elsewhere in this guide.
+
+### Start with what happens in one update
+
+A language model assigns probabilities to possible next tokens. During training, the correct next token comes from the dataset. A loss function measures how poorly the model predicted it. Backpropagation computes the gradient: the local sensitivity of that loss to each trainable parameter. The optimizer uses that gradient and, often, stored information from earlier gradients to change the parameters.
+
+<ul class="flow"><li><strong>Forward pass</strong><small>Read a batch and calculate next-token probabilities and loss.</small></li><li><strong>Backward pass</strong><small>Calculate gradients for the trainable parameters.</small></li><li><strong>Optimizer update</strong><small>Use the accumulated gradient to change weights, then clear the gradient buffer.</small></li></ul>
+
+The **weights stay fixed during gradient accumulation**. Several forward/backward passes can contribute to one update. By contrast, several ordinary optimizer steps evaluate later examples at already changed weights. Those procedures generally produce different models.
+
+### Vocabulary with units
+
+| Term | Precise meaning | Example |
+|---|---|---|
+| Training example | One dataset record, before formatting and packing | One document or conversation |
+| Sequence | One tokenized model input | A 2,048-token block; it may contain one or several examples |
+| Token | One tokenizer unit, not necessarily a word | A word part, punctuation, or a control token |
+| Microbatch | Sequences processed in one forward/backward pass on one data-parallel replica | Two sequences |
+| Accumulation factor, A | Number of microbatches contributing before an optimizer update | Eight passes |
+| Data-parallel replicas, D | Copies of the model processing different data and combining gradients | Four replicas |
+| Global/effective batch, B | Sequences contributing to one optimizer update across those replicas | 2 × 8 × 4 = 64 sequences |
+| Optimizer step/update | One application of the optimizer to the trainable parameters | AdamW update number 100 |
+| Epoch | One pass over the defined finite dataset | All records once, subject to sampler/drop rules |
+| Training run | One experiment from an initial state to a stopping point | Two epochs with one configuration and seed |
+
+“Batch size” is ambiguous unless you specify **sequences or tokens, per-device or global, and before or after accumulation**. “Step” can mean a dataloader iteration or optimizer update in different tools. In this guide, an unqualified training step means an optimizer update.
+
+### The effective-batch equation
+
+For equal microbatches and ordinary data parallelism:
+
+```text
+B_sequences = microbatch_per_replica × accumulation_steps × data_parallel_replicas
+```
+
+Four GPUs do not always mean four data replicas. If four GPUs jointly hold one tensor-parallel model replica, they are processing one distributed copy of a batch; multiplying by four would overcount examples. Pipeline parallelism also has its own scheduling notion of microbatches. Record the actual parallelism topology.
+
+These are three ways to assemble 32 sequences for one update:
+
+| Microbatch per replica | Accumulation | Data replicas | Effective sequences/update |
+|---|---|---|---|
+| 1 | 32 | 1 | 32 |
+| 4 | 8 | 1 | 32 |
+| 4 | 2 | 4 | 32 |
+
+With matching data, correct normalization, and compatible model behavior, their accumulated gradients can be mathematically equivalent. Their memory, communication, runtime, and floating-point results need not be identical. Random masks, reduction order, and batch-dependent layers can also affect equivalence. This is an equivalence to **one update**, not to 32 sequential updates.
+
+### Sequence count is not token count
+
+Let L be average non-padding input length, and R average supervised target length after causal shifting and loss masking:
+
+```text
+Input tokens/update       ≈ B_sequences × L
+Supervised tokens/update  ≈ B_sequences × R
+Padding positions         = allocated sequence positions − actual input tokens
+```
+
+In CPT, most real tokens after the first position are targets. In assistant-only SFT, user instructions and supplied context consume compute but are not direct target labels. A long prompt with a short answer can therefore have a low supervised-token fraction.
+
+**Worked example:** microbatch 2, accumulation 8, two data replicas means 32 sequences/update. At 1,500 actual input tokens and 300 supervised answer tokens per sequence, that update processes roughly **48,000 input tokens** but supervises **9,600 target tokens**. If each microbatch is padded to length 2,048, its aggregate allocated positions total 65,536; utilization is about 73.2%. Padding is not additional training information.
+
+This distinction matters for personality SFT. Ten long verbose answers can contribute many more target tokens than ten concise answers. The loss reduction and sampling policy determine their relative influence; simply counting conversations does not reveal it.
+
+### From dataset size to update count
+
+For N already prepared sequences, E epochs, no dropped records, and full batches:
+
+```text
+Approximate updates = E × N / B_sequences
+```
+
+Real counts depend on incomplete batches, distributed sampler padding, accumulation at epoch boundaries, packing, and trainer behavior. Use logs for the exact total. For a fixed processed-token budget T, use measured input tokens/update instead of raw record counts.
+
+Consider 32,000 fixed-length sequences, one epoch, one GPU:
+
+| Microbatch | Accumulation | Effective batch | Updates | Sequence exposures |
+|---|---|---|---|---|
+| 4 | 2 | 8 | 4,000 | 32,000 |
+| 4 | 8 | 32 | 1,000 | 32,000 |
+| 4 | 32 | 128 | 250 | 32,000 |
+
+All three see the same number of sequences. The last changes the weights only one-sixteenth as often as the first. Keeping **1,000 updates** instead would give 8,000, 32,000, and 128,000 exposures respectively. “Same number of steps” is not a fair equal-data comparison across different effective batches.
+
+### Explore the arithmetic
+
+<form id="batch-calculator" class="budget-calculator">
+<div class="calculator-grid">
+<label>Prepared sequences in dataset<input name="examples" type="number" min="1" step="1" value="32000"></label>
+<label>Epochs<input name="epochs" type="number" min="0.01" step="0.1" value="1"></label>
+<label>Microbatch per data replica<input name="micro" type="number" min="1" step="1" value="4"></label>
+<label>Accumulation steps<input name="accum" type="number" min="1" step="1" value="8"></label>
+<label>Data-parallel replicas<input name="replicas" type="number" min="1" step="1" value="1"></label>
+<label>Mean real input tokens/sequence<input name="length" type="number" min="1" step="1" value="1500"></label>
+<label>Mean supervised targets/sequence<input name="targets" type="number" min="1" step="1" value="300"></label>
+</div>
+<div class="calculator-results" aria-live="polite"><p><strong data-batch-output="effective">32</strong> sequences/update</p><p><strong data-batch-output="updates">1,000</strong> approximate updates</p><p><strong data-batch-output="inputs">48,000</strong> input tokens/update</p><p><strong data-batch-output="supervised">9,600</strong> supervised tokens/update</p><p><strong data-batch-output="total">48,000,000</strong> total input-token exposures</p></div>
+<p data-batch-status>Arithmetic estimate; assumes constant average lengths and full batches. It does not predict quality or GPU memory.</p>
+</form>
+
+Try raising accumulation from 8 to 32. Updates fall from 1,000 to 250 while total data exposure stays fixed. Then raise microbatch to 8 and lower accumulation to 4: the original effective batch is restored, but peak activation memory and throughput may change. These are different experimental questions.
+
+### Padding, bucketing, truncation, and packing
+
+| Method | What it does | Consequence for learning and execution |
+|---|---|---|
+| Dynamic padding | Pads to the longest sequence in that microbatch | Reduces unused positions; actual memory can spike when a long record arrives |
+| Length bucketing | Groups similar lengths | Reduces padding, but length may correlate with topic or difficulty; shuffle bucket order |
+| Truncation | Removes tokens past a limit | Changes the training example and may delete the answer or essential context |
+| Chunking | Splits a long document into blocks | Retains more text, but limits dependencies across block boundaries |
+| Packing | Places several examples into fuller sequences | Improves utilization; changes sequence counts and requires explicit boundary semantics |
+
+An EOS marker alone does **not** prevent later tokens from attending to an earlier packed example. Independent-example packing needs appropriate attention boundaries and label handling; position-ID resets alone do not establish isolation unless the attention implementation uses them that way. Concatenated-document CPT is another deliberate objective. Know which one your trainer implements. TRL exposes packing and padding-related options; inspect the selected strategy and masks rather than assuming every framework treats boundaries alike. [TRL SFT documentation](https://huggingface.co/docs/trl/en/sft_trainer)
+
+Longer context does not automatically add knowledge. It makes longer dependencies available to the model, at a cost. Dense global attention has a quadratic sequence-length compute component; other parts scale differently, and sliding-window attention and memory-efficient kernels change the practical profile. Doubling context is therefore not generally the same cost as doubling sequence batch size.
+
+### Loss normalization: the subtle part
+
+For token-weighted causal language modeling, the batch objective is the sum of negative log probabilities for valid target tokens divided by their count. Masked prompts and padding contribute neither numerator nor denominator. The first token has no preceding prediction within its sequence and is excluded after causal shifting.
+
+```text
+L = (sum of losses over valid target tokens) / (number of valid target tokens)
+g = gradient of L with respect to trainable parameters
+```
+
+For accumulation, a mean of microbatch means differs from a global token mean when supervised token counts vary. Hugging Face documents this distinction and the need to normalize across the accumulation window. Distributed reduction must also match the intended global normalization. [Gradient accumulation correction](https://huggingface.co/blog/gradient_accumulation), [current token-counting documentation](https://huggingface.co/docs/transformers/grad_accumulation)
+
+**Numerical example:** microbatch A has 100 targets with mean loss 2; B has 900 targets with mean loss 1. Averaging means gives `(2 + 1)/2 = 1.5`. A token mean gives `(100×2 + 900×1)/1000 = 1.1`. The first gives each microbatch half the influence; the second gives each target equal weight. Neither number changes because you rename the effective batch.
+
+Equal-example weighting can be a deliberate SFT objective: average each answer's token loss, then average answers. This prevents long responses from automatically receiving greater total weight. Define that objective explicitly; a mean of variable-size microbatch means is not generally equal-example weighting either.
+
+**Starter-code connection:** this guide's pinned Gemma teaching script uses a mean loss per microbatch and scales accumulation accordingly. At microbatch one, that gives each sequence equal weight within a full accumulation window. It does not implement a global token-weighted loss across variable-length microbatches. If you want token-weighted equivalence, change and test the loss reduction before comparing accumulation configurations. The starter remains GPU-unverified.
+
+### What batch size cannot guarantee
+
+A bigger batch does not expand the context window, increase parameter count, add factual knowledge by itself, or make the model perform more reasoning at inference. It changes how training evidence is combined into updates. The curriculum, objective, parameter subset, learning rate, and total data exposure determine what that evidence teaches.
+
+## 11. How batch size changes optimization
+
+Batch size is both a **statistical choice** and a **hardware choice**. Statistically, it determines how much data estimates each gradient. Operationally, it affects how work is parallelized, when weights update, and how memory is used. A configuration can be efficient in tokens per second while being inefficient in tokens required to reach the desired quality.
+
+### The stochastic-gradient view
+
+Let θ denote the trainable parameters. Let ℓᵢ(θ) be the loss of training unit i under your chosen weighting. For B equally weighted sampled units:
+
+```text
+g_B = (1/B) × sum of ∇θ ℓᵢ(θ)
+SGD update: θ_next = θ − η × g_B
+```
+
+Here η is learning rate. The gradient is an estimate of the gradient over the full training distribution. Under independent sampling with finite covariance Σ, the covariance of the average is `Σ/B`; typical noise amplitude falls roughly as `1/√B`. Sixteen times as many independent units gives about one-quarter the noise amplitude, not sixteen times the learning.
+
+That is a simplified statistical model. Tokens within one document are correlated; duplicate answers, related records, and fixed-order curricula violate the independence assumption. Thousands of tokens from one repetitive document do not offer the same diversity as independent evidence. Batch size reported in tokens is useful accounting, but token count alone does not specify gradient noise.
+
+### Smaller versus larger batches
+
+| Property | Smaller effective batch | Larger effective batch |
+|---|---|---|
+| Gradient estimate per update | Usually noisier under comparable sampling | Usually closer to the average training gradient |
+| Updates for a fixed data budget | More | Fewer |
+| Reaction to newly encountered examples | More frequent parameter changes | Changes after pooling more examples |
+| Hardware opportunity | May underfill a GPU if the physical microbatch is tiny | Larger physical batches can improve utilization until limits are reached |
+| Risk | Unstable updates with an unsuitable learning rate or optimizer | Wasting samples on redundant gradient averaging; too few useful updates |
+| Generalization | Can benefit from stochasticity in some settings | Can also generalize well with a suitable recipe; no universal ordering |
+
+Gradient noise can influence the optimization path and act as an implicit regularizer. It is not equivalent to deliberately adding useful diversity, and it does not guarantee better held-out performance. “Small batches find flat minima” is an intuition from some research settings, not a reliable rule for selecting an adapter SFT batch. Judge the model on held-out tasks and retained capabilities.
+
+### Critical batch size and diminishing returns
+
+McCandlish and colleagues proposed gradient noise scale as a predictor of useful batch sizes and described the tradeoff between compute efficiency and elapsed training time. The practical idea is diminishing returns: beyond a problem-dependent region, averaging more examples before each update buys progressively less improvement. The location can evolve during training. [An Empirical Model of Large-Batch Training, 2018](https://arxiv.org/abs/1812.06162)
+
+Later results refine this picture. Zhang and colleagues studied autoregressive models from 85M to 1.2B parameters and found critical batch size depended primarily on data scale in their experiments. Merrill and colleagues directly measured it on OLMo 1B/7B runs and questioned assumptions behind using gradient noise as a universal proxy. These findings do not give a lookup table for a 27B personality adapter. [How Does Critical Batch Size Scale in Pre-training?, ICLR 2025](https://arxiv.org/abs/2410.21676), [Critical Batch Size Revisited, 2025](https://arxiv.org/abs/2505.23971)
+
+**Practical inference:** model size alone does not determine the right batch. Data distribution, training stage, optimizer, target loss, and compute budget also matter. A large pretraining run's global token batch should not be copied into a small SFT experiment without testing.
+
+### Why more accumulation can make a run worse
+
+Accumulation is useful when you want a particular effective batch that cannot fit as a physical microbatch. It trades serial passes for activation-memory savings. It does not create additional information and does not reproduce the parallel speed of a larger physical batch.
+
+At fixed data exposure, increasing accumulation reduces the number of updates. On one GPU, accumulating 32 tiny batches can postpone useful parameter changes while still doing all 32 passes. Whether the smoother gradient compensates for fewer updates is an empirical question.
+
+Marek and colleagues found that small-batch language-model training could be stable and competitive when optimizer settings were adjusted, especially the second-moment timescale. Their NeurIPS 2025 paper recommends against routine accumulation outside certain multi-replica settings. Treat this as evidence that accumulation deserves testing, not as a guarantee that batch one wins for every model or corpus. [Small Batch Size Training for Language Models, 2025](https://arxiv.org/abs/2507.07101)
+
+### Learning rate and batch size interact
+
+With a **mean** loss, increasing batch size does not automatically multiply the expected gradient by B. It changes its variance and how often an update happens per token. Larger batches can sometimes tolerate a higher learning rate, but the appropriate change depends on optimizer, objective, and stage.
+
+The familiar linear learning-rate scaling rule has influential evidence from large-batch ImageNet SGD, paired with warmup. It is not a general theorem for AdamW, CPT, LoRA, or SFT. Square-root rules also rely on assumptions. Use such rules to propose experiments, not to certify a setting. [Goyal et al., Accurate, Large Minibatch SGD, 2017](https://arxiv.org/abs/1706.02677)
+
+Changing batch while freezing every other setting answers, “What happens under this fixed recipe?” Retuning learning rate for each batch answers, “What is the best performance each batch can achieve within this search budget?” Both are valid experiments; label which one you ran.
+
+### AdamW: the optimizer remembers previous gradients
+
+Adam maintains moving estimates of the gradient and its elementwise square. It uses bias-corrected versions to scale parameter updates. In simplified notation:
+
+```text
+m_t = β1 × m_previous + (1 − β1) × g_t
+v_t = β2 × v_previous + (1 − β2) × g_t²
+update direction ≈ corrected_m / (sqrt(corrected_v) + ε)
+```
+
+β1 controls the first-moment memory, β2 the second-moment memory, and ε numerical stabilization. These are **optimizer-step timescales**. AdamW additionally applies weight decay separately from the adaptive gradient transformation. [Adam, Kingma and Ba](https://arxiv.org/abs/1412.6980), [Decoupled Weight Decay Regularization, Loshchilov and Hutter](https://arxiv.org/abs/1711.05101)
+
+For an exponential moving average, the half-life of an old contribution is:
+
+```text
+Half-life in updates = ln(0.5) / ln(β)
+Half-life in tokens ≈ half-life in updates × tokens/update
+```
+
+At β2 = 0.999, the half-life is about 693 updates. If batch tokens rise fourfold and β2 stays fixed, its memory spans roughly four times as many tokens. To preserve that token half-life algebraically, use `β_new = β_old^(new_batch_tokens / old_batch_tokens)`; for a fourfold increase, `0.999^4 ≈ 0.996006`. This preserves one timescale only. It is **not** a complete optimizer-scaling prescription or a reason to change beta values blindly.
+
+Decay and schedules have the same accounting issue. In a simplified AdamW decay-only step, `θ ← (1 − ηλ)θ`. Fewer updates at fixed epochs change the cumulative decay even if λ is unchanged. Likewise, 100 warmup updates span 3,200 sequences at batch 32 but 12,800 at batch 128. Record learning-rate schedules against processed tokens as well as step number.
+
+### Clipping, precision, and memory
+
+Gradient clipping caps a gradient norm according to a chosen threshold; it can limit unusually large updates, but cannot repair incorrect loss masks or consistently bad data. To emulate one accumulated batch, normally normalize and accumulate first, then clip once before the optimizer update. Clipping each microbatch separately is a different transformation. With scaled mixed-precision gradients, unscale before norm clipping. [PyTorch gradient clipping](https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html)
+
+Memory is approximately the sum of weights, trainable gradients, optimizer states, activations, temporary buffers, and implementation overhead. Increasing the physical microbatch mostly increases activations and associated buffers. Increasing accumulation usually does not require retaining all earlier computation graphs: backward frees each graph while gradients accumulate. It therefore increases work per update without the same proportional activation-memory increase.
+
+LoRA changes which parameters receive gradients and optimizer state; QLoRA also quantizes the frozen base. Neither removes the forward/backward computation needed through the model to train adapters. Gradient checkpointing saves activations by recomputing parts of the forward pass. These controls solve different memory costs; none determines the statistically best effective batch by itself.
+
+### Batch composition can change the behavior you learn
+
+Random shuffling reduces dependence on arbitrary file order. If all formal answers come first and casual answers last, late-stage training can emphasize the latter. Repeated examples increase exposure to their pattern; accumulation does not cancel that bias.
+
+For mixed-domain CPT, decide whether mixture weights are by documents, sequences, or tokens. For SFT, decide whether long answers should have more total loss weight. A 50/50 mix of conversation counts may be far from a 50/50 mix of answer tokens. To change personality while retaining competence, include desired-style examples across many task types and measure general task performance alongside style.
+
+A homogeneous batch may produce a strongly aligned gradient for one behavior. A diverse batch combines potentially conflicting gradients. Neither is automatically better: homogeneous batches can make updates alternate sharply across tasks, while excessive averaging can dilute rare objectives. Curriculum and sampling are training choices to evaluate, not just dataloader conveniences.
+
+### A controlled batch experiment
+
+1. Fix the starting checkpoint, tokenizer/template, data split, loss weighting, context policy, and evaluation prompts.
+2. Benchmark physical microbatches that fit with memory headroom. Record steady-state real tokens/second, supervised targets/second, and peak VRAM. Include longest expected sequences.
+3. Choose several effective batches that your hardware can realize. For a small SFT pilot, 8, 32, and 128 sequences are illustrative comparison points, not recommended optima.
+4. Compare them at equal processed-token exposure. Recalculate update counts and schedule milestones. Also compare wall time and cost to reach a quality threshold.
+5. Use a small learning-rate search for each batch if the question is best achievable performance. Document whether optimizer betas and decay were held fixed or retuned.
+6. Select on held-out validation, then repeat promising settings with additional seeds. Keep a final test set unused during selection.
+
+| Record per candidate | Why it matters |
+|---|---|
+| Microbatch / accumulation / data replicas | Explains the physical and effective batch |
+| Input and supervised tokens/update | Describes both work and objective weighting |
+| Total tokens, optimizer steps, epochs | Makes the training budget comparable |
+| LR schedule, betas, decay, clipping | Captures coupled optimization choices |
+| Validation loss and task/style scores | Distinguishes prediction fit from useful behavior |
+| Wall time, peak VRAM, rental cost | Measures practical efficiency |
+| Seed and run-to-run variation | Shows whether a small apparent gain is repeatable |
+
+For intuition: batch size determines **how much evidence is combined before the next change**, learning rate controls the scale of that change, the optimizer controls its transformation and memory, and total training exposure determines how many opportunities the model has to learn. You select these together against a measurable objective.
+
+## 12. Understand the main training controls
 
 Tune a few controls deliberately. A configuration copied from a different model, task, or hardware setup is a hypothesis to test.
 
@@ -440,7 +799,7 @@ The seed affects data ordering, adapter initialization, and other stochastic ope
 
 Temperature, top-p, and maximum generated tokens normally control inference sampling. They can make the same trained model seem more varied, repetitive, terse, or erratic. Keep them fixed during comparisons so sampling does not masquerade as a training improvement. A setting called temperature in a distillation or preference objective may have a different meaning; read that trainer's definition.
 
-## 10. Choose full tuning, LoRA, or QLoRA
+## 13. Choose full tuning, LoRA, or QLoRA
 
 **Full tuning** changes the selected original weights. **LoRA** freezes them and learns low-rank updates. **QLoRA** trains those updates while holding the base in a quantized representation. CPT and SFT are learning objectives; all three update methods can be considered independently of those objectives.
 
@@ -474,7 +833,7 @@ For bitsandbytes-based QLoRA, NF4, double quantization, and BF16 computation are
 
 If CPT used an adapter, starting SFT from the original base with a fresh adapter loses that adaptation. You can continue training the CPT adapter on SFT, or merge the selected CPT update into a compatible higher-precision base and train a new SFT adapter against that exact derived checkpoint. Record the choice. Do not assume independently trained adapters can be added together without evaluation. [PEFT LoRA reference](https://huggingface.co/docs/peft/package_reference/lora)
 
-## 11. Evaluate the model you actually want
+## 14. Evaluate the model you actually want
 
 Build evaluation before scaling training. Separate knowledge, approach, personality, and retained capability so an improvement in one does not hide a regression in another.
 
@@ -505,7 +864,7 @@ Validation loss is useful but incomplete. Lower CPT loss measures prediction of 
 
 For example, “domain task correctness improves and no material general-task regression appears under blinded review” is a useful direction. Define what “material” means before the run; a handful of prompts cannot resolve small percentage differences reliably.
 
-## 12. Run the first experiment
+## 15. Run the first experiment
 
 The initial goal is to discover whether your data and training sequence improve a model you would actually use. Begin with a limited token budget and a clean comparison.
 
@@ -548,7 +907,7 @@ This is a documentation example, not a trainer's configuration schema. Add the a
 
 The first technical success is a reproducible training and reload cycle. The first model success is a measured improvement on unseen tasks. Treat them as separate milestones.
 
-## 13. Build the training script
+## 16. Build the training script
 
 A training project is a small software pipeline: **data → tokenization → batches and loss labels → model and adapters → optimizer updates → evaluation → checkpoints → reload**. You do not implement Gemma's transformer mathematics yourself. Transformers supplies the model and training loop; PEFT supplies adapters. Your script defines exactly what data the model sees, what errors it learns from, which weights may change, and how a run can be reproduced.
 
@@ -713,7 +1072,7 @@ Periodic `checkpoint-N` folders are resumable training artifacts. `adapter-final
 
 For a larger CPT corpus, replace the eager Python-list dataset with a tested streaming or Arrow pipeline and explicit packing. For DPO, add preference pairs and a suitable trainer. For personality alone, use the IT/SFT config and judge both style and unchanged task competence. The training script supplies mechanics; your examples and evaluations define the behavior worth learning.
 
-## 14. Use Runpod for rented GPU training
+## 17. Use Runpod for rented GPU training
 
 For these experiments, choose a **Pod**: a rented GPU machine that can run a long training process. Compare GPUs using the completed job cost once you have measured throughput. The lowest hourly rate need not be the cheapest way to process your corpus.
 
@@ -754,7 +1113,7 @@ Use a persistent terminal session or job launcher so disconnecting the browser d
 
 After the run, upload the selected export and copy the training records. Verify the remote files before terminating the Pod. Disconnecting your SSH session does not stop the GPU bill. Stopping compute can leave storage charges; deletion has different consequences for the volume types.
 
-## 15. Use Hugging Face tools and Jobs
+## 18. Use Hugging Face tools and Jobs
 
 Hugging Face supplies both software and hosting. Its libraries can run on a Runpod machine; **Hugging Face Jobs** is an alternative compute service. The Hub stores models and datasets. These are complementary roles, so using Runpod does not require abandoning the Hugging Face workflow.
 
@@ -801,7 +1160,7 @@ For CPT, use cleaned text with a causal language-model objective and the intende
 
 Pin the working software environment and keep one known-good example batch. When upgrading a library, rerun formatting, masking, load, and export checks before paying for another long run.
 
-## 16. Export and keep the training lineage
+## 19. Export and keep the training lineage
 
 Save both the selected inference artifact and enough information to reproduce it. An adapter requires its exact base. A merged checkpoint still requires the matching tokenizer, configuration, and chat template.
 
@@ -835,7 +1194,7 @@ Describe the base revision, task scope, data composition and exclusions, trainin
 
 Run a small fixed prompt set through the training environment and the deployed runtime. Look for answer truncation, missing turn endings, role leakage, unexpected template text, and changes in factual or structured output. A successful file conversion is not sufficient evidence of serving parity.
 
-## 17. What other Gemma trainers reported
+## 20. What other Gemma trainers reported
 
 There are useful firsthand accounts, but they cover different objectives and scales. I did not find a fully comparable public account with an itemized bill for **Gemma 3 27B cyber CPT → process/personality SFT**. The cases below give narrower evidence. Reported times are the authors' results, not independently reproduced measurements for this guide.
 
@@ -861,7 +1220,7 @@ The University of Ljubljana's GaMS3 project adapted **Gemma 3 12B**, using three
 
 Short adapter runs can be affordable. Large-scale CPT can consume orders of magnitude more compute. The words “fine-tuned Gemma” do not tell you which situation applies. Always ask for model size, starting checkpoint, objective, total processed tokens, sequence length, update method, hardware, and whether the reported time includes generation and evaluation. The final cost chapter reprices a few reported runtimes at today's rates, explicitly as calculations.
 
-## 18. Sources and evidence notes
+## 21. Sources and evidence notes
 
 Research checked **23 September 2026**. The links below are model publishers, library maintainers, research authors, standards bodies, or the GPU providers. Recommendations about your pilot are this guide's synthesis and should be tested on your data.
 
@@ -899,7 +1258,7 @@ Research checked **23 September 2026**. The links below are model publishers, li
 
 No training run or GPU benchmark was performed for this guide. There is no claim that the suggested corpus sizes, learning rates, or mixtures are optimal. Current rental prices are provider listings, not reserved capacity. Field reports use different software and objectives. A training budget should use a measured pilot on your chosen setup.
 
-## 19. Current rental prices
+## 22. Current rental prices
 
 **USD, checked 23 September 2026.** The Runpod pricing page says it was updated on 13 September. These are the publicly displayed **Pod** rates; confirm the selected cloud, region, instance configuration, and availability at launch. Hugging Face figures are **Jobs** rates. They are not inference API token prices. [Runpod pricing](https://www.runpod.io/pricing), [HF Jobs pricing](https://huggingface.co/docs/hub/jobs-pricing)
 
@@ -933,7 +1292,7 @@ These are **our calculations using current listed rates**, not the authors' actu
 
 Teacher API calls, data preparation, failed experiments, serving, and storage are not established by those multiplications. Antislop's own $13.30 is a historical estimate; it should not be substituted for today's quote. Read the linked field reports for the scope of each measured runtime.
 
-## 20. Build your experiment budget
+## 23. Build your experiment budget
 
 Use measured **training input tokens per second across the whole job**, not inference generation speed. Count all processed prompt and answer tokens and every planned epoch. Keep the numerator consistent with how throughput is measured: if the rate includes padded tokens, account for padding in the workload too.
 

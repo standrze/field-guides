@@ -6,7 +6,7 @@ import {renderMarkdown} from './markdown-engine.mjs';
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const source = fs.readFileSync(path.join(dir, 'guide.md'), 'utf8');
 const metadata = [
-  ['orientation', 'Design a Gemma 3 specialist with domain knowledge, useful problem-solving habits, and a consistent voice.'],
+  ['orientation', 'Learn LLM training mechanics and design a specialist with domain knowledge, useful problem-solving habits, and a consistent voice.'],
   ['training-map', 'Understand which training stage changes knowledge, behavior, or preferences.'],
   ['gemma', 'Choose the exact pretrained checkpoint and understand its practical constraints.'],
   ['cyber-corpus', 'Prepare a reliable corpus for defensive security knowledge.'],
@@ -14,6 +14,9 @@ const metadata = [
   ['personality', 'Make tone, judgment, and interaction style consistent without losing competence.'],
   ['data-scale', 'Budget unique data, processed tokens, and instruction coverage.'],
   ['rounds', 'Understand epochs, steps, checkpoints, and repeated training.'],
+  ['finetuning-foundations', 'Connect the SFT objective, gradients, trainable parameters, overfitting, and capability retention.'],
+  ['batches', 'Understand batches, tokens, accumulation, loss weighting, packing, and update counts across LLMs.'],
+  ['optimization', 'Understand gradient noise, optimizer dynamics, critical batch size, and controlled experiments.'],
   ['hyperparameters', 'Connect the training controls to learning, memory, and stability.'],
   ['adapters', 'Compare full tuning, LoRA, and QLoRA for a 27B model.'],
   ['evaluation', 'Measure domain skill, general ability, behavior, and practical reliability.'],
@@ -38,7 +41,7 @@ const chapters = headings.map((heading, index) => {
   const body = source.slice(bodyStart, headings[index + 1]?.index ?? source.length).trim();
   if (!body) throw new Error(`Chapter ${id} has no content.`);
   if (/<\/template\b/i.test(body)) throw new Error(`Chapter ${id} contains an unsupported closing template tag.`);
-  const group = index < 6 ? 'Knowledge and behavior' : index < 11 ? 'Training decisions' : index < 16 ? 'Rented GPU practice' : 'Reference and cost';
+  const group = index < 6 ? 'Knowledge and behavior' : index < 14 ? 'Training decisions' : index < 19 ? 'Rented GPU practice' : 'Reference and cost';
   const html = renderMarkdown(body).replaceAll('<table>', '<div class="table-wrap"><table>').replaceAll('</table>', '</table></div>');
   return `<!-- CHAPTER ${id}|${group}|${title.replaceAll('|', '—')}|${summary} -->\n${html}\n`;
 }).join('\n');

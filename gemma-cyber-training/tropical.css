@@ -96,18 +96,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sidebar a:focus-visible, .sidebar button:focus-visible { outline-color: #fac261; outline-offset: -3px; }
 .skip-link { color: #103f3c; border-color: #b9533c; }
 .noscript-note { max-width: 65ch; padding: 24px; margin: auto; }
-#budget-calculator { margin: 32px 0; padding: 28px; background: #f1f9ed; border: 1px solid #6f9c87; border-top: 6px solid #ed826b; }
-#budget-calculator .calculator-grid, #budget-calculator .calculator-fields, #budget-calculator .budget-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-#budget-calculator label { display: block; color: #174b3d; font-weight: 600; font-size: 1rem; line-height: 1.5; }
-#budget-calculator label small { display: block; font-weight: 400; color: #527265; font-size: .875rem; }
-#budget-calculator input { display: block; width: 100%; min-height: 48px; margin-top: 8px; padding: 10px 12px; color: #103f3c; background: #fff; border: 1px solid #769f8d; border-radius: 0; font: 1rem var(--mono); }
-#budget-calculator .calculator-results, #budget-calculator .budget-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
-#budget-calculator [data-cost-output] { display: block; overflow-wrap: anywhere; color: #073f3a; font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-#budget-calculator .calculator-result, #budget-calculator .budget-result { padding: 16px; background: #d8f5e7; border: 1px solid #9fc8b4; }
-#budget-calculator .calculator-result:nth-child(2), #budget-calculator .budget-result:nth-child(2) { background: #fff0ce; border-color: #d9bd7b; }
-#budget-calculator .calculator-result:nth-child(3), #budget-calculator .budget-result:nth-child(3) { background: #fce5dc; border-color: #d7b09c; }
-#budget-calculator [data-cost-status] { margin-bottom: 0; font-size: .875rem; line-height: 1.6; color: #47685b; }
-#budget-calculator[data-valid="false"] [data-cost-status] { color: #a13e2a; }
+:is(#budget-calculator, #batch-calculator) { margin: 32px 0; padding: 28px; background: #f1f9ed; border: 1px solid #6f9c87; border-top: 6px solid #ed826b; }
+:is(#budget-calculator, #batch-calculator) .calculator-grid, :is(#budget-calculator, #batch-calculator) .calculator-fields, :is(#budget-calculator, #batch-calculator) .budget-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+:is(#budget-calculator, #batch-calculator) label { display: block; color: #174b3d; font-weight: 600; font-size: 1rem; line-height: 1.5; }
+:is(#budget-calculator, #batch-calculator) label small { display: block; font-weight: 400; color: #527265; font-size: .875rem; }
+:is(#budget-calculator, #batch-calculator) input { display: block; width: 100%; min-height: 48px; margin-top: 8px; padding: 10px 12px; color: #103f3c; background: #fff; border: 1px solid #769f8d; border-radius: 0; font: 1rem var(--mono); }
+:is(#budget-calculator, #batch-calculator) .calculator-results, :is(#budget-calculator, #batch-calculator) .budget-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+:is(#budget-calculator, #batch-calculator) :is([data-cost-output], [data-batch-output]) { display: block; overflow-wrap: anywhere; color: #073f3a; font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#budget-calculator, #batch-calculator) .calculator-result, :is(#budget-calculator, #batch-calculator) .budget-result { padding: 16px; background: #d8f5e7; border: 1px solid #9fc8b4; }
+:is(#budget-calculator, #batch-calculator) .calculator-result:nth-child(2), :is(#budget-calculator, #batch-calculator) .budget-result:nth-child(2) { background: #fff0ce; border-color: #d9bd7b; }
+:is(#budget-calculator, #batch-calculator) .calculator-result:nth-child(3), :is(#budget-calculator, #batch-calculator) .budget-result:nth-child(3) { background: #fce5dc; border-color: #d7b09c; }
+:is(#budget-calculator, #batch-calculator) :is([data-cost-status], [data-batch-status]) { margin-bottom: 0; font-size: .875rem; line-height: 1.6; color: #47685b; }
+:is(#budget-calculator, #batch-calculator)[data-valid="false"] :is([data-cost-status], [data-batch-status]) { color: #a13e2a; }
 .read-all > main { width: min(var(--reading-width, 1280px), 100%); margin: auto; }
 .read-all-header { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 20px var(--reading-inset, 58px); border-inline: 1px solid #275e56; border-bottom: 1px solid #275e56; background: #e1f7ed; font: .875rem/1.5 var(--mono); }
 .read-all-header span { color: #a3432f; }
@@ -128,9 +128,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .lesson-meta .edition-label { display: none; }
   .eyebrow { font-size: .7rem; max-width: calc(100% - 70px); }
   .lesson-meta span { font-size: .75rem; margin-right: 10px; }
-  #budget-calculator { padding: 20px; }
-  #budget-calculator .calculator-grid, #budget-calculator .calculator-fields, #budget-calculator .budget-inputs { grid-template-columns: 1fr; gap: 16px; }
-  #budget-calculator .calculator-results, #budget-calculator .budget-results { grid-template-columns: 1fr; }
+  :is(#budget-calculator, #batch-calculator) { padding: 20px; }
+  :is(#budget-calculator, #batch-calculator) .calculator-grid, :is(#budget-calculator, #batch-calculator) .calculator-fields, :is(#budget-calculator, #batch-calculator) .budget-inputs { grid-template-columns: 1fr; gap: 16px; }
+  :is(#budget-calculator, #batch-calculator) .calculator-results, :is(#budget-calculator, #batch-calculator) .budget-results { grid-template-columns: 1fr; }
   .read-all-header { padding: 18px 22px; }
   .read-all-header span { display: none; }
   .read-all-toc ol { display: block; }
@@ -148,5 +148,5 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .read-all-chapter { break-before: page; }
   .read-all hr { display: none; }
   pre { white-space: pre-wrap; }
-  #budget-calculator { break-inside: avoid; }
+  :is(#budget-calculator, #batch-calculator) { break-inside: avoid; }
 }

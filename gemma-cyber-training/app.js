@@ -137,6 +137,7 @@ function renderLesson() {
   if (requested !== lesson.id) history.replaceState(null, "", `#${lesson.id}`);
   lessonElement.innerHTML = lessonBody(lesson);
   window.updateBudgetCalculator?.(lessonElement);
+  window.updateBatchCalculator?.(lessonElement);
   crumb.textContent = `${String(currentIndex).padStart(2, "0")} / ${lesson.group}`;
   document.title = `${lesson.title} · ${GUIDE.title}`;
   previousButton.disabled = currentIndex === 0;

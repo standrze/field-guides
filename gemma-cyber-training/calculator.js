@@ -44,6 +44,37 @@
       updateBudgetCalculator();
     }
   });
+
+  function updateBatchCalculator(root = document) {
+    const form = root.querySelector('#batch-calculator');
+    if (!form) return;
+    const fields = ['examples', 'epochs', 'micro', 'accum', 'replicas', 'length', 'targets'];
+    const values = Object.fromEntries(fields.map(name => [name, Number(form.elements.namedItem(name).value)]));
+    const valid = fields.every(name => Number.isFinite(values[name]) && values[name] > 0)
+      && ['examples', 'micro', 'accum', 'replicas'].every(name => Number.isInteger(values[name]))
+      && values.targets <= values.length;
+    const effective = values.micro * values.accum * values.replicas;
+    const results = {effective, updates: values.examples * values.epochs / effective,
+      inputs: effective * values.length, supervised: effective * values.targets,
+      total: values.examples * values.epochs * values.length};
+    const okay = valid && Object.values(results).every(Number.isFinite);
+    form.querySelectorAll('[data-batch-output]').forEach(output => {
+      output.textContent = okay ? number.format(results[output.dataset.batchOutput]) : '—';
+    });
+    form.dataset.valid = String(okay);
+    form.querySelector('[data-batch-status]').textContent = okay
+      ? 'Arithmetic estimate; assumes constant average lengths and full batches. It does not predict quality or GPU memory.'
+      : 'Enter positive values; dataset size, microbatch, accumulation and replicas must be integers. Targets cannot exceed input tokens.';
+  }
+  document.addEventListener('input', event => {
+    if (event.target.closest('#batch-calculator')) updateBatchCalculator();
+  });
+  document.addEventListener('submit', event => {
+    if (event.target.id === 'batch-calculator') { event.preventDefault(); updateBatchCalculator(); }
+  });
+  window.updateBatchCalculator = updateBatchCalculator;
+  updateBatchCalculator();
+
   window.updateBudgetCalculator = updateBudgetCalculator;
   updateBudgetCalculator();
 })();

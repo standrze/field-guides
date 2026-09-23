@@ -1,9 +1,9 @@
 const projects = {
   "gemma-cyber-training": {
-    name: "Gemma Training Field Guide",
-    total: 20,
+    name: "LLM Training Field Guide",
+    total: 23,
     keys: ["gemma-cyber-training-progress-v1"],
-    validIDs: ["orientation", "training-map", "gemma", "cyber-corpus", "sft-data", "personality", "data-scale", "rounds", "hyperparameters", "adapters", "evaluation", "recipe", "training-script", "runpod", "hugging-face", "export", "field-reports", "sources", "prices", "budget"]
+    validIDs: ["orientation", "training-map", "gemma", "cyber-corpus", "sft-data", "personality", "data-scale", "rounds", "finetuning-foundations", "batches", "optimization", "hyperparameters", "adapters", "evaluation", "recipe", "training-script", "runpod", "hugging-face", "export", "field-reports", "sources", "prices", "budget"]
   },
   "swift-basics": {
     name: "Swift Programming Field Guide",
